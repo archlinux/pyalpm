@@ -66,6 +66,8 @@ static PyObject * option_get_logcb_alpm(PyObject *self)
 
 static PyObject * option_get_root_alpm(PyObject *self)
 {
+  const char *str;
+  
   if(alpm_option_get_root() == NULL)
   {
     PyErr_SetString(alpm_error, "failed getting root path");
@@ -73,7 +75,9 @@ static PyObject * option_get_root_alpm(PyObject *self)
   }
   else
   {
-    return Py_None;
+    str = alpm_option_get_root();
+    
+    return Py_BuildValue("s", str);
   }
 }
 
