@@ -24,6 +24,8 @@ This file is part of pyalpm.
 #include <alpm.h>
 #include <alpm_list.h>
 
+char VERSION[] = "0.1";
+
 static PyObject *alpm_error = NULL;
 
 static PyObject * initialize_alpm(PyObject *self)
@@ -54,19 +56,28 @@ static PyObject * release_alpm(PyObject *self)
 
 static PyObject * option_get_logcb_alpm(PyObject *self)
 {
+  const char *str = NULL;
   if(alpm_option_get_logcb() == NULL)
   {
     PyErr_SetString(alpm_error, "failed getting logcb");
     return NULL;
   }
-  else{
-    return Py_None;
+  else
+  {
+    str = alpm_option_get_logcb();
+    
+    return Py_BuildValue("s", str);
   }
+}
+
+static PyObject * option_set_logcb_alpm(PyObject *self, PyObject *args)
+{
+  return Py_None;
 }
 
 static PyObject * option_get_root_alpm(PyObject *self)
 {
-  const char *str;
+  const char *str = NULL;
   
   if(alpm_option_get_root() == NULL)
   {
@@ -87,26 +98,127 @@ static PyObject * option_set_root_alpm(PyObject *self, PyObject *args)
 
   if(!PyArg_ParseTuple(args, "s", &path))
   {
-    return NULL;
-  }
-  
-  if(alpm_option_set_root(path) == -1)
-  {
-    PyErr_SetString(alpm_error, "failed setting root path");
+    PyErr_SetString(alpm_error, "error in the args");
     return NULL;
   }
   else
   {
-    return Py_None;
+    if(alpm_option_set_root(path) == -1)
+    {
+      PyErr_SetString(alpm_error, "failed setting root path");
+      return NULL;
+    }
+    else
+    {
+      return Py_None;
+    }
   }
+}
+
+static PyObject * option_set_dbpath_alpm(PyObject *self, PyObject *args)
+{
+  const char *path;
+  if(!PyArg_ParseTuple(args, "s", &path))
+  {
+    PyErr_SetString(alpm_error, "error in the args");
+    return NULL;
+  }
+  else
+  {
+    if(alpm_option_set_dbpath(path) == -1)
+    {
+      PyErr_SetString(alpm_error, "failed setting dbpath");
+      return NULL;
+    }
+    else
+    {
+      return Py_None;
+    }
+  }
+}
+
+static PyObject * option_get_dbpath_alpm(PyObject *self)
+{
+  const char *str = NULL;
+  
+  if(alpm_option_get_dbpath() == NULL)
+  {
+    PyErr_SetString(alpm_error, "failed getting dbpath.");
+    return NULL;
+  }
+  else
+  {
+    str = alpm_option_get_dbpath();
+    
+    return Py_BuildValue("s", str);
+  }
+}
+
+static PyObject * option_set_logfile_alpm(PyObject *self, PyObject *args)
+{
+  const char *path;
+  if(!PyArg_ParseTuple(args, "s", &path))
+  {
+    PyErr_SetString(alpm_error, "error in the args");
+    return NULL;
+  }
+  else
+  {
+    if(alpm_option_set_logfile(path) == -1)
+    {
+      PyErr_SetString(alpm_error, "failed setting logfile");
+      return NULL;
+    }
+    else
+    {
+      return Py_None;
+    }
+  }
+}
+
+static PyObject * option_get_logfile_alpm(PyObject *self)
+{
+  const char *str = NULL;
+  
+  if(alpm_option_get_logfile() == NULL)
+  {
+    PyErr_SetString(alpm_error, "failed getting logfile.");
+    return NULL;
+  }
+  else
+  {
+    str = alpm_option_get_logfile();
+    
+    return Py_BuildValue("s", str);
+  }
+}
+
+static PyObject * alpmversion_alpm(PyObject *self)
+{
+  const char *str;
+  str = alpm_version();
+  
+  return Py_BuildValue("s", str);
+}
+
+static PyObject * version_alpm(PyObject *self)
+{
+  return Py_BuildValue("s", VERSION);
 }
 
 PyMethodDef methods[] = {
   {"initialize", initialize_alpm, METH_VARARGS, "initialize alpm."},
   {"release", release_alpm, METH_VARARGS, "release alpm."},
   {"getlogcb", option_get_logcb_alpm, METH_VARARGS, "call back function for logging."},
+  {"setlogcb", option_set_logcb_alpm, METH_VARARGS, "sets logging config."},
   {"getroot", option_get_root_alpm, METH_VARARGS, "gets the root path."},
   {"setroot", option_set_root_alpm, METH_VARARGS, "sets the root path."},
+  {"getdbpath", option_get_dbpath_alpm, METH_VARARGS, "gets the dbpath."},
+  {"setdbpath", option_set_dbpath_alpm, METH_VARARGS, "sets the dbpath."},
+  {"getlogfile", option_get_logfile_alpm, METH_VARARGS, "gets the logfile."},
+  {"setlogfile", option_set_logfile_alpm, METH_VARARGS, "sets the logfile"},
+  {"version", version_alpm, METH_VARARGS, "returns pyalpm version."},
+  {"alpmversion", alpmversion_alpm, METH_VARARGS, "returns alpm version."},
   {NULL, NULL, 0, NULL}
 };
 
