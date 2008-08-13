@@ -1,0 +1,4 @@
+To build it simply
+python setup.py build
+
+more information on the way

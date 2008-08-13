@@ -24,6 +24,8 @@ This file is part of pyalpm.
 #include <alpm.h>
 #include <alpm_list.h>
 
+#include <string.h>
+
 char VERSION[] = "0.1";
 
 static PyObject *alpm_error = NULL;
@@ -70,11 +72,54 @@ static PyObject * option_get_logcb_alpm(PyObject *self)
   }
 }
 
+void test_cb(pmloglevel_t level, char *fmt, va_list args)
+{
+  char msg[4][15];
+  
+  strcmp(msg[0], "Error: ");
+  strcmp(msg[1], "Warning: ");
+  strcmp(msg[2], "Debug: ");
+  strcmp(msg[3], "Function: ");
+  
+  if(strlen(fmt))
+  {
+    switch(level)
+    {
+      case PM_LOG_ERROR: printf("%s", msg[0]); break;
+      case PM_LOG_WARNING: printf("%s", msg[1]); break;
+      case PM_LOG_DEBUG: printf("%s", msg[2]); break;
+      case PM_LOG_FUNCTION: printf("%s", msg[3]); break;
+      default: return;
+    }
+    vprintf(fmt, args);
+  }
+}
+
 static PyObject * option_set_logcb_alpm(PyObject *self, PyObject *args)
 {
+  
+  va_list cbargs;
+  alpm_cb_log testcb;
+  
+  if(args == NULL)
+  {
+    PyErr_SetString(alpm_error, "invalid arguments");
+    return NULL;
+  }
+  
+  /*va_start(cbargs, args);
+  
+  va_end(cbargs);*/
+  
+  alpm_option_set_logcb(test_cb);
+  
   return Py_None;
 }
 
+/*
+The following functions take a string as argument(*_set_*)
+while other (*_get_*) return a string
+*/
 static PyObject * option_get_root_alpm(PyObject *self)
 {
   const char *str = NULL;
