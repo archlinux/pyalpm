@@ -317,6 +317,8 @@ static PyObject * option_set_nopassiveftp_alpm(PyObject *self, PyObject *args)
   }
 }
 
+/*write only function*/
+
 static PyObject * option_set_usedelta_alpm(PyObject *self, PyObject *args)
 {
   const unsigned short *srt;
@@ -329,23 +331,6 @@ static PyObject * option_set_usedelta_alpm(PyObject *self, PyObject *args)
   {
     alpm_option_set_usedelta(*srt);
     return Py_None;
-  }
-}
-
-/*non alpm functions, but here because of being difficult to implement in Python*/
-
-static PyObject * testdb(PyObject *self, PyObject *args)
-{
-  const char *dbpath;
-  
-  if(!PyArg_ParseTuple(args, "s", &dbpath))
-  {
-    PyErr_SetString(alpm_error, "wrong dbpath");
-    return NULL;
-  }
-  else
-  {
-    
   }
 }
 
@@ -378,6 +363,13 @@ static PyObject * alpmversion_alpm(PyObject *self)
 static PyObject * version_alpm(PyObject *self)
 {
   return Py_BuildValue("s", VERSION);
+}
+
+/*data type converters*/
+
+pmdb_t python-internal()
+{
+  return 0;
 }
 
 PyMethodDef methods[] = {
