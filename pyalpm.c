@@ -26,7 +26,9 @@ This file is part of pyalpm.
 
 #include <string.h>
 
-char VERSION[] = "0.1";
+/*pyalpm internal variables*/
+static char *error, *warning, *debug, *function;
+static char VERSION[] = "0.1";
 
 static PyObject *alpm_error = NULL;
 
@@ -74,21 +76,14 @@ static PyObject * option_get_logcb_alpm(PyObject *self)
 
 void test_cb(pmloglevel_t level, char *fmt, va_list args)
 {
-  char msg[4][15];
-  
-  strcmp(msg[0], "Error: ");
-  strcmp(msg[1], "Warning: ");
-  strcmp(msg[2], "Debug: ");
-  strcmp(msg[3], "Function: ");
-  
   if(strlen(fmt))
   {
     switch(level)
     {
-      case PM_LOG_ERROR: printf("%s", msg[0]); break;
-      case PM_LOG_WARNING: printf("%s", msg[1]); break;
-      case PM_LOG_DEBUG: printf("%s", msg[2]); break;
-      case PM_LOG_FUNCTION: printf("%s", msg[3]); break;
+      case PM_LOG_ERROR: printf("%s", error); break;
+      case PM_LOG_WARNING: printf("%s", warning); break;
+      case PM_LOG_DEBUG: printf("%s", debug); break;
+      case PM_LOG_FUNCTION: printf("%s", function); break;
       default: return;
     }
     vprintf(fmt, args);
@@ -97,23 +92,18 @@ void test_cb(pmloglevel_t level, char *fmt, va_list args)
 
 static PyObject * option_set_logcb_alpm(PyObject *self, PyObject *args)
 {
-  
-  va_list cbargs;
-  alpm_cb_log testcb;
-  
-  if(args == NULL)
+  if(!PyArg_ParseTuple(args, "ssss", &error, &warning, &debug, &function))
   {
-    PyErr_SetString(alpm_error, "invalid arguments");
+    PyErr_SetString(alpm_error, "incorrect arguments");
     return NULL;
   }
   
-  /*va_start(cbargs, args);
-  
-  va_end(cbargs);*/
-  
-  alpm_option_set_logcb(test_cb);
-  
-  return Py_None;
+  else
+  {
+    alpm_option_set_logcb(test_cb);
+    
+    return Py_None;
+  }
 }
 
 /*
@@ -122,17 +112,15 @@ while other (*_get_*) return a string
 */
 static PyObject * option_get_root_alpm(PyObject *self)
 {
-  const char *str = NULL;
+  const char *str = alpm_option_get_root();
   
-  if(alpm_option_get_root() == NULL)
+  if(str == NULL)
   {
     PyErr_SetString(alpm_error, "failed getting root path");
     return NULL;
   }
   else
   {
-    str = alpm_option_get_root();
-    
     return Py_BuildValue("s", str);
   }
 }
@@ -184,17 +172,15 @@ static PyObject * option_set_dbpath_alpm(PyObject *self, PyObject *args)
 
 static PyObject * option_get_dbpath_alpm(PyObject *self)
 {
-  const char *str = NULL;
+  const char *str = alpm_option_get_dbpath();
   
-  if(alpm_option_get_dbpath() == NULL)
+  if(str == NULL)
   {
     PyErr_SetString(alpm_error, "failed getting dbpath.");
     return NULL;
   }
   else
   {
-    str = alpm_option_get_dbpath();
-    
     return Py_BuildValue("s", str);
   }
 }
@@ -223,17 +209,160 @@ static PyObject * option_set_logfile_alpm(PyObject *self, PyObject *args)
 
 static PyObject * option_get_logfile_alpm(PyObject *self)
 {
-  const char *str = NULL;
+  const char *str = alpm_option_get_logfile();
   
-  if(alpm_option_get_logfile() == NULL)
+  if(str == NULL)
   {
     PyErr_SetString(alpm_error, "failed getting logfile.");
     return NULL;
   }
   else
   {
-    str = alpm_option_get_logfile();
+    return Py_BuildValue("s", str);
+  }
+}
+
+static PyObject * option_set_xfercommand_alpm(PyObject *self, PyObject *args)
+{
+  const char *cmd;
+  if(!PyArg_ParseTuple(args, "s", &cmd))
+  {
+    PyErr_SetString(alpm_error, "error in the args");
+    return NULL;
+  }
+  else
+  {
+    alpm_option_set_xfercommand(cmd);
+    return Py_None;
+  }
+}
+
+static PyObject * option_get_xfercommand_alpm(PyObject *self)
+{
+  const char *str = alpm_option_get_xfercommand();
+  
+  if(str == NULL)
+  {
+    PyErr_SetString(alpm_error, "failed getting xfercommand.");
+    return NULL;
+  }
+  else
+  {
+    return Py_BuildValue("s", str);
+  }
+}
+
+/*
+receives and returns an int type
+1 = enabled
+0 = disabled
+*/
+static PyObject * option_get_usesyslog_alpm(PyObject *self)
+{
+  unsigned short srt = alpm_option_get_usesyslog();
+  
+  if(srt == -1)
+  {
+    PyErr_SetString(alpm_error, "failed getting usesyslog");
+    return NULL;
+  }
+  else
+  {
+    return Py_BuildValue("i", srt);
+  }
+}
+
+static PyObject * option_set_usesyslog_alpm(PyObject *self, PyObject *args)
+{
+  const unsigned short *srt;
+  if(!PyArg_ParseTuple(args, "i", &srt))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    alpm_option_set_usesyslog(*srt);
+    return Py_None;
+  }
+}
+
+static PyObject * option_get_nopassiveftp_alpm(PyObject *self)
+{
+  unsigned short srt = alpm_option_get_nopassiveftp();
+  
+  if(srt == -1)
+  {
+    PyErr_SetString(alpm_error, "failed getting nopassiveftp");
+    return NULL;
+  }
+  else
+  {
+    return Py_BuildValue("i", srt);
+  }
+}
+
+static PyObject * option_set_nopassiveftp_alpm(PyObject *self, PyObject *args)
+{
+  const unsigned short *srt;
+  if(!PyArg_ParseTuple(args, "i", &srt))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    alpm_option_set_usesyslog(*srt);
+    return Py_None;
+  }
+}
+
+static PyObject * option_set_usedelta_alpm(PyObject *self, PyObject *args)
+{
+  const unsigned short *srt;
+  if(!PyArg_ParseTuple(args, "i", &srt))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    alpm_option_set_usedelta(*srt);
+    return Py_None;
+  }
+}
+
+/*non alpm functions, but here because of being difficult to implement in Python*/
+
+static PyObject * testdb(PyObject *self, PyObject *args)
+{
+  const char *dbpath;
+  
+  if(!PyArg_ParseTuple(args, "s", &dbpath))
+  {
+    PyErr_SetString(alpm_error, "wrong dbpath");
+    return NULL;
+  }
+  else
+  {
     
+  }
+}
+
+/*read-only functions*/
+
+static PyObject * option_get_lockfile_alpm(PyObject *self)
+{
+  const char *str = NULL;
+  str = alpm_option_get_lockfile();
+  
+  if(str == NULL)
+  {
+    PyErr_SetString(alpm_error, "failed getting lockfile");
+    return NULL;
+  }
+  else
+  {
     return Py_BuildValue("s", str);
   }
 }
@@ -261,7 +390,15 @@ PyMethodDef methods[] = {
   {"getdbpath", option_get_dbpath_alpm, METH_VARARGS, "gets the dbpath."},
   {"setdbpath", option_set_dbpath_alpm, METH_VARARGS, "sets the dbpath."},
   {"getlogfile", option_get_logfile_alpm, METH_VARARGS, "gets the logfile."},
-  {"setlogfile", option_set_logfile_alpm, METH_VARARGS, "sets the logfile"},
+  {"setlogfile", option_set_logfile_alpm, METH_VARARGS, "sets the logfile."},
+  {"getlockfile", option_get_lockfile_alpm, METH_VARARGS, "gets the lockfile."},
+  {"getxfercommand", option_get_xfercommand_alpm, METH_VARARGS, "gets the xfercommand value."},
+  {"setxfercommand", option_set_xfercommand_alpm, METH_VARARGS, "sets the xfercommand value."},
+  {"getusesyslog", option_get_usesyslog_alpm, METH_VARARGS, "gets usesyslog value."},
+  {"setusesyslog", option_set_usesyslog_alpm, METH_VARARGS, "sets usesyslog value."},
+  {"getnopassiveftp", option_get_nopassiveftp_alpm, METH_VARARGS, "gets nopassiveftp value."},
+  {"setnopassiveftp", option_set_nopassiveftp_alpm, METH_VARARGS, "sets nopassiveftp value."},
+  {"setusedelta", option_set_usedelta_alpm, METH_VARARGS, "sets usedelta value."},
   {"version", version_alpm, METH_VARARGS, "returns pyalpm version."},
   {"alpmversion", alpmversion_alpm, METH_VARARGS, "returns alpm version."},
   {NULL, NULL, 0, NULL}
