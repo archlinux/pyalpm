@@ -16,6 +16,8 @@ DONE:
 
 * alpm_option_set_usedelta()
 
+* added array to alpm_list_t converter
+
 * alpmversion()
 * version()
 
@@ -35,5 +37,6 @@ TODO:
 * alpm_option_get_localdb()
 * alpm_option_get_syncdb()
 
+* add internal datatype converters
 
 * add more things to this TODO

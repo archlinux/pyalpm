@@ -28,10 +28,29 @@ This file is part of pyalpm.
 
 /*pyalpm internal variables*/
 static char *error, *warning, *debug, *function;
+static unsigned short enable_messages_logcb = 0;
 static char VERSION[] = "0.1";
 
+/*some function definitions*/
+static void add_alpm_list_t(alpm_list_t *prt);
+static void remove_alpm_list_t(alpm_list_t *prt);
+static alpm_list_t * tuple_alpm_list_t(char element[], int amount);
+static void clean_alpm_list_t(alpm_list_t *prt);
+
+/*copied from pacman db.h as it can't be included, set as pmdb_t in alpm.h*/
+struct __pmdb_t {
+	char *path;
+	char *treename;
+	void *handle;
+	alpm_list_t *pkgcache;
+	alpm_list_t *grpcache;
+	alpm_list_t *servers;
+};
+
+/*pyalpm errors*/
 static PyObject *alpm_error = NULL;
 
+/*pyalpm functions*/
 static PyObject * initialize_alpm(PyObject *self)
 {
   if(alpm_initialize() == -1)
@@ -365,14 +384,105 @@ static PyObject * version_alpm(PyObject *self)
   return Py_BuildValue("s", VERSION);
 }
 
-/*data type converters*/
-
-pmdb_t python-internal()
+/*internal data type converters*/
+static pmdb_t tuple_pmdb_t(char *dbpath, char *dbtreename)
 {
-  return 0;
+  pmdb_t result;
+  
+  /*strcpy(result.path, dbpath);
+  strcpy(result.treename, dbtreename);
+  */
+  result.path = dbpath;
+  result.treename = dbtreename;
+  return result;
+}
+
+static PyObject * testconverter(PyObject *self, PyObject *args)
+{
+  const char *path, *dbtreename;
+  pmdb_t test;
+  
+  if(!PyArg_ParseTuple(args, "ss", &path, &dbtreename))
+  {
+    PyErr_SetString(alpm_error, "bad arguments");
+    return NULL;
+  }
+  else
+  {
+    test = tuple_pmdb_t(path, dbtreename);
+    return Py_None;
+  }
+}
+/*converts a C array to alpm_list_t linked list, returns a pointer to first node*/
+static alpm_list_t * tuple_alpm_list_t(char element[], int amount)
+{
+  alpm_list_t *nodetmp;
+  char *tmp;
+  int i;
+  
+  nodetmp = (alpm_list_t*) malloc(sizeof(alpm_list_t));
+  
+  for(i=0;i<amount;i++)
+  {
+    tmp = NULL;
+    tmp = (char*) malloc(sizeof(element[i]));
+    if(tmp == NULL)
+    {
+      nodetmp = NULL;
+      return nodetmp;
+    }
+    else
+    {
+      nodetmp->data = tmp;
+      strcpy(nodetmp->data, &element[i]);
+      if(i != amount-1)
+      {
+      add_alpm_list_t(nodetmp);
+      nodetmp = nodetmp->next;
+      }
+    }
+  }
+  
+  return nodetmp;
+}
+
+/*alpm_list_t related functions*/
+static void add_alpm_list_t(alpm_list_t *prt)
+{
+  alpm_list_t *new;
+  new = (alpm_list_t*) malloc(sizeof(alpm_list_t));
+  
+  prt->next = new;
+  new->prev = prt;
+}
+
+static void remove_alpm_list_t(alpm_list_t *prt)
+{
+  alpm_list_t *old;
+  
+  old = prt->prev;
+  old->next = NULL;
+  
+  free(prt->data);
+  free(prt);
+}
+
+static void clean_alpm_list_t(alpm_list_t *prt)
+{
+  alpm_list_t *tmp, *tmp2;
+  
+  tmp = prt;
+  tmp2 = prt->next;
+  do
+  {
+    remove_alpm_list_t(tmp);
+    tmp = tmp2;
+    tmp2 = tmp->next;
+  } while(tmp2 != NULL);
 }
 
 PyMethodDef methods[] = {
+  {"testconv", testconverter, METH_VARARGS, "test type converter."},
   {"initialize", initialize_alpm, METH_VARARGS, "initialize alpm."},
   {"release", release_alpm, METH_VARARGS, "release alpm."},
   {"getlogcb", option_get_logcb_alpm, METH_VARARGS, "call back function for logging."},
