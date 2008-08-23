@@ -26,29 +26,15 @@ This file is part of pyalpm.
 
 #include <string.h>
 
-/*pyalpm internal variables*/
-static char *error, *warning, *debug, *function;
-static unsigned short enable_messages_logcb = 0;
-static char VERSION[] = "0.1";
+#include "pyalpm.h"
 
 /*some function definitions*/
-static void add_alpm_list_t(alpm_list_t *prt);
+static alpm_list_t *add_alpm_list_t(alpm_list_t *prt);
 static void remove_alpm_list_t(alpm_list_t *prt);
-static alpm_list_t * tuple_alpm_list_t(char element[], int amount);
+static alpm_list_t * tuple_alpm_list_t(PyObject *list);
 static void clean_alpm_list_t(alpm_list_t *prt);
-
-/*copied from pacman db.h as it can't be included, set as pmdb_t in alpm.h*/
-struct __pmdb_t {
-	char *path;
-	char *treename;
-	void *handle;
-	alpm_list_t *pkgcache;
-	alpm_list_t *grpcache;
-	alpm_list_t *servers;
-};
-
-/*pyalpm errors*/
-static PyObject *alpm_error = NULL;
+static void clean_pmdb_t(pmdb_t *prt);
+static void clean_memory(alpm_list_t *ptr);
 
 /*pyalpm functions*/
 static PyObject * initialize_alpm(PyObject *self)
@@ -60,6 +46,8 @@ static PyObject * initialize_alpm(PyObject *self)
   }
   else
   {
+    init = 1;
+    addresses = (alpm_list_t*) malloc(sizeof(alpm_list_t));
     return Py_None;
   }
 }
@@ -73,6 +61,8 @@ static PyObject * release_alpm(PyObject *self)
   }
   else
   {
+    init = 0;
+    /*clean_memory(addresses);*/
     return Py_None;
   }
 }
@@ -371,7 +361,27 @@ static PyObject * option_get_lockfile_alpm(PyObject *self)
   }
 }
 
-static PyObject * alpmversion_alpm(PyObject *self)
+static PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args)
+{
+  alpm_list_t * target;
+  PyObject * tmp;
+  
+  if(!PyArg_ParseTuple(args, "O", &tmp))
+  {
+    PyErr_SetString(alpm_error, "error in the args.");
+    return NULL;
+  }
+  else
+  {
+    target = tuple_alpm_list_t(tmp);
+    addresses->data = target;
+    addresses->next = add_alpm_list_t(addresses);
+    alpm_option_set_noupgrades(target);
+    return Py_None;
+  }
+}
+
+PyObject * alpmversion_alpm(PyObject *self)
 {
   const char *str;
   str = alpm_version();
@@ -379,75 +389,154 @@ static PyObject * alpmversion_alpm(PyObject *self)
   return Py_BuildValue("s", str);
 }
 
-static PyObject * version_alpm(PyObject *self)
+PyObject * version_alpm(PyObject *self)
 {
   return Py_BuildValue("s", VERSION);
 }
 
-/*internal data type converters*/
-static pmdb_t tuple_pmdb_t(char *dbpath, char *dbtreename)
+static PyObject * check_init_alpm(PyObject *self)
 {
-  pmdb_t result;
+  if(init == 0)
+  {
+    return Py_False;
+  }
+  if(init == 1)
+  {
+    return Py_True;
+  }
+  else
+  {
+    PyErr_SetString(alpm_error, "internal error");
+    return NULL;
+  }
+}
+
+/*internal data type converters*/
+static pmdb_t * tuple_pmdb_t(char *dbpath, char *dbtreename, alpm_list_t *pkgcache,
+			    alpm_list_t *grpcache, alpm_list_t *servers)
+{
+  pmdb_t *result;
   
-  /*strcpy(result.path, dbpath);
-  strcpy(result.treename, dbtreename);
-  */
-  result.path = dbpath;
-  result.treename = dbtreename;
+  result = (pmdb_t*) malloc(sizeof(pmdb_t));
+  
+  result->path = dbpath;
+  result->treename = dbtreename;
+  result->pkgcache = pkgcache;
+  result->grpcache = grpcache;
+  result->servers = servers;
+  
   return result;
+}
+
+static void clean_pmdb_t(pmdb_t *ptr)
+{
+  clean_alpm_list_t(ptr->pkgcache);
+  clean_alpm_list_t(ptr->grpcache);
+  clean_alpm_list_t(ptr->servers);
+  free(ptr->treename);
+  free(ptr->path);
+  free(ptr);
 }
 
 static PyObject * testconverter(PyObject *self, PyObject *args)
 {
   const char *path, *dbtreename;
-  pmdb_t test;
+  alpm_list_t *pkgcache, *grpcache, *servers;
+  pmdb_t *test;
+  PyObject *pkgtmp, *grptmp, *srvtmp;
   
-  if(!PyArg_ParseTuple(args, "ss", &path, &dbtreename))
+  if(!PyArg_ParseTuple(args, "ssOOO", &path, &dbtreename, &pkgtmp, &grptmp, &srvtmp))
   {
     PyErr_SetString(alpm_error, "bad arguments");
     return NULL;
   }
   else
   {
-    test = tuple_pmdb_t(path, dbtreename);
-    return Py_None;
+    pkgcache = tuple_alpm_list_t(pkgtmp);
+    grpcache = tuple_alpm_list_t(grptmp);
+    servers = tuple_alpm_list_t(srvtmp);
+    test = tuple_pmdb_t(path, dbtreename, pkgcache, grpcache, servers);
+    clean_alpm_list_t(pkgcache);
+    clean_alpm_list_t(grpcache);
+    clean_alpm_list_t(servers);
+    return Py_BuildValue("s", test->path);
   }
 }
 /*converts a C array to alpm_list_t linked list, returns a pointer to first node*/
-static alpm_list_t * tuple_alpm_list_t(char element[], int amount)
+static alpm_list_t * tuple_alpm_list_t(PyObject *list)
 {
   alpm_list_t *nodetmp;
   char *tmp;
-  int i;
+  /*int i, num;*/
+  PyObject *iterator = PyObject_GetIter(list);
+  PyObject *item;
   
+  if(iterator == NULL)
+  {
+    nodetmp = NULL;
+    return nodetmp;
+  }
+/*  
+  num = PySequence_Lenght(list);
+  if(num < 0)
+  {
+    nodetemp = NULL;
+    return nodetmp;
+  }
+*/  
   nodetmp = (alpm_list_t*) malloc(sizeof(alpm_list_t));
   
-  for(i=0;i<amount;i++)
+  while(item = PyIter_Next(iterator))
   {
+    tmp = (char*) malloc(sizeof(item));
+    nodetmp->data = tmp;
+    strcpy(nodetmp->data, item);
+    
+    nodetmp->next = add_alpm_list_t(nodetmp);
+    Py_DECREF(item);
+  }
+  Py_DECREF(iterator);
+  
+/*  for(i=0;i<num;i++)
+  {
+    item = PySequence_GetItem(list, i);
     tmp = NULL;
-    tmp = (char*) malloc(sizeof(element[i]));
+    tmp = (char*) malloc(sizeof(item));
     if(tmp == NULL)
     {
       nodetmp = NULL;
       return nodetmp;
+      Py_DECREF(item);
     }
     else
     {
       nodetmp->data = tmp;
-      strcpy(nodetmp->data, &element[i]);
-      if(i != amount-1)
+      strcpy(nodetmp->data, item);
+      if(i != num-1)
       {
       add_alpm_list_t(nodetmp);
       nodetmp = nodetmp->next;
       }
+      Py_DECREF(item);
     }
   }
-  
+*/  
   return nodetmp;
 }
 
+static PyObject * alpm_list_t_tuple(alpm_list_t *prt)
+{
+  PyObject * output;
+  
+  while(prt != NULL)
+  {
+    
+    prt = prt->next;
+  }
+}
+
 /*alpm_list_t related functions*/
-static void add_alpm_list_t(alpm_list_t *prt)
+static alpm_list_t * add_alpm_list_t(alpm_list_t *prt)
 {
   alpm_list_t *new;
   new = (alpm_list_t*) malloc(sizeof(alpm_list_t));
@@ -481,6 +570,20 @@ static void clean_alpm_list_t(alpm_list_t *prt)
   } while(tmp2 != NULL);
 }
 
+static void clean_memory(alpm_list_t *ptr)
+{
+  alpm_list_t *tmp;
+  
+  while(ptr != NULL)
+  {
+    free(ptr->data);
+    tmp = ptr;
+    ptr = ptr->next;
+    free(tmp);
+  }
+  free(ptr);
+}
+
 PyMethodDef methods[] = {
   {"testconv", testconverter, METH_VARARGS, "test type converter."},
   {"initialize", initialize_alpm, METH_VARARGS, "initialize alpm."},
@@ -501,8 +604,10 @@ PyMethodDef methods[] = {
   {"getnopassiveftp", option_get_nopassiveftp_alpm, METH_VARARGS, "gets nopassiveftp value."},
   {"setnopassiveftp", option_set_nopassiveftp_alpm, METH_VARARGS, "sets nopassiveftp value."},
   {"setusedelta", option_set_usedelta_alpm, METH_VARARGS, "sets usedelta value."},
+  {"setnoupgrades", option_set_noupgrades_alpm, METH_VARARGS, "sets noupgrades."},
   {"version", version_alpm, METH_VARARGS, "returns pyalpm version."},
   {"alpmversion", alpmversion_alpm, METH_VARARGS, "returns alpm version."},
+  {"checkinit", check_init_alpm, METH_VARARGS, "checks if the library was initialized."},
   {NULL, NULL, 0, NULL}
 };
 
