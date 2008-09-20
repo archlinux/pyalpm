@@ -19,25 +19,10 @@ This file is part of pyalpm.
 
 */
 
-#include <Python.h>
-
-#include <alpm.h>
-#include <alpm_list.h>
-
-#include <string.h>
-
 #include "pyalpm.h"
-
-/*some function definitions*/
-static alpm_list_t *add_alpm_list_t(alpm_list_t *prt);
-static void remove_alpm_list_t(alpm_list_t *prt);
-static alpm_list_t * tuple_alpm_list_t(PyObject *list);
-static void clean_alpm_list_t(alpm_list_t *prt);
-static void clean_pmdb_t(pmdb_t *prt);
-static void clean_memory(alpm_list_t *ptr);
-
+#include <stdio.h>
 /*pyalpm functions*/
-static PyObject * initialize_alpm(PyObject *self)
+PyObject * initialize_alpm(PyObject *self)
 {
   if(alpm_initialize() == -1)
   {
@@ -52,8 +37,9 @@ static PyObject * initialize_alpm(PyObject *self)
   }
 }
 
-static PyObject * release_alpm(PyObject *self)
+PyObject * release_alpm(PyObject *self)
 {
+  /*clean_memory(addresses);*/
   if(alpm_release() == -1)
   {
     PyErr_SetString(alpm_error, "failed to release alpm");
@@ -62,12 +48,11 @@ static PyObject * release_alpm(PyObject *self)
   else
   {
     init = 0;
-    /*clean_memory(addresses);*/
     return Py_None;
   }
 }
 
-static PyObject * option_get_logcb_alpm(PyObject *self)
+PyObject * option_get_logcb_alpm(PyObject *self)
 {
   const char *str = NULL;
   if(alpm_option_get_logcb() == NULL)
@@ -99,7 +84,7 @@ void test_cb(pmloglevel_t level, char *fmt, va_list args)
   }
 }
 
-static PyObject * option_set_logcb_alpm(PyObject *self, PyObject *args)
+PyObject * option_set_logcb_alpm(PyObject *self, PyObject *args)
 {
   if(!PyArg_ParseTuple(args, "ssss", &error, &warning, &debug, &function))
   {
@@ -119,7 +104,7 @@ static PyObject * option_set_logcb_alpm(PyObject *self, PyObject *args)
 The following functions take a string as argument(*_set_*)
 while other (*_get_*) return a string
 */
-static PyObject * option_get_root_alpm(PyObject *self)
+PyObject * option_get_root_alpm(PyObject *self)
 {
   const char *str = alpm_option_get_root();
   
@@ -134,7 +119,7 @@ static PyObject * option_get_root_alpm(PyObject *self)
   }
 }
 
-static PyObject * option_set_root_alpm(PyObject *self, PyObject *args)
+PyObject * option_set_root_alpm(PyObject *self, PyObject *args)
 {
   const char *path;
 
@@ -157,7 +142,7 @@ static PyObject * option_set_root_alpm(PyObject *self, PyObject *args)
   }
 }
 
-static PyObject * option_set_dbpath_alpm(PyObject *self, PyObject *args)
+PyObject * option_set_dbpath_alpm(PyObject *self, PyObject *args)
 {
   const char *path;
   if(!PyArg_ParseTuple(args, "s", &path))
@@ -179,7 +164,7 @@ static PyObject * option_set_dbpath_alpm(PyObject *self, PyObject *args)
   }
 }
 
-static PyObject * option_get_dbpath_alpm(PyObject *self)
+PyObject * option_get_dbpath_alpm(PyObject *self)
 {
   const char *str = alpm_option_get_dbpath();
   
@@ -194,7 +179,7 @@ static PyObject * option_get_dbpath_alpm(PyObject *self)
   }
 }
 
-static PyObject * option_set_logfile_alpm(PyObject *self, PyObject *args)
+PyObject * option_set_logfile_alpm(PyObject *self, PyObject *args)
 {
   const char *path;
   if(!PyArg_ParseTuple(args, "s", &path))
@@ -216,7 +201,7 @@ static PyObject * option_set_logfile_alpm(PyObject *self, PyObject *args)
   }
 }
 
-static PyObject * option_get_logfile_alpm(PyObject *self)
+PyObject * option_get_logfile_alpm(PyObject *self)
 {
   const char *str = alpm_option_get_logfile();
   
@@ -231,7 +216,7 @@ static PyObject * option_get_logfile_alpm(PyObject *self)
   }
 }
 
-static PyObject * option_set_xfercommand_alpm(PyObject *self, PyObject *args)
+PyObject * option_set_xfercommand_alpm(PyObject *self, PyObject *args)
 {
   const char *cmd;
   if(!PyArg_ParseTuple(args, "s", &cmd))
@@ -246,7 +231,7 @@ static PyObject * option_set_xfercommand_alpm(PyObject *self, PyObject *args)
   }
 }
 
-static PyObject * option_get_xfercommand_alpm(PyObject *self)
+PyObject * option_get_xfercommand_alpm(PyObject *self)
 {
   const char *str = alpm_option_get_xfercommand();
   
@@ -266,86 +251,86 @@ receives and returns an int type
 1 = enabled
 0 = disabled
 */
-static PyObject * option_get_usesyslog_alpm(PyObject *self)
+PyObject * option_get_usesyslog_alpm(PyObject *self)
 {
-  unsigned short srt = alpm_option_get_usesyslog();
+  unsigned short str = alpm_option_get_usesyslog();
   
-  if(srt == -1)
+  if(str == -1)
   {
     PyErr_SetString(alpm_error, "failed getting usesyslog");
     return NULL;
   }
   else
   {
-    return Py_BuildValue("i", srt);
+    return Py_BuildValue("i", str);
   }
 }
 
-static PyObject * option_set_usesyslog_alpm(PyObject *self, PyObject *args)
+PyObject * option_set_usesyslog_alpm(PyObject *self, PyObject *args)
 {
-  const unsigned short *srt;
-  if(!PyArg_ParseTuple(args, "i", &srt))
+  const unsigned short *str;
+  if(!PyArg_ParseTuple(args, "i", &str))
   {
     PyErr_SetString(alpm_error, "wrong arguments");
     return NULL;
   }
   else
   {
-    alpm_option_set_usesyslog(*srt);
+    alpm_option_set_usesyslog(str);
     return Py_None;
   }
 }
 
-static PyObject * option_get_nopassiveftp_alpm(PyObject *self)
+PyObject * option_get_nopassiveftp_alpm(PyObject *self)
 {
-  unsigned short srt = alpm_option_get_nopassiveftp();
+  unsigned short str = alpm_option_get_nopassiveftp();
   
-  if(srt == -1)
+  if(str == -1)
   {
     PyErr_SetString(alpm_error, "failed getting nopassiveftp");
     return NULL;
   }
   else
   {
-    return Py_BuildValue("i", srt);
+    return Py_BuildValue("i", str);
   }
 }
 
-static PyObject * option_set_nopassiveftp_alpm(PyObject *self, PyObject *args)
+PyObject * option_set_nopassiveftp_alpm(PyObject *self, PyObject *args)
 {
-  const unsigned short *srt;
-  if(!PyArg_ParseTuple(args, "i", &srt))
+  const unsigned short *str;
+  if(!PyArg_ParseTuple(args, "i", &str))
   {
     PyErr_SetString(alpm_error, "wrong arguments");
     return NULL;
   }
   else
   {
-    alpm_option_set_usesyslog(*srt);
+    alpm_option_set_usesyslog(str);
     return Py_None;
   }
 }
 
 /*write only function*/
 
-static PyObject * option_set_usedelta_alpm(PyObject *self, PyObject *args)
+PyObject * option_set_usedelta_alpm(PyObject *self, PyObject *args)
 {
-  const unsigned short *srt;
-  if(!PyArg_ParseTuple(args, "i", &srt))
+  const unsigned short *str;
+  if(!PyArg_ParseTuple(args, "i", &str))
   {
     PyErr_SetString(alpm_error, "wrong arguments");
     return NULL;
   }
   else
   {
-    alpm_option_set_usedelta(*srt);
+    alpm_option_set_usedelta(str);
     return Py_None;
   }
 }
 
 /*read-only functions*/
 
-static PyObject * option_get_lockfile_alpm(PyObject *self)
+PyObject * option_get_lockfile_alpm(PyObject *self)
 {
   const char *str = NULL;
   str = alpm_option_get_lockfile();
@@ -361,10 +346,10 @@ static PyObject * option_get_lockfile_alpm(PyObject *self)
   }
 }
 
-static PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args)
+PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args)
 {
-  alpm_list_t * target;
-  PyObject * tmp;
+  alpm_list_t *target, *adtmp;
+  PyObject *tmp;
   
   if(!PyArg_ParseTuple(args, "O", &tmp))
   {
@@ -374,9 +359,138 @@ static PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args)
   else
   {
     target = tuple_alpm_list_t(tmp);
+    adtmp = addresses;
     addresses->data = target;
-    addresses->next = add_alpm_list_t(addresses);
+    add_alpm_list_t(addresses);
+    addresses->prev = adtmp;
     alpm_option_set_noupgrades(target);
+    return Py_None;
+  }
+}
+
+PyObject * option_add_noupgrade_alpm(PyObject *self, PyObject *args)
+{
+  const char *str;
+  
+  if(!PyArg_ParseTuple(args, "s", &str))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    alpm_option_add_noupgrade(str);
+    return Py_None;
+  }
+}
+
+PyObject * option_remove_noupgrade_alpm(PyObject *self, PyObject *args)
+{
+  const char *str;
+  
+  if(!PyArg_ParseTuple(args, "s", &str))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    alpm_option_remove_noupgrade(str);
+    return Py_None;
+  }
+}
+
+PyObject * option_add_cachedir_alpm(PyObject *self, PyObject *args)
+{
+  const char *str;
+  
+  if(!PyArg_ParseTuple(args, "s", &str))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    alpm_option_add_cachedir(str);
+    return Py_None;
+  }
+}
+
+PyObject * option_remove_cachedir_alpm(PyObject *self, PyObject *args)
+{
+  const char *str;
+  
+  if(!PyArg_ParseTuple(args, "s", &str))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    alpm_option_remove_cachedir(str);
+    return Py_None;
+  }
+}
+
+PyObject * option_add_noextract_alpm(PyObject *self, PyObject *args)
+{
+  const char *str;
+  
+  if(!PyArg_ParseTuple(args, "s", &str))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    alpm_option_add_noextract(str);
+    return Py_None;
+  }
+}
+
+PyObject * option_remove_noextract_alpm(PyObject *self, PyObject *args)
+{
+  const char *str;
+  
+  if(!PyArg_ParseTuple(args, "s", &str))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    alpm_option_remove_noextract(str);
+    return Py_None;
+  }
+}
+
+PyObject * option_add_ignorepkg_alpm(PyObject *self, PyObject *args)
+{
+  const char *str;
+  
+  if(!PyArg_ParseTuple(args, "s", &str))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    alpm_option_add_ignorepkg(str);
+    return Py_None;
+  }
+}
+
+PyObject * option_remove_ignorepkg_alpm(PyObject *self, PyObject *args)
+{
+  const char *str;
+  if(!PyArg_ParseTuple(args, "s", &str))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    alpm_option_remove_ignorepkg(str);
     return Py_None;
   }
 }
@@ -394,7 +508,7 @@ PyObject * version_alpm(PyObject *self)
   return Py_BuildValue("s", VERSION);
 }
 
-static PyObject * check_init_alpm(PyObject *self)
+PyObject * check_init_alpm(PyObject *self)
 {
   if(init == 0)
   {
@@ -412,7 +526,7 @@ static PyObject * check_init_alpm(PyObject *self)
 }
 
 /*internal data type converters*/
-static pmdb_t * tuple_pmdb_t(char *dbpath, char *dbtreename, alpm_list_t *pkgcache,
+pmdb_t * tuple_pmdb_t(char *dbpath, char *dbtreename, alpm_list_t *pkgcache,
 			    alpm_list_t *grpcache, alpm_list_t *servers)
 {
   pmdb_t *result;
@@ -428,7 +542,7 @@ static pmdb_t * tuple_pmdb_t(char *dbpath, char *dbtreename, alpm_list_t *pkgcac
   return result;
 }
 
-static void clean_pmdb_t(pmdb_t *ptr)
+void clean_pmdb_t(pmdb_t *ptr)
 {
   clean_alpm_list_t(ptr->pkgcache);
   clean_alpm_list_t(ptr->grpcache);
@@ -438,7 +552,7 @@ static void clean_pmdb_t(pmdb_t *ptr)
   free(ptr);
 }
 
-static PyObject * testconverter(PyObject *self, PyObject *args)
+PyObject * testconverter(PyObject *self, PyObject *args)
 {
   const char *path, *dbtreename;
   alpm_list_t *pkgcache, *grpcache, *servers;
@@ -463,7 +577,7 @@ static PyObject * testconverter(PyObject *self, PyObject *args)
   }
 }
 /*converts a C array to alpm_list_t linked list, returns a pointer to first node*/
-static alpm_list_t * tuple_alpm_list_t(PyObject *list)
+alpm_list_t * tuple_alpm_list_t(PyObject *list)
 {
   alpm_list_t *nodetmp;
   char *tmp;
@@ -491,8 +605,8 @@ static alpm_list_t * tuple_alpm_list_t(PyObject *list)
     tmp = (char*) malloc(sizeof(item));
     nodetmp->data = tmp;
     strcpy(nodetmp->data, item);
-    
-    nodetmp->next = add_alpm_list_t(nodetmp);
+    /*printf("%s\n", (char*) *nodetmp->data);*/
+    add_alpm_list_t(nodetmp);
     Py_DECREF(item);
   }
   Py_DECREF(iterator);
@@ -524,7 +638,7 @@ static alpm_list_t * tuple_alpm_list_t(PyObject *list)
   return nodetmp;
 }
 
-static PyObject * alpm_list_t_tuple(alpm_list_t *prt)
+PyObject * alpm_list_t_tuple(alpm_list_t *prt)
 {
   PyObject * output;
   
@@ -536,7 +650,7 @@ static PyObject * alpm_list_t_tuple(alpm_list_t *prt)
 }
 
 /*alpm_list_t related functions*/
-static alpm_list_t * add_alpm_list_t(alpm_list_t *prt)
+void add_alpm_list_t(alpm_list_t *prt)
 {
   alpm_list_t *new;
   new = (alpm_list_t*) malloc(sizeof(alpm_list_t));
@@ -545,7 +659,7 @@ static alpm_list_t * add_alpm_list_t(alpm_list_t *prt)
   new->prev = prt;
 }
 
-static void remove_alpm_list_t(alpm_list_t *prt)
+void remove_alpm_list_t(alpm_list_t *prt)
 {
   alpm_list_t *old;
   
@@ -556,7 +670,7 @@ static void remove_alpm_list_t(alpm_list_t *prt)
   free(prt);
 }
 
-static void clean_alpm_list_t(alpm_list_t *prt)
+void clean_alpm_list_t(alpm_list_t *prt)
 {
   alpm_list_t *tmp, *tmp2;
   
@@ -570,7 +684,7 @@ static void clean_alpm_list_t(alpm_list_t *prt)
   } while(tmp2 != NULL);
 }
 
-static void clean_memory(alpm_list_t *ptr)
+void clean_memory(alpm_list_t *ptr)
 {
   alpm_list_t *tmp;
   
@@ -578,7 +692,7 @@ static void clean_memory(alpm_list_t *ptr)
   {
     free(ptr->data);
     tmp = ptr;
-    ptr = ptr->next;
+    ptr = ptr->prev;
     free(tmp);
   }
   free(ptr);
@@ -605,6 +719,14 @@ PyMethodDef methods[] = {
   {"setnopassiveftp", option_set_nopassiveftp_alpm, METH_VARARGS, "sets nopassiveftp value."},
   {"setusedelta", option_set_usedelta_alpm, METH_VARARGS, "sets usedelta value."},
   {"setnoupgrades", option_set_noupgrades_alpm, METH_VARARGS, "sets noupgrades."},
+  {"addnoupgrade", option_add_noupgrade_alpm, METH_VARARGS, "add a noupgrade package."},
+  {"removenoupgrade", option_remove_noupgrade_alpm, METH_VARARGS, "removes a noupgrade package."},
+  {"addcachedir", option_add_cachedir_alpm, METH_VARARGS, "adds a cachedir."},
+  {"removecachedir", option_remove_cachedir_alpm, METH_VARARGS, "removes a cachedir."},
+  {"addnoextract", option_add_noextract_alpm, METH_VARARGS, "add a noextract package."},
+  {"removenoextract", option_remove_noextract_alpm, METH_VARARGS, "remove a noextract package."},
+  {"addignorepkg", option_add_ignorepkg_alpm, METH_VARARGS, "add an ignorepkg."},
+  {"removeignorepkg", option_remove_ignorepkg_alpm, METH_VARARGS, "remove an ignorepkg."},
   {"version", version_alpm, METH_VARARGS, "returns pyalpm version."},
   {"alpmversion", alpmversion_alpm, METH_VARARGS, "returns alpm version."},
   {"checkinit", check_init_alpm, METH_VARARGS, "checks if the library was initialized."},
