@@ -19,6 +19,9 @@ DONE:
 * alpm_option_{add,remove}_noupgrade()
 * alpm_option_{add,remove}_cachedir()
 * alpm_option_{add,remove}_noextract()
+* alpm_option_{add,remove}_ignorepkg()
+* alpm_option_{add,remove}_ignoregrps()
+* alpm_option_{add,remove}_holdpkg()
 
 * added array to alpm_list_t converter
 
@@ -34,9 +37,9 @@ TODO:
 * alpm_option_{get,set}_cachedirs()
 * alpm_option_{get,set}_noupgrades()
 * alpm_option_{get,set}_noextracts()
-* alpm_option_{get,set,add,remove}_ignorepkgs()
-* alpm_option_{get,set,add,remove}_ignoregrps()
-* alpm_option_{get,set,add,remove}_holdpkgs()
+* alpm_option_{get,set}_ignorepkgs()
+* alpm_option_{get,set}_ignoregrps()
+* alpm_option_{get,set}_holdpkgs()
 
 * alpm_option_get_localdb()
 * alpm_option_get_syncdb()

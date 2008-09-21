@@ -34,9 +34,6 @@ unsigned short enable_messages_logcb = 0;
 char VERSION[] = "0.1";
 unsigned short init = 0;
 
-/*we reuse pyalpm_list_t for freeing memory at alpm release*/
-alpm_list_t *addresses;
-
 /*copied from pacman db.h as it can't be included, set as pmdb_t in alpm.h*/
 struct __pmdb_t {
 	char *path;
@@ -47,13 +44,12 @@ struct __pmdb_t {
 	alpm_list_t *servers;
 };
 
-/*miscenaleus internal functions*/
+/*misc internal functions*/
 void add_alpm_list_t(alpm_list_t *prt);
 void remove_alpm_list_t(alpm_list_t *prt);
 alpm_list_t * tuple_alpm_list_t(PyObject *list);
-void clean_alpm_list_t(alpm_list_t *prt);
 void clean_pmdb_t(pmdb_t *prt);
-void clean_memory(alpm_list_t *ptr);
+unsigned short check_init(void);
 
 /*pyalpm errors*/
 PyObject *alpm_error = NULL;
@@ -102,6 +98,12 @@ PyObject * option_remove_noextract_alpm(PyObject *self, PyObject *args);
 
 PyObject * option_add_ignorepkg_alpm(PyObject *self, PyObject *args);
 PyObject * option_remove_ignorepkg_alpm(PyObject *self, PyObject *args);
+
+PyObject * option_add_ignoregrps_alpm(PyObject *self, PyObject *args);
+PyObject * option_remove_ignoregrps_alpm(PyObject *self, PyObject *args);
+
+PyObject * option_add_holdpkg_alpm(PyObject *self, PyObject *args);
+PyObject * option_remove_holdpkg_alpm(PyObject *self, PyObject *args);
 
 /*callback function*/
 

@@ -379,8 +379,16 @@ PyObject * option_add_noupgrade_alpm(PyObject *self, PyObject *args)
   }
   else
   {
-    alpm_option_add_noupgrade(str);
-    return Py_None;
+    if(check_init == 1)
+    {
+      alpm_option_add_noupgrade(str);
+      return Py_None;
+    }
+    else
+    {
+      PyErr_SetString(alpm_error, "pyalpm not initialized");
+      return NULL;
+    }
   }
 }
 
@@ -395,8 +403,16 @@ PyObject * option_remove_noupgrade_alpm(PyObject *self, PyObject *args)
   }
   else
   {
-    alpm_option_remove_noupgrade(str);
-    return Py_None;
+    if(check_init() == 1)
+    {
+      alpm_option_remove_noupgrade(str);
+      return Py_None;
+    }
+    else
+    {
+      PyErr_SetString(alpm_error, "pyalpm not initialized");
+      return NULL;
+    }
   }
 }
 
@@ -411,8 +427,16 @@ PyObject * option_add_cachedir_alpm(PyObject *self, PyObject *args)
   }
   else
   {
-    alpm_option_add_cachedir(str);
-    return Py_None;
+    if(check_init() == 1)
+    {
+      alpm_option_add_cachedir(str);
+      return Py_None;
+    }
+    else
+    {
+      PyErr_SetString(alpm_error, "pyalpm not initialized");
+      return NULL;
+    }
   }
 }
 
@@ -427,8 +451,16 @@ PyObject * option_remove_cachedir_alpm(PyObject *self, PyObject *args)
   }
   else
   {
-    alpm_option_remove_cachedir(str);
-    return Py_None;
+    if(check_init() == 1)
+    {
+      alpm_option_remove_cachedir(str);
+      return Py_None;
+    }
+    else
+    {
+      PyErr_SetString(alpm_error, "pyalpm not initialized");
+      return NULL;
+    }
   }
 }
 
@@ -443,8 +475,16 @@ PyObject * option_add_noextract_alpm(PyObject *self, PyObject *args)
   }
   else
   {
-    alpm_option_add_noextract(str);
-    return Py_None;
+    if(check_init() == 1)
+    {
+      alpm_option_add_noextract(str);
+      return Py_None;
+    }
+    else
+    {
+      PyErr_SetString(alpm_error, "pyalpm not initialized");
+      return NULL;
+    }
   }
 }
 
@@ -459,8 +499,16 @@ PyObject * option_remove_noextract_alpm(PyObject *self, PyObject *args)
   }
   else
   {
-    alpm_option_remove_noextract(str);
-    return Py_None;
+    if(check_init() == 1)
+    {
+      alpm_option_remove_noextract(str);
+      return Py_None;
+    }
+    else
+    {
+      PyErr_SetString(alpm_error, "pyalpm not initialized");
+      return NULL;
+    }
   }
 }
 
@@ -475,14 +523,23 @@ PyObject * option_add_ignorepkg_alpm(PyObject *self, PyObject *args)
   }
   else
   {
-    alpm_option_add_ignorepkg(str);
-    return Py_None;
+    if(check_init() == 1)
+    {
+      alpm_option_add_ignorepkg(str);
+      return Py_None;
+    }
+    else
+    {
+      PyErr_SetString(alpm_error, "pyalpm not initialized");
+      return NULL;
+    }
   }
 }
 
 PyObject * option_remove_ignorepkg_alpm(PyObject *self, PyObject *args)
 {
   const char *str;
+  
   if(!PyArg_ParseTuple(args, "s", &str))
   {
     PyErr_SetString(alpm_error, "wrong arguments");
@@ -490,8 +547,112 @@ PyObject * option_remove_ignorepkg_alpm(PyObject *self, PyObject *args)
   }
   else
   {
-    alpm_option_remove_ignorepkg(str);
-    return Py_None;
+    if(check_init() == 1)
+    {
+      alpm_option_remove_ignorepkg(str);
+      return Py_None;
+    }
+    else
+    {
+      PyErr_SetString(alpm_error, "pyalpm not initialized");
+      return NULL;
+    }
+  }
+}
+
+PyObject * option_add_ignoregrps_alpm(PyObject *self, PyObject *args)
+{
+  const char *str;
+  
+  if(!PyArg_ParseTuple(args, "s", &str))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    if(check_init() == 1)
+    {
+      alpm_option_add_ignoregrps(str);
+      return Py_None;
+    }
+    else
+    {
+      PyErr_SetString(alpm_error, "pyalpm not initialized");
+      return NULL;
+    }
+  }
+}
+
+PyObject * option_remove_ignoregrps_alpm(PyObject *self, PyObject *args)
+{
+  const char *str;
+  
+  if(!PyArg_ParseTuple(args, "s", &str))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    if(check_init() == 1)
+    {
+      alpm_option_remove_ignoregrps(str);
+      return Py_None;
+    }
+    else
+    {
+      PyErr_SetString(alpm_error, "pyalpm not initialized");
+      return NULL;
+    }
+  }
+}
+
+PyObject * option_add_holdpkg_alpm(PyObject *self, PyObject *args)
+{
+  const char *str;
+  
+  if(!PyArg_ParseTuple(args, "s", &str))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    if(check_init() == 1)
+    {
+      alpm_option_add_holdpkg(str);
+      return Py_None;
+    }
+    else
+    {
+      PyErr_SetString(alpm_error, "pyalpm not initialized");
+      return NULL;
+    }
+  }
+}
+
+PyObject * option_remove_holdpkg_alpm(PyObject *self, PyObject *args)
+{
+  const char *str;
+  
+  if(!PyArg_ParseTuple(args, "s", &str))
+  {
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return NULL;
+  }
+  else
+  {
+    if(check_init() == 1)
+    {
+      alpm_option_add_holdpkg(str);
+      return Py_None;
+    }
+    else
+    {
+      PyErr_SetString(alpm_error, "pyalpm not initialized");
+      return NULL;
+    }
   }
 }
 
@@ -525,6 +686,19 @@ PyObject * check_init_alpm(PyObject *self)
   }
 }
 
+unsigned short check_init(void)
+{
+  switch(init)
+  {
+    case 0:
+      return 0;
+    case 1:
+      return 1;
+   default:
+      return -1;
+  }
+}
+
 /*internal data type converters*/
 pmdb_t * tuple_pmdb_t(char *dbpath, char *dbtreename, alpm_list_t *pkgcache,
 			    alpm_list_t *grpcache, alpm_list_t *servers)
@@ -544,9 +718,6 @@ pmdb_t * tuple_pmdb_t(char *dbpath, char *dbtreename, alpm_list_t *pkgcache,
 
 void clean_pmdb_t(pmdb_t *ptr)
 {
-  clean_alpm_list_t(ptr->pkgcache);
-  clean_alpm_list_t(ptr->grpcache);
-  clean_alpm_list_t(ptr->servers);
   free(ptr->treename);
   free(ptr->path);
   free(ptr);
@@ -570,9 +741,6 @@ PyObject * testconverter(PyObject *self, PyObject *args)
     grpcache = tuple_alpm_list_t(grptmp);
     servers = tuple_alpm_list_t(srvtmp);
     test = tuple_pmdb_t(path, dbtreename, pkgcache, grpcache, servers);
-    clean_alpm_list_t(pkgcache);
-    clean_alpm_list_t(grpcache);
-    clean_alpm_list_t(servers);
     return Py_BuildValue("s", test->path);
   }
 }
@@ -670,34 +838,6 @@ void remove_alpm_list_t(alpm_list_t *prt)
   free(prt);
 }
 
-void clean_alpm_list_t(alpm_list_t *prt)
-{
-  alpm_list_t *tmp, *tmp2;
-  
-  tmp = prt;
-  tmp2 = prt->next;
-  do
-  {
-    remove_alpm_list_t(tmp);
-    tmp = tmp2;
-    tmp2 = tmp->next;
-  } while(tmp2 != NULL);
-}
-
-void clean_memory(alpm_list_t *ptr)
-{
-  alpm_list_t *tmp;
-  
-  while(ptr != NULL)
-  {
-    free(ptr->data);
-    tmp = ptr;
-    ptr = ptr->prev;
-    free(tmp);
-  }
-  free(ptr);
-}
-
 PyMethodDef methods[] = {
   {"testconv", testconverter, METH_VARARGS, "test type converter."},
   {"initialize", initialize_alpm, METH_VARARGS, "initialize alpm."},
@@ -727,6 +867,10 @@ PyMethodDef methods[] = {
   {"removenoextract", option_remove_noextract_alpm, METH_VARARGS, "remove a noextract package."},
   {"addignorepkg", option_add_ignorepkg_alpm, METH_VARARGS, "add an ignorepkg."},
   {"removeignorepkg", option_remove_ignorepkg_alpm, METH_VARARGS, "remove an ignorepkg."},
+  {"addignoregrps", option_add_ignoregrps_alpm, METH_VARARGS, "add an ignoregrps."},
+  {"removeignoregrps", option_remove_ignoregrps_alpm, METH_VARARGS, "remove an ignoregrps."},
+  {"addholdpkg", option_add_holdpkg_alpm, METH_VARARGS, "add a holdpkg."},
+  {"removeholdpkg", option_remove_holdpkg_alpm, METH_VARARGS, "remove a holdpkg."},
   {"version", version_alpm, METH_VARARGS, "returns pyalpm version."},
   {"alpmversion", alpmversion_alpm, METH_VARARGS, "returns alpm version."},
   {"checkinit", check_init_alpm, METH_VARARGS, "checks if the library was initialized."},
