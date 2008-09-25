@@ -23,6 +23,7 @@ This file is part of pyalpm.
 #include <alpm.h>
 #include <alpm_list.h>
 
+#include <stdio.h>
 #include <string.h>
 
 #ifndef PYALPM_H

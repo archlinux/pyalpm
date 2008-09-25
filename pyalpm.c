@@ -20,7 +20,7 @@ This file is part of pyalpm.
 */
 
 #include "pyalpm.h"
-#include <stdio.h>
+
 /*pyalpm functions*/
 PyObject * initialize_alpm(PyObject *self)
 {
@@ -32,7 +32,6 @@ PyObject * initialize_alpm(PyObject *self)
   else
   {
     init = 1;
-    addresses = (alpm_list_t*) malloc(sizeof(alpm_list_t));
     return Py_None;
   }
 }
@@ -359,10 +358,6 @@ PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args)
   else
   {
     target = tuple_alpm_list_t(tmp);
-    adtmp = addresses;
-    addresses->data = target;
-    add_alpm_list_t(addresses);
-    addresses->prev = adtmp;
     alpm_option_set_noupgrades(target);
     return Py_None;
   }
