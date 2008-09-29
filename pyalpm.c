@@ -568,7 +568,7 @@ PyObject * option_add_ignoregrps_alpm(PyObject *self, PyObject *args)
   {
     if(check_init() == 1)
     {
-      alpm_option_add_ignoregrps(str);
+      alpm_option_add_ignoregrp(str);
       return Py_None;
     }
     else
@@ -592,7 +592,7 @@ PyObject * option_remove_ignoregrps_alpm(PyObject *self, PyObject *args)
   {
     if(check_init() == 1)
     {
-      alpm_option_remove_ignoregrps(str);
+      alpm_option_remove_ignoregrp(str);
       return Py_None;
     }
     else
@@ -739,66 +739,45 @@ PyObject * testconverter(PyObject *self, PyObject *args)
     return Py_BuildValue("s", test->path);
   }
 }
-/*converts a C array to alpm_list_t linked list, returns a pointer to first node*/
+/*converts a Python array to alpm_list_t linked list, returns a pointer to first node*/
 alpm_list_t * tuple_alpm_list_t(PyObject *list)
 {
-  alpm_list_t *nodetmp;
-  char *tmp;
-  /*int i, num;*/
+  char *tmp, *pystring;
+  alpm_list_t *nodetmp, *ret;
   PyObject *iterator = PyObject_GetIter(list);
   PyObject *item;
   
+  
   if(iterator == NULL)
   {
-    nodetmp = NULL;
-    return nodetmp;
+    return NULL;
   }
-/*  
-  num = PySequence_Lenght(list);
-  if(num < 0)
-  {
-    nodetemp = NULL;
-    return nodetmp;
-  }
-*/  
-  nodetmp = (alpm_list_t*) malloc(sizeof(alpm_list_t));
   
-  while(item = PyIter_Next(iterator))
+  nodetmp = (alpm_list_t*) malloc(sizeof(alpm_list_t));
+  ret = nodetmp;
+  
+  while((item = PyIter_Next(iterator)))
   {
-    tmp = (char*) malloc(sizeof(item));
-    nodetmp->data = tmp;
-    strcpy(nodetmp->data, item);
-    /*printf("%s\n", (char*) *nodetmp->data);*/
+    if(PyString_Check(item))
+    {
+      tmp = (char*) malloc(sizeof(*PyString_AsString(item)));
+      
+      strcpy(tmp, PyString_AsString(item));
+      
+      nodetmp->data=tmp;
+      /*nodetmp->data=PyString_AsString(item);*/
+      printf("%s\n", nodetmp->data);
+    }
+    else
+    {
+      return NULL;
+    }
     add_alpm_list_t(nodetmp);
     Py_DECREF(item);
   }
   Py_DECREF(iterator);
-  
-/*  for(i=0;i<num;i++)
-  {
-    item = PySequence_GetItem(list, i);
-    tmp = NULL;
-    tmp = (char*) malloc(sizeof(item));
-    if(tmp == NULL)
-    {
-      nodetmp = NULL;
-      return nodetmp;
-      Py_DECREF(item);
-    }
-    else
-    {
-      nodetmp->data = tmp;
-      strcpy(nodetmp->data, item);
-      if(i != num-1)
-      {
-      add_alpm_list_t(nodetmp);
-      nodetmp = nodetmp->next;
-      }
-      Py_DECREF(item);
-    }
-  }
-*/  
-  return nodetmp;
+    
+  return ret;
 }
 
 PyObject * alpm_list_t_tuple(alpm_list_t *prt)
@@ -808,8 +787,11 @@ PyObject * alpm_list_t_tuple(alpm_list_t *prt)
   while(prt != NULL)
   {
     
+    
     prt = prt->next;
   }
+  
+  return output;
 }
 
 /*alpm_list_t related functions*/
