@@ -363,6 +363,18 @@ PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args)
   }
 }
 
+PyObject * option_get_noupgrades_alpm(PyObject *self)
+{
+  PyObject *ret;
+  alpm_list_t *output;
+  
+  output = alpm_option_get_noupgrades();
+  
+  ret = alpm_list_t_tuple(output);
+  
+  return ret;
+}
+
 PyObject * option_add_noupgrade_alpm(PyObject *self, PyObject *args)
 {
   const char *str;
@@ -782,13 +794,38 @@ alpm_list_t * tuple_alpm_list_t(PyObject *list)
 
 PyObject * alpm_list_t_tuple(alpm_list_t *prt)
 {
-  PyObject * output;
+  PyObject *output, *strtmp;
+  alpm_list_t *tmp;
   
-  while(prt != NULL)
+  tmp = prt;
+  
+  if(tmp != NULL)
   {
+    output = PyList_New(0);
+    if(output != NULL)
+    {
+      strtmp = Py_BuildValue("s", tmp->data);
+      
+      
+      tmp = tmp->next;
+      
+      PyList_Append(output, strtmp);
+    }
+  
+    while(tmp != NULL)
+    {
+      
+        strtmp = Py_BuildValue("s", tmp->data);
+        
+        PyList_Append(output, strcmp);
+        
+        tmp = tmp->next;
+    }
     
-    
-    prt = prt->next;
+  }
+  else
+  {
+    output = NULL;
   }
   
   return output;
@@ -836,6 +873,7 @@ PyMethodDef methods[] = {
   {"setnopassiveftp", option_set_nopassiveftp_alpm, METH_VARARGS, "sets nopassiveftp value."},
   {"setusedelta", option_set_usedelta_alpm, METH_VARARGS, "sets usedelta value."},
   {"setnoupgrades", option_set_noupgrades_alpm, METH_VARARGS, "sets noupgrades."},
+  {"getnoupgrades", option_get_noupgrades_alpm, METH_VARARGS, "gets noupgrades."},
   {"addnoupgrade", option_add_noupgrade_alpm, METH_VARARGS, "add a noupgrade package."},
   {"removenoupgrade", option_remove_noupgrade_alpm, METH_VARARGS, "removes a noupgrade package."},
   {"addcachedir", option_add_cachedir_alpm, METH_VARARGS, "adds a cachedir."},

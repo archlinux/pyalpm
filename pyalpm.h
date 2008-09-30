@@ -49,6 +49,7 @@ struct __pmdb_t {
 void add_alpm_list_t(alpm_list_t *prt);
 void remove_alpm_list_t(alpm_list_t *prt);
 alpm_list_t * tuple_alpm_list_t(PyObject *list);
+PyObject * alpm_list_t_tuple(alpm_list_t *prt);
 void clean_pmdb_t(pmdb_t *prt);
 unsigned short check_init(void);
 
@@ -88,6 +89,7 @@ PyObject * option_get_usesyslog_alpm(PyObject *self);
 /*_{get,set,add,remove}_ functions*/
 
 PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args);
+PyObject * option_get_noupgrades_alpm(PyObject *self);
 PyObject * option_add_noupgrade_alpm(PyObject *self, PyObject *args);
 PyObject * option_remove_noupgrade_alpm(PyObject *self, PyObject *args);
 
