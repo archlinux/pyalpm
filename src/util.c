@@ -27,7 +27,7 @@ unsigned short init = 0;
 /*converts a Python array to alpm_list_t linked list, returns a pointer to first node*/
 alpm_list_t * tuple_alpm_list_t(PyObject *list)
 {
-  char *tmp, *pystring;
+  char *tmp;
   alpm_list_t *nodetmp, *ret;
   PyObject *iterator = PyObject_GetIter(list);
   PyObject *item;
@@ -43,25 +43,20 @@ alpm_list_t * tuple_alpm_list_t(PyObject *list)
   
   while((item = PyIter_Next(iterator)))
   {
-    if(PyString_Check(item))
-    {
-      tmp = (char*) malloc(sizeof(*PyString_AsString(item)));
-      
-      strcpy(tmp, PyString_AsString(item));
-      
-      nodetmp->data=tmp;
+    if (PyArg_ParseTuple(item, "s", &tmp)) {
+      alpm_list_add(ret, strdup(tmp));
       /*nodetmp->data=PyString_AsString(item);*/
-      printf("%s\n", nodetmp->data);
+      printf("%s\n", tmp);
     }
     else
     {
+      FREELIST(ret);
       return NULL;
     }
-    add_alpm_list_t(nodetmp);
     Py_DECREF(item);
   }
   Py_DECREF(iterator);
-    
+
   return ret;
 }
 
@@ -138,4 +133,4 @@ unsigned short check_init(void)
   }
 }
 
-
+/* vim: set ts=2 sw=2 et: */

@@ -25,6 +25,7 @@
 #include "options.h"
 #include "util.h"
 
+extern int init;
 static PyObject *alpm_error;
 
 /*
@@ -173,7 +174,7 @@ PyObject * option_set_usesyslog_alpm(PyObject *self, PyObject *args)
   }
   else
   {
-    alpm_option_set_usesyslog(str);
+    alpm_option_set_usesyslog(value);
     return Py_None;
   }
 }
@@ -254,7 +255,7 @@ PyObject * option_add_noupgrade_alpm(PyObject *self, PyObject *args)
   }
   else
   {
-    if(check_init == 1)
+    if(check_init() == 1)
     {
       alpm_option_add_noupgrade(str);
       return Py_None;
@@ -509,11 +510,20 @@ static PyMethodDef pyalpm_options_methods[] = {
   {NULL, NULL, 0, NULL},
 };
 
-
+static struct PyModuleDef pyalpm_options_def = {
+  PyModuleDef_HEAD_INIT,
+  "_alpmoptions",
+  "This module handles options getting and setting for pyalpm",
+  -1,
+  pyalpm_options_methods
+};
 
 PyMODINIT_FUNC PyInit__alpmoptions()
 {
-  (void) Py_InitModule("pyalpm", methods);
-  
-  alpm_error = PyErr_NewException("alpm.error", NULL, NULL);
+  PyObject* m = PyModule_Create(&pyalpm_options_def);
+
+  alpm_error = PyErr_NewException("_alpmoptions.error", NULL, NULL);
+  return m;
 }
+
+/* vim: set ts=2 sw=2 et: */

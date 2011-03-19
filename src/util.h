@@ -33,7 +33,6 @@ void remove_alpm_list_t(alpm_list_t *prt);
 alpm_list_t * tuple_alpm_list_t(PyObject *list);
 PyObject * alpm_list_t_tuple(alpm_list_t *prt);
 
-extern int init;
 unsigned short check_init(void);
 
 #endif // _PY_ALPM_UTIL_H
