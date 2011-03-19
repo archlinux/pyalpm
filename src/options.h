@@ -26,25 +26,25 @@
 #include <Python.h>
 
 /*read-only function*/
-PyObject * option_get_lockfile_alpm(PyObject *self);
+PyObject * option_get_lockfile_alpm(PyObject *self, PyObject *args);
 
 /*write-only function*/
 PyObject * option_set_usedelta_alpm(PyObject *self, PyObject *args);
 
 /*_{get,set}_ functions*/
 PyObject * option_set_root_alpm(PyObject *self, PyObject *args);
-PyObject * option_get_root_alpm(PyObject *self);
+PyObject * option_get_root_alpm(PyObject *self, PyObject *args);
 PyObject * option_set_dbpath_alpm(PyObject *self, PyObject *args);
-PyObject * option_get_dbpath_alpm(PyObject *self);
+PyObject * option_get_dbpath_alpm(PyObject *self, PyObject *args);
 PyObject * option_set_logfile_alpm(PyObject *self, PyObject *args);
-PyObject * option_get_logfile_alpm(PyObject *self);
+PyObject * option_get_logfile_alpm(PyObject *self, PyObject *args);
 PyObject * option_set_usesyslog_alpm(PyObject *self, PyObject *args);
-PyObject * option_get_usesyslog_alpm(PyObject *self);
+PyObject * option_get_usesyslog_alpm(PyObject *self, PyObject *args);
 
 /*_{get,set,add,remove}_ functions*/
 
 PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args);
-PyObject * option_get_noupgrades_alpm(PyObject *self);
+PyObject * option_get_noupgrades_alpm(PyObject *self, PyObject *args);
 PyObject * option_add_noupgrade_alpm(PyObject *self, PyObject *args);
 PyObject * option_remove_noupgrade_alpm(PyObject *self, PyObject *args);
 

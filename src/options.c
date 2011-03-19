@@ -31,7 +31,7 @@ static PyObject *alpm_error;
 The following functions take a string as argument(*_set_*)
 while other (*_get_*) return a string
 */
-PyObject * option_get_root_alpm(PyObject *self)
+PyObject * option_get_root_alpm(PyObject *self, PyObject *args)
 {
   const char *str = alpm_option_get_root();
   
@@ -91,7 +91,7 @@ PyObject * option_set_dbpath_alpm(PyObject *self, PyObject *args)
   }
 }
 
-PyObject * option_get_dbpath_alpm(PyObject *self)
+PyObject * option_get_dbpath_alpm(PyObject *self, PyObject *args)
 {
   const char *str = alpm_option_get_dbpath();
   
@@ -128,7 +128,7 @@ PyObject * option_set_logfile_alpm(PyObject *self, PyObject *args)
   }
 }
 
-PyObject * option_get_logfile_alpm(PyObject *self)
+PyObject * option_get_logfile_alpm(PyObject *self, PyObject *args)
 {
   const char *str = alpm_option_get_logfile();
   
@@ -148,7 +148,7 @@ receives and returns an int type
 1 = enabled
 0 = disabled
 */
-PyObject * option_get_usesyslog_alpm(PyObject *self)
+PyObject * option_get_usesyslog_alpm(PyObject *self, PyObject *args)
 {
   unsigned short str = alpm_option_get_usesyslog();
   
@@ -182,22 +182,22 @@ PyObject * option_set_usesyslog_alpm(PyObject *self, PyObject *args)
 
 PyObject * option_set_usedelta_alpm(PyObject *self, PyObject *args)
 {
-  const unsigned short *str;
-  if(!PyArg_ParseTuple(args, "i", &str))
+  int value;
+  if(!PyArg_ParseTuple(args, "i", &value))
   {
     PyErr_SetString(alpm_error, "wrong arguments");
     return NULL;
   }
   else
   {
-    alpm_option_set_usedelta(str);
+    alpm_option_set_usedelta(value);
     return Py_None;
   }
 }
 
 /*read-only functions*/
 
-PyObject * option_get_lockfile_alpm(PyObject *self)
+PyObject * option_get_lockfile_alpm(PyObject *self, PyObject *args)
 {
   const char *str = NULL;
   str = alpm_option_get_lockfile();
@@ -231,7 +231,7 @@ PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args)
   }
 }
 
-PyObject * option_get_noupgrades_alpm(PyObject *self)
+PyObject * option_get_noupgrades_alpm(PyObject *self, PyObject *args)
 {
   PyObject *ret;
   alpm_list_t *output;
