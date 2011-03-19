@@ -23,6 +23,9 @@
 #include <Python.h>
 #include <alpm.h>
 #include "options.h"
+#include "util.h"
+
+static PyObject *alpm_error;
 
 /*
 The following functions take a string as argument(*_set_*)

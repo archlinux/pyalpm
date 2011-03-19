@@ -33,7 +33,6 @@ This file is part of pyalpm.
 char *error, *warning, *debug, *function;
 unsigned short enable_messages_logcb = 0;
 char VERSION[] = "0.1";
-unsigned short init = 0;
 
 /*copied from pacman db.h as it can't be included, set as pmdb_t in alpm.h*/
 struct __pmdb_t {
@@ -45,11 +44,6 @@ struct __pmdb_t {
 	alpm_list_t *servers;
 };
 
-/*misc internal functions*/
-void add_alpm_list_t(alpm_list_t *prt);
-void remove_alpm_list_t(alpm_list_t *prt);
-alpm_list_t * tuple_alpm_list_t(PyObject *list);
-PyObject * alpm_list_t_tuple(alpm_list_t *prt);
 void clean_pmdb_t(pmdb_t *prt);
 unsigned short check_init(void);
 

@@ -20,6 +20,7 @@ This file is part of pyalpm.
 */
 
 #include "pyalpm.h"
+#include "src/util.h"
 
 /*pyalpm functions*/
 PyObject * initialize_alpm(PyObject *self)
@@ -129,19 +130,6 @@ PyObject * check_init_alpm(PyObject *self)
   }
 }
 
-unsigned short check_init(void)
-{
-  switch(init)
-  {
-    case 0:
-      return 0;
-    case 1:
-      return 1;
-   default:
-      return -1;
-  }
-}
-
 /*internal data type converters*/
 pmdb_t * tuple_pmdb_t(char *dbpath, char *dbtreename, alpm_list_t *pkgcache,
 			    alpm_list_t *grpcache, alpm_list_t *servers)
@@ -186,106 +174,6 @@ PyObject * testconverter(PyObject *self, PyObject *args)
     test = tuple_pmdb_t(path, dbtreename, pkgcache, grpcache, servers);
     return Py_BuildValue("s", test->path);
   }
-}
-/*converts a Python array to alpm_list_t linked list, returns a pointer to first node*/
-alpm_list_t * tuple_alpm_list_t(PyObject *list)
-{
-  char *tmp, *pystring;
-  alpm_list_t *nodetmp, *ret;
-  PyObject *iterator = PyObject_GetIter(list);
-  PyObject *item;
-  
-  
-  if(iterator == NULL)
-  {
-    return NULL;
-  }
-  
-  nodetmp = (alpm_list_t*) malloc(sizeof(alpm_list_t));
-  ret = nodetmp;
-  
-  while((item = PyIter_Next(iterator)))
-  {
-    if(PyString_Check(item))
-    {
-      tmp = (char*) malloc(sizeof(*PyString_AsString(item)));
-      
-      strcpy(tmp, PyString_AsString(item));
-      
-      nodetmp->data=tmp;
-      /*nodetmp->data=PyString_AsString(item);*/
-      printf("%s\n", nodetmp->data);
-    }
-    else
-    {
-      return NULL;
-    }
-    add_alpm_list_t(nodetmp);
-    Py_DECREF(item);
-  }
-  Py_DECREF(iterator);
-    
-  return ret;
-}
-
-PyObject * alpm_list_t_tuple(alpm_list_t *prt)
-{
-  PyObject *output, *strtmp;
-  alpm_list_t *tmp;
-  
-  tmp = prt;
-  
-  if(tmp != NULL)
-  {
-    output = PyList_New(0);
-    if(output != NULL)
-    {
-      strtmp = Py_BuildValue("s", tmp->data);
-      
-      
-      tmp = tmp->next;
-      
-      PyList_Append(output, strtmp);
-    }
-  
-    while(tmp != NULL)
-    {
-      
-        strtmp = Py_BuildValue("s", tmp->data);
-        
-        PyList_Append(output, strcmp);
-        
-        tmp = tmp->next;
-    }
-    
-  }
-  else
-  {
-    output = NULL;
-  }
-  
-  return output;
-}
-
-/*alpm_list_t related functions*/
-void add_alpm_list_t(alpm_list_t *prt)
-{
-  alpm_list_t *new;
-  new = (alpm_list_t*) malloc(sizeof(alpm_list_t));
-  
-  prt->next = new;
-  new->prev = prt;
-}
-
-void remove_alpm_list_t(alpm_list_t *prt)
-{
-  alpm_list_t *old;
-  
-  old = prt->prev;
-  old->next = NULL;
-  
-  free(prt->data);
-  free(prt);
 }
 
 PyMethodDef methods[] = {
