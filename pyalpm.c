@@ -52,22 +52,6 @@ PyObject * release_alpm(PyObject *self)
   }
 }
 
-PyObject * option_get_logcb_alpm(PyObject *self)
-{
-  const char *str = NULL;
-  if(alpm_option_get_logcb() == NULL)
-  {
-    PyErr_SetString(alpm_error, "failed getting logcb");
-    return NULL;
-  }
-  else
-  {
-    str = alpm_option_get_logcb();
-    
-    return Py_BuildValue("s", str);
-  }
-}
-
 void test_cb(pmloglevel_t level, char *fmt, va_list args)
 {
   if(strlen(fmt))

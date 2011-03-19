@@ -60,11 +60,6 @@ PyObject * option_remove_ignorepkg_alpm(PyObject *self, PyObject *args);
 PyObject * option_add_ignoregrps_alpm(PyObject *self, PyObject *args);
 PyObject * option_remove_ignoregrps_alpm(PyObject *self, PyObject *args);
 
-/*callback function*/
-
-PyObject * option_get_logcb_alpm(PyObject *self);
-PyObject * option_set_logcb_alpm(PyObject *self, PyObject *args);
-
 #endif // _PY_ALPM_OPTIONS_H
 
 /* vim: set ts=2 sw=2 et: */

@@ -483,10 +483,7 @@ PyObject * option_remove_ignoregrps_alpm(PyObject *self, PyObject *args)
   }
 }
 
-
-static PyMethodDef methods[] = {
-  {"getlogcb", option_get_logcb_alpm, METH_VARARGS, "call back function for logging."},
-  {"setlogcb", option_set_logcb_alpm, METH_VARARGS, "sets logging config."},
+static PyMethodDef pyalpm_options_methods[] = {
   {"getroot", option_get_root_alpm, METH_VARARGS, "gets the root path."},
   {"setroot", option_set_root_alpm, METH_VARARGS, "sets the root path."},
   {"getdbpath", option_get_dbpath_alpm, METH_VARARGS, "gets the dbpath."},
