@@ -38,10 +38,6 @@ PyObject * option_set_dbpath_alpm(PyObject *self, PyObject *args);
 PyObject * option_get_dbpath_alpm(PyObject *self);
 PyObject * option_set_logfile_alpm(PyObject *self, PyObject *args);
 PyObject * option_get_logfile_alpm(PyObject *self);
-PyObject * option_set_xfercommand_alpm(PyObject *self, PyObject *args);
-PyObject * option_get_xfercommand_alpm(PyObject *self);
-PyObject * option_set_nopassiveftp_alpm(PyObject *self, PyObject *args);
-PyObject * option_get_nopassiveftp_alpm(PyObject *self);
 PyObject * option_set_usesyslog_alpm(PyObject *self, PyObject *args);
 PyObject * option_get_usesyslog_alpm(PyObject *self);
 
@@ -63,9 +59,6 @@ PyObject * option_remove_ignorepkg_alpm(PyObject *self, PyObject *args);
 
 PyObject * option_add_ignoregrps_alpm(PyObject *self, PyObject *args);
 PyObject * option_remove_ignoregrps_alpm(PyObject *self, PyObject *args);
-
-PyObject * option_add_holdpkg_alpm(PyObject *self, PyObject *args);
-PyObject * option_remove_holdpkg_alpm(PyObject *self, PyObject *args);
 
 /*callback function*/
 

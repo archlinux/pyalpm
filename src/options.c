@@ -143,36 +143,6 @@ PyObject * option_get_logfile_alpm(PyObject *self)
   }
 }
 
-PyObject * option_set_xfercommand_alpm(PyObject *self, PyObject *args)
-{
-  const char *cmd;
-  if(!PyArg_ParseTuple(args, "s", &cmd))
-  {
-    PyErr_SetString(alpm_error, "error in the args");
-    return NULL;
-  }
-  else
-  {
-    alpm_option_set_xfercommand(cmd);
-    return Py_None;
-  }
-}
-
-PyObject * option_get_xfercommand_alpm(PyObject *self)
-{
-  const char *str = alpm_option_get_xfercommand();
-  
-  if(str == NULL)
-  {
-    PyErr_SetString(alpm_error, "failed getting xfercommand.");
-    return NULL;
-  }
-  else
-  {
-    return Py_BuildValue("s", str);
-  }
-}
-
 /*
 receives and returns an int type
 1 = enabled
@@ -195,38 +165,8 @@ PyObject * option_get_usesyslog_alpm(PyObject *self)
 
 PyObject * option_set_usesyslog_alpm(PyObject *self, PyObject *args)
 {
-  const unsigned short *str;
-  if(!PyArg_ParseTuple(args, "i", &str))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
-    return NULL;
-  }
-  else
-  {
-    alpm_option_set_usesyslog(str);
-    return Py_None;
-  }
-}
-
-PyObject * option_get_nopassiveftp_alpm(PyObject *self)
-{
-  unsigned short str = alpm_option_get_nopassiveftp();
-  
-  if(str == -1)
-  {
-    PyErr_SetString(alpm_error, "failed getting nopassiveftp");
-    return NULL;
-  }
-  else
-  {
-    return Py_BuildValue("i", str);
-  }
-}
-
-PyObject * option_set_nopassiveftp_alpm(PyObject *self, PyObject *args)
-{
-  const unsigned short *str;
-  if(!PyArg_ParseTuple(args, "i", &str))
+  int value;
+  if(!PyArg_ParseTuple(args, "i", &value))
   {
     PyErr_SetString(alpm_error, "wrong arguments");
     return NULL;
@@ -543,53 +483,6 @@ PyObject * option_remove_ignoregrps_alpm(PyObject *self, PyObject *args)
   }
 }
 
-PyObject * option_add_holdpkg_alpm(PyObject *self, PyObject *args)
-{
-  const char *str;
-  
-  if(!PyArg_ParseTuple(args, "s", &str))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
-    return NULL;
-  }
-  else
-  {
-    if(check_init() == 1)
-    {
-      alpm_option_add_holdpkg(str);
-      return Py_None;
-    }
-    else
-    {
-      PyErr_SetString(alpm_error, "pyalpm not initialized");
-      return NULL;
-    }
-  }
-}
-
-PyObject * option_remove_holdpkg_alpm(PyObject *self, PyObject *args)
-{
-  const char *str;
-  
-  if(!PyArg_ParseTuple(args, "s", &str))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
-    return NULL;
-  }
-  else
-  {
-    if(check_init() == 1)
-    {
-      alpm_option_add_holdpkg(str);
-      return Py_None;
-    }
-    else
-    {
-      PyErr_SetString(alpm_error, "pyalpm not initialized");
-      return NULL;
-    }
-  }
-}
 
 static PyMethodDef methods[] = {
   {"getlogcb", option_get_logcb_alpm, METH_VARARGS, "call back function for logging."},
@@ -601,12 +494,8 @@ static PyMethodDef methods[] = {
   {"getlogfile", option_get_logfile_alpm, METH_VARARGS, "gets the logfile."},
   {"setlogfile", option_set_logfile_alpm, METH_VARARGS, "sets the logfile."},
   {"getlockfile", option_get_lockfile_alpm, METH_VARARGS, "gets the lockfile."},
-  {"getxfercommand", option_get_xfercommand_alpm, METH_VARARGS, "gets the xfercommand value."},
-  {"setxfercommand", option_set_xfercommand_alpm, METH_VARARGS, "sets the xfercommand value."},
   {"getusesyslog", option_get_usesyslog_alpm, METH_VARARGS, "gets usesyslog value."},
   {"setusesyslog", option_set_usesyslog_alpm, METH_VARARGS, "sets usesyslog value."},
-  {"getnopassiveftp", option_get_nopassiveftp_alpm, METH_VARARGS, "gets nopassiveftp value."},
-  {"setnopassiveftp", option_set_nopassiveftp_alpm, METH_VARARGS, "sets nopassiveftp value."},
   {"setusedelta", option_set_usedelta_alpm, METH_VARARGS, "sets usedelta value."},
   {"setnoupgrades", option_set_noupgrades_alpm, METH_VARARGS, "sets noupgrades."},
   {"getnoupgrades", option_get_noupgrades_alpm, METH_VARARGS, "gets noupgrades."},
@@ -620,8 +509,7 @@ static PyMethodDef methods[] = {
   {"removeignorepkg", option_remove_ignorepkg_alpm, METH_VARARGS, "remove an ignorepkg."},
   {"addignoregrps", option_add_ignoregrps_alpm, METH_VARARGS, "add an ignoregrps."},
   {"removeignoregrps", option_remove_ignoregrps_alpm, METH_VARARGS, "remove an ignoregrps."},
-  {"addholdpkg", option_add_holdpkg_alpm, METH_VARARGS, "add a holdpkg."},
-  {"removeholdpkg", option_remove_holdpkg_alpm, METH_VARARGS, "remove a holdpkg."},
+  {NULL, NULL, 0, NULL},
 };
 
 
