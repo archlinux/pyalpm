@@ -25,15 +25,7 @@
 
 #include <Python.h>
 
-typedef struct _AlpmDB {
-  PyObject_HEAD
-  pmdb_t *c_data;
-} AlpmDB;
-
-PyTypeObject AlpmDBType;
-
-PyObject *pyalpm_db_new(PyTypeObject *type, PyObject *args, PyObject *kwargs);
-
+PyObject *pyalpm_db_from_pmdb(pmdb_t *db);
 void init_pyalpm_db(PyObject *module);
 
 #endif // _PYALPM_DB_H

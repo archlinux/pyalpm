@@ -23,8 +23,15 @@
 #include <alpm.h>
 #include <Python.h>
 #include "db.h"
+#include "package.h"
+
+typedef struct _AlpmDB {
+  PyObject_HEAD
+  pmdb_t *c_data;
+} AlpmDB;
 
 static void pyalpm_db_dealloc(AlpmDB *self);
+static struct PyMethodDef db_methods[];
 
 PyTypeObject AlpmDBType = {
   PyVarObject_HEAD_INIT(NULL, 0)
@@ -76,6 +83,18 @@ void init_pyalpm_db(PyObject *module) {
   type = (PyObject*)&AlpmDBType;
   Py_INCREF(type);
   PyModule_AddObject(module, "DB", type);
+}
+
+PyObject *pyalpm_db_from_pmdb(pmdb_t *db) {
+  AlpmDB *self;
+  self = (AlpmDB*)AlpmDBType.tp_alloc(&AlpmDBType, 0);
+  if (self == NULL) {
+    PyErr_SetString(PyExc_RuntimeError, "unable to create DB object");
+    return NULL;
+  }
+
+  self->c_data = db;
+  return (PyObject *)self;
 }
 
 void pyalpm_db_dealloc(AlpmDB *self) {

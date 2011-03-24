@@ -2,6 +2,7 @@
  * pyalpm - a Python C module wrapping libalpm
  *
  *  Copyright 2008 Imanol Celaya <ilcra1989@gmail.com>
+ *  Copyright (c) 2011 Rémy Oudompheng <remy@archlinux.org>
  *
  *  pyalpm is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -163,14 +164,14 @@ PyObject * testconverter(PyObject *self, PyObject *args)
 }
 
 static PyObject* pyalpm_get_localdb(PyObject *self) {
-  AlpmDB *db = (AlpmDB*)AlpmDBType.tp_alloc(&AlpmDBType, 0);
+  PyObject *db;
 
   if (self == NULL) {
     PyErr_SetString(PyExc_RuntimeError, "unable to create DB object");
     return NULL;
   }
 
-  db->c_data = alpm_option_get_localdb;
+  db = pyalpm_db_from_pmdb(alpm_option_get_localdb());
   return (PyObject *)db;
 }
 

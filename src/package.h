@@ -25,15 +25,7 @@
 
 #include <Python.h>
 
-typedef struct _AlpmPackage {
-  PyObject_HEAD
-  pmpkg_t *c_data;
-} AlpmPackage;
-
-PyTypeObject AlpmPackageType;
-
-PyObject *pyalpm_package_new(PyTypeObject *type, PyObject *args, PyObject *kwargs);
-
+PyObject *pyalpm_package_from_pmpkg(pmpkg_t *p);
 void init_pyalpm_package(PyObject *module);
 
 #endif // _PYALPM_PACKAGE_H

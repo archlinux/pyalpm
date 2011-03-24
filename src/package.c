@@ -24,6 +24,11 @@
 #include <Python.h>
 #include "package.h"
 
+typedef struct _AlpmPackage {
+  PyObject_HEAD
+  pmpkg_t *c_data;
+} AlpmPackage;
+
 struct PyGetSetDef AlpmPackageGetSet[];
 static void pyalpm_package_dealloc(AlpmPackage *self);
 
