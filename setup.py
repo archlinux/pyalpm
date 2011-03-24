@@ -4,7 +4,12 @@ from distutils.core import Extension
 alpm = Extension('pyalpm',
     extra_compile_args = ["-Wall"],
     libraries = ['alpm'],
-    sources = ['src/pyalpm.c', 'src/util.c'])
+    sources = [
+        'src/pyalpm.c',
+        'src/util.c',
+        'src/package.c',
+        'src/db.c'
+        ])
 
 alpm_options = Extension('_alpmoptions',
                    libraries = ['alpm'],

@@ -22,8 +22,9 @@ This file is part of pyalpm.
 #include "pyalpm.h"
 #include "util.h"
 #include "package.h"
+#include "db.h"
 
-int init;
+extern unsigned short init;
 
 /*pyalpm functions*/
 PyObject * initialize_alpm(PyObject *self)
@@ -163,6 +164,18 @@ PyObject * testconverter(PyObject *self, PyObject *args)
   }
 }
 
+static PyObject* pyalpm_get_localdb(PyObject *self) {
+  AlpmDB *db = (AlpmDB*)AlpmDBType.tp_alloc(&AlpmDBType, 0);
+
+  if (self == NULL) {
+    PyErr_SetString(PyExc_RuntimeError, "unable to create DB object");
+    return NULL;
+  }
+
+  db->c_data = alpm_option_get_localdb;
+  return (PyObject *)db;
+}
+
 static PyMethodDef methods[] = {
   {"testconv", testconverter, METH_VARARGS, "test type converter."},
   {"initialize", initialize_alpm, METH_VARARGS, "initialize alpm."},
@@ -170,6 +183,9 @@ static PyMethodDef methods[] = {
   {"version", version_alpm, METH_VARARGS, "returns pyalpm version."},
   {"alpmversion", alpmversion_alpm, METH_VARARGS, "returns alpm version."},
   {"checkinit", check_init_alpm, METH_VARARGS, "checks if the library was initialized."},
+
+  {"get_localdb", pyalpm_get_localdb, METH_NOARGS, "returns an object representing the local DB"},
+
   {NULL, NULL, 0, NULL}
 };
 
@@ -188,6 +204,7 @@ PyMODINIT_FUNC PyInit_pyalpm()
   alpm_error = PyErr_NewException("alpm.error", NULL, NULL);
 
   init_pyalpm_package(m);
+  init_pyalpm_db(m);
   
   return m;
 }
