@@ -61,7 +61,7 @@ PyTypeObject AlpmDBType = {
   0,                          /* tp_weaklistoffset */
   0,                          /* tp_iter */
   0,                          /* tp_iternext */
-  0,                          /* tp_methods */
+  db_methods,                          /* tp_methods */
   0,                          /* tp_members */
   0,                          /* tp_getset */
   0,                          /* tp_base */
@@ -100,3 +100,33 @@ PyObject *pyalpm_db_from_pmdb(pmdb_t *db) {
 void pyalpm_db_dealloc(AlpmDB *self) {
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
+
+static PyObject* pyalpm_db_get_pkg(PyObject* self, PyObject* args) {
+  char *pkgname;
+  pmpkg_t *p;
+  AlpmDB *db = (AlpmDB *)self;
+
+  if(!PyArg_ParseTuple(args, "s", &pkgname))
+  {
+    PyErr_SetString(PyExc_TypeError, "get_pkg() takes a string argument");
+    return NULL;
+  }
+
+  p = alpm_db_get_pkg(db->c_data, pkgname);
+
+  if (p == NULL) {
+    Py_RETURN_NONE;
+  } else {
+    PyObject *result;
+    result = pyalpm_package_from_pmpkg(p);
+    if (result == NULL) {
+      return NULL;
+    } else {
+      return result;
+    }
+  }
+}
+
+static struct PyMethodDef db_methods[] = {
+  { "get_pkg", pyalpm_db_get_pkg, METH_VARARGS, "get a package by name" },
+};
