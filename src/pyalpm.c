@@ -20,7 +20,10 @@ This file is part of pyalpm.
 */
 
 #include "pyalpm.h"
-#include "src/util.h"
+#include "util.h"
+#include "package.h"
+
+int init;
 
 /*pyalpm functions*/
 PyObject * initialize_alpm(PyObject *self)
@@ -160,7 +163,7 @@ PyObject * testconverter(PyObject *self, PyObject *args)
   }
 }
 
-PyMethodDef methods[] = {
+static PyMethodDef methods[] = {
   {"testconv", testconverter, METH_VARARGS, "test type converter."},
   {"initialize", initialize_alpm, METH_VARARGS, "initialize alpm."},
   {"release", release_alpm, METH_VARARGS, "release alpm."},
@@ -170,10 +173,22 @@ PyMethodDef methods[] = {
   {NULL, NULL, 0, NULL}
 };
 
+static struct PyModuleDef pyalpm_def = {
+  PyModuleDef_HEAD_INIT,
+  "alpm",
+  "This module wraps the libalpm library",
+  -1,
+  methods
+};
 
-PyMODINIT_FUNC initpyalpm()
+PyMODINIT_FUNC PyInit_pyalpm()
 {
-  (void) Py_InitModule("pyalpm", methods);
-  
+  PyObject* m = PyModule_Create(&pyalpm_def);
+
   alpm_error = PyErr_NewException("alpm.error", NULL, NULL);
+
+  init_pyalpm_package(m);
+  
+  return m;
 }
+

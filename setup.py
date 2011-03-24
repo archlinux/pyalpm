@@ -1,11 +1,15 @@
 from distutils.core import setup
 from distutils.core import Extension
 
-module = Extension('pyalpm',
+alpm = Extension('pyalpm',
+    extra_compile_args = ["-Wall"],
+    libraries = ['alpm'],
+    sources = ['src/pyalpm.c', 'src/util.c'])
+
+alpm_options = Extension('_alpmoptions',
                    libraries = ['alpm'],
-                   sources = ['pyalpm.c'])
-                        
+                   sources = ['src/options.c', 'src/util.c'])
 
 setup(name = 'pyalpm',
       version = '0.1',
-      ext_modules = [module])
+      ext_modules = [alpm, alpm_options])
