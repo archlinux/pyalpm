@@ -58,14 +58,6 @@ PyTypeObject AlpmPackageType = {
   0,                          /* tp_methods */
   0,                          /* tp_members */
   AlpmPackageGetSet,          /* tp_getset */
-  0,                          /* tp_base */
-  0,                          /* tp_dict */
-  0,                          /* tp_descr_get */
-  0,                          /* tp_descr_set */
-  0,                          /* tp_dictoffset */
-  0,        /* tp_init */
-  0,                          /* tp_alloc */
-  (newfunc)pyalpm_package_new,         /* tp_new */
 };
 
 /** Initializes Package class in module */
@@ -79,13 +71,15 @@ void init_pyalpm_package(PyObject *module) {
   PyModule_AddObject(module, "Package", type);
 }
 
-PyObject *pyalpm_package_new(PyTypeObject *type, PyObject *args, PyObject *kwargs) {
+PyObject *pyalpm_package_from_pmpkg(pmpkg_t *p) {
   AlpmPackage *self;
-  self = (AlpmPackage*)type->tp_alloc(type, 0);
-  if (self != NULL) {
-    self->c_data = NULL;
+  self = (AlpmPackage*)AlpmPackageType.tp_alloc(&AlpmPackageType, 0);
+  if (self == NULL) {
+    PyErr_SetString(PyExc_RuntimeError, "unable to create package object");
+    return NULL;
   }
 
+  self->c_data = p;
   return (PyObject *)self;
 }
 
