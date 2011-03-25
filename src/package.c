@@ -23,6 +23,7 @@
 #include <alpm.h>
 #include <Python.h>
 #include "package.h"
+#include "util.h"
 
 typedef struct _AlpmPackage {
   PyObject_HEAD
@@ -156,10 +157,40 @@ static PyObject* pyalpm_package_get_desc(AlpmPackage *self, void *closure) {
   return Py_BuildValue("s", desc);
 }
 
+static PyObject* pyalpm_package_get_depends(AlpmPackage *self, void *closure) {
+  alpm_list_t *depends = NULL, *p;
+  PyObject *output, *stritem;
+
+  if (! self->c_data) {
+    PyErr_SetString(PyExc_RuntimeError, "data is not initialized");
+    return NULL;
+  }
+
+  depends = alpm_pkg_get_depends(self->c_data);
+  output = PyList_New(0);
+  if(output == NULL) {
+    PyErr_SetString(PyExc_RuntimeError, "unable to create list object");
+    return NULL;
+  }
+
+  for(p = depends; p; p = alpm_list_next(p)) {
+    char *depstring = alpm_dep_compute_string(alpm_list_getdata(p));
+    stritem = Py_BuildValue("s", depstring);
+    PyList_Append(output, stritem);
+    Py_DECREF(stritem);
+    free(depstring);
+  }
+
+  return output;
+
+  return string_alpmlist_to_pylist(depends);
+}
+
 struct PyGetSetDef AlpmPackageGetSet[] = {
   { "name", (getter)pyalpm_package_get_name, 0, "package name", NULL } ,
   { "version", (getter)pyalpm_package_get_version, 0, "package version", NULL } ,
   { "desc", (getter)pyalpm_package_get_desc, 0, "package desc", NULL } ,
   { "filename", (getter)pyalpm_package_get_filename, 0, "package filename", NULL } ,
+  { "depends", (getter)pyalpm_package_get_depends, 0, "package list of depends", NULL } ,
   { NULL }
 };
