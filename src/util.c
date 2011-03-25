@@ -2,6 +2,7 @@
  * util.c : utility functions for pyalpm
  *
  *  Copyright 2008 Imanol Celaya <ilcra1989@gmail.com>
+ *  Copyright 2011 Rémy Oudompheng <remy@archlinux.org>
  *
  *  This file is part of pyalpm.
  *
@@ -60,42 +61,28 @@ alpm_list_t * tuple_alpm_list_t(PyObject *list)
   return ret;
 }
 
-PyObject * alpm_list_t_tuple(alpm_list_t *prt)
+PyObject* string_alpmlist_to_pylist(alpm_list_t *prt)
 {
-  PyObject *output, *strtmp;
+  PyObject *output, *stritem;
   alpm_list_t *tmp;
-  
-  tmp = prt;
-  
-  if(tmp != NULL)
-  {
-    output = PyList_New(0);
-    if(output != NULL)
-    {
-      strtmp = Py_BuildValue("s", tmp->data);
-      
-      
-      tmp = tmp->next;
-      
-      PyList_Append(output, strtmp);
-    }
-  
-    while(tmp != NULL)
-    {
-      
-        strtmp = Py_BuildValue("s", tmp->data);
-        
-        PyList_Append(output, strcmp);
-        
-        tmp = tmp->next;
-    }
-    
+
+  if(prt == NULL) {
+    PyErr_SetString(PyExc_RuntimeError, "invalid argument for conversion from alpm_list_t");
+    return NULL;
   }
-  else
-  {
-    output = NULL;
+
+  output = PyList_New(0);
+  if(output == NULL) {
+    PyErr_SetString(PyExc_RuntimeError, "unable to create list object");
+    return NULL;
   }
-  
+
+  for(tmp = prt; tmp; tmp = alpm_list_next(tmp)) {
+    stritem = Py_BuildValue("s", (char*)alpm_list_getdata(tmp));
+    PyList_Append(output, stritem);
+    Py_DECREF(stritem);
+  }
+
   return output;
 }
 

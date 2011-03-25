@@ -31,7 +31,8 @@
 void add_alpm_list_t(alpm_list_t *prt);
 void remove_alpm_list_t(alpm_list_t *prt);
 alpm_list_t * tuple_alpm_list_t(PyObject *list);
-PyObject * alpm_list_t_tuple(alpm_list_t *prt);
+
+PyObject* string_alpmlist_to_pylist(alpm_list_t *prt);
 
 unsigned short check_init(void);
 

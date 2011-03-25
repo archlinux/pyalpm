@@ -239,7 +239,7 @@ PyObject * option_get_noupgrades_alpm(PyObject *self, PyObject *args)
   
   output = alpm_option_get_noupgrades();
   
-  ret = alpm_list_t_tuple(output);
+  ret = string_alpmlist_to_pylist(output);
   
   return ret;
 }
