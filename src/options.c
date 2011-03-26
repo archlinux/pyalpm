@@ -56,12 +56,15 @@ int option_set_root_alpm(PyObject *self, PyObject *value, void* closure)
   int ret;
   if (PyBytes_Check(value)) {
     path = strdup(PyBytes_AS_STRING(value));
+  } else if (PyUnicode_Check(value)) {
+    PyObject* utf8 = PyUnicode_AsUTF8String(value);
+    path = strdup(PyBytes_AS_STRING(utf8));
+    Py_DECREF(utf8);
   } else {
     PyErr_SetString(alpm_error, "root path must be a string");
     return -1;
   }
 
-  puts(path); puts("\n");
   if(alpm_option_set_root(path) == -1) {
     PyErr_SetString(alpm_error, "failed setting root");
     ret = -1;
@@ -79,12 +82,15 @@ int option_set_dbpath_alpm(PyObject *self, PyObject* value, void *closure)
   int ret;
   if (PyBytes_Check(value)) {
     path = strdup(PyBytes_AS_STRING(value));
+  } else if (PyUnicode_Check(value)) {
+    PyObject* utf8 = PyUnicode_AsUTF8String(value);
+    path = strdup(PyBytes_AS_STRING(utf8));
+    Py_DECREF(utf8);
   } else {
     PyErr_SetString(alpm_error, "dbpath must be a string");
     return -1;
   }
 
-  puts(path); puts("\n");
   if(alpm_option_set_dbpath(path) == -1) {
     PyErr_SetString(alpm_error, "failed setting dbpath");
     ret = -1;
