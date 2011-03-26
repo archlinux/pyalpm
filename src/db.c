@@ -82,7 +82,7 @@ static PyObject* pyalpm_db_get_pkg(AlpmDB* self, PyObject* args) {
 
 static PyObject* pyalpm_db_get_name(AlpmDB* self, void* closure) {
   CHECK_IF_INITIALIZED();
-  char* name = alpm_db_get_name(self->c_data);
+  const char* name = alpm_db_get_name(self->c_data);
   if (!name)
     Py_RETURN_NONE;
   return PyUnicode_FromString(name);
@@ -90,7 +90,7 @@ static PyObject* pyalpm_db_get_name(AlpmDB* self, void* closure) {
 
 static PyObject* pyalpm_db_get_url(AlpmDB* self, void* closure) {
   CHECK_IF_INITIALIZED();
-  char* url = alpm_db_get_url(self->c_data);
+  const char* url = alpm_db_get_url(self->c_data);
   if (!url)
     Py_RETURN_NONE;
   return PyUnicode_FromString(url);
