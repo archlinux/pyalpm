@@ -25,7 +25,7 @@
 
 #include <Python.h>
 
-PyObject *pyalpm_db_from_pmdb(pmdb_t *db);
+PyObject *pyalpm_db_from_pmdb(void* data);
 void init_pyalpm_db(PyObject *module);
 
 #endif // _PYALPM_DB_H

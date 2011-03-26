@@ -49,8 +49,9 @@ static PyObject* _pyobject_from_pmdepend(void* dep) {
   return item;
 };
 
-PyObject *pyalpm_package_from_pmpkg(pmpkg_t *p) {
+PyObject *pyalpm_package_from_pmpkg(void* data) {
   AlpmPackage *self;
+  pmpkg_t *p = (pmpkg_t*)data;
   self = (AlpmPackage*)AlpmPackageType.tp_alloc(&AlpmPackageType, 0);
   if (self == NULL) {
     PyErr_SetString(PyExc_RuntimeError, "unable to create package object");

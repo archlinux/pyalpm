@@ -30,7 +30,6 @@ static unsigned short init = 0;
  */
 int pylist_string_to_alpmlist(PyObject *list, alpm_list_t* *result)
 {
-  char *tmp;
   alpm_list_t *ret = NULL;
   PyObject *iterator = PyObject_GetIter(list);
   PyObject *item;

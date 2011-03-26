@@ -53,9 +53,10 @@ static PyObject* _pyobject_from_pmgrp(void *group) {
   return NULL; \
   }
 
-static PyObject* pyalpm_db_get_pkg(AlpmDB* self, PyObject* args) {
+static PyObject* pyalpm_db_get_pkg(PyObject *rawself, PyObject* args) {
   char *pkgname;
   pmpkg_t *p;
+  AlpmDB *self = (AlpmDB*)rawself;
 
   if(!PyArg_ParseTuple(args, "s", &pkgname))
   {
@@ -165,7 +166,8 @@ void init_pyalpm_db(PyObject *module) {
   PyModule_AddObject(module, "DB", type);
 }
 
-PyObject *pyalpm_db_from_pmdb(pmdb_t *db) {
+PyObject *pyalpm_db_from_pmdb(void* data) {
+  pmdb_t *db = (pmdb_t*)data;
   AlpmDB *self;
   self = (AlpmDB*)AlpmDBType.tp_alloc(&AlpmDBType, 0);
   if (self == NULL) {
