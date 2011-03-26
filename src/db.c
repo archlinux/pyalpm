@@ -24,6 +24,7 @@
 #include <Python.h>
 #include "db.h"
 #include "package.h"
+#include "util.h"
 
 typedef struct _AlpmDB {
   PyObject_HEAD
@@ -60,8 +61,17 @@ static PyObject* pyalpm_db_get_pkg(PyObject* self, PyObject* args) {
   }
 }
 
+static PyObject* pyalpm_db_get_pkgcache(PyObject* self) {
+  AlpmDB *db = (AlpmDB *)self;
+  alpm_list_t *pkglist;
+
+  pkglist = alpm_db_get_pkgcache(db->c_data);
+  return alpmlist_to_pylist(pkglist, pyalpm_package_from_pmpkg);
+}
+
 static struct PyMethodDef db_methods[] = {
   { "get_pkg", pyalpm_db_get_pkg, METH_VARARGS, "get a package by name" },
+  { "get_pkgcache", pyalpm_db_get_pkgcache, METH_NOARGS, "get the DB package list" },
   { NULL },
 };
 
