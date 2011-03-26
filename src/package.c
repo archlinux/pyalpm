@@ -36,7 +36,7 @@ static void pyalpm_package_dealloc(AlpmPackage *self) {
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-static PyObject* pyobject_from_pmdepend(void* dep) {
+static PyObject* _pyobject_from_pmdepend(void* dep) {
   char *depstring = alpm_dep_compute_string((pmdepend_t*)dep);
   PyObject *item = Py_BuildValue("s", depstring);
   free(depstring);
@@ -171,6 +171,17 @@ static PyObject* pyalpm_package_get_url(AlpmPackage *self, void *closure) {
   return Py_BuildValue("s", url);
 }
 
+
+static PyObject* pyalpm_package_get_builddate(AlpmPackage *self, void *closure) {
+  CHECK_IF_INITIALIZED();
+  return PyLong_FromLong(alpm_pkg_get_builddate(self->c_data));
+}
+
+static PyObject* pyalpm_package_get_installdate(AlpmPackage *self, void *closure) {
+  CHECK_IF_INITIALIZED();
+  return PyLong_FromLong(alpm_pkg_get_installdate(self->c_data));
+}
+
 static PyObject* pyalpm_package_get_packager(AlpmPackage *self, void *closure) {
   const char *packager;
 
@@ -210,6 +221,16 @@ static PyObject* pyalpm_package_get_arch(AlpmPackage *self, void *closure) {
   return Py_BuildValue("s", arch);
 }
 
+static PyObject* pyalpm_package_get_size(AlpmPackage *self, void *closure) {
+  CHECK_IF_INITIALIZED();
+  return PyLong_FromLong(alpm_pkg_get_size(self->c_data));
+}
+
+static PyObject* pyalpm_package_get_isize(AlpmPackage *self, void *closure) {
+  CHECK_IF_INITIALIZED();
+  return PyLong_FromLong(alpm_pkg_get_isize(self->c_data));
+}
+
 static PyObject* pyalpm_package_get_licenses(AlpmPackage *self, void *closure) {
   alpm_list_t *licenses = NULL;
 
@@ -234,7 +255,7 @@ static PyObject* pyalpm_package_get_depends(AlpmPackage *self, void *closure) {
   CHECK_IF_INITIALIZED();
 
   depends = alpm_pkg_get_depends(self->c_data);
-  return alpmlist_to_pylist(depends, pyobject_from_pmdepend);
+  return alpmlist_to_pylist(depends, _pyobject_from_pmdepend);
 }
 
 static PyObject* pyalpm_package_get_optdepends(AlpmPackage *self, void *closure) {
@@ -264,6 +285,11 @@ static PyObject* pyalpm_package_get_provides(AlpmPackage *self, void *closure) {
   return alpmlist_to_pylist(provides, pyobject_from_string);
 }
 
+static PyObject* pyalpm_package_get_deltas(AlpmPackage *self, void *closure) {
+  CHECK_IF_INITIALIZED();
+  return alpmlist_to_pylist(alpm_pkg_get_deltas(self->c_data), pyobject_from_string);
+}
+
 static PyObject* pyalpm_package_get_replaces(AlpmPackage *self, void *closure) {
   alpm_list_t *replaces = NULL;
 
@@ -282,22 +308,60 @@ static PyObject* pyalpm_package_get_files(AlpmPackage *self, void *closure) {
   return alpmlist_to_pylist(files, pyobject_from_string);
 }
 
+/** Convert backup file strings to Python tuples
+ * Strings "file\tmd5sum" are converted to ("file", "md5sum")
+ * Strings "file" are converted to ("file", None)
+ */
+static PyObject* _pytuple_from_tab_separated(void* data) {
+  char* s = (char *)data;
+  char* sep = strchrnul(s, '\t');
+  PyObject* fst;
+  PyObject* snd;
+  PyObject* tuple;
+  fst = PyUnicode_FromStringAndSize(s, sep - s);
+  if (*sep != '\0')
+    snd = PyUnicode_FromString(sep + 1);
+  else {
+    Py_INCREF(Py_None);
+    snd = Py_None;
+  }
+  tuple = PyTuple_Pack(2, fst, snd);
+  Py_DECREF(fst);
+  Py_DECREF(snd);
+  return tuple;
+}
+
+static PyObject* pyalpm_package_get_backup(AlpmPackage *self, void *closure) {
+  CHECK_IF_INITIALIZED();
+  return alpmlist_to_pylist(alpm_pkg_get_backup(self->c_data),
+			    _pytuple_from_tab_separated);
+}
+
 struct PyGetSetDef AlpmPackageGetSet[] = {
+  /* description properties */
   { "name", (getter)pyalpm_package_get_name, 0, "package name", NULL } ,
   { "version", (getter)pyalpm_package_get_version, 0, "package version", NULL } ,
   { "desc", (getter)pyalpm_package_get_desc, 0, "package desc", NULL } ,
   { "url", (getter)pyalpm_package_get_url, 0, "package URL", NULL } ,
-  { "packager", (getter)pyalpm_package_get_packager, 0, "packager name", NULL } ,
-  { "md5sum", (getter)pyalpm_package_get_md5sum, 0, "package md5sum", NULL } ,
   { "arch", (getter)pyalpm_package_get_arch, 0, "target architecture", NULL } ,
-  { "filename", (getter)pyalpm_package_get_filename, 0, "package filename", NULL } ,
   { "licenses", (getter)pyalpm_package_get_licenses, 0, "list of licenses", NULL } ,
   { "groups", (getter)pyalpm_package_get_groups, 0, "list of package groups", NULL } ,
+  /* package properties */
+  { "packager", (getter)pyalpm_package_get_packager, 0, "packager name", NULL } ,
+  { "md5sum", (getter)pyalpm_package_get_md5sum, 0, "package md5sum", NULL } ,
+  { "filename", (getter)pyalpm_package_get_filename, 0, "package filename", NULL } ,
+  { "size", (getter)pyalpm_package_get_size, 0, "package size", NULL } ,
+  { "isize", (getter)pyalpm_package_get_isize, 0, "installed size", NULL } ,
+  { "builddate", (getter)pyalpm_package_get_builddate, 0, "building time", NULL } ,
+  { "installdate", (getter)pyalpm_package_get_installdate, 0, "install time", NULL } ,
+  { "files", (getter)pyalpm_package_get_files, 0, "list of installed files", NULL } ,
+  { "backup", (getter)pyalpm_package_get_backup, 0, "list of tuples (filename, md5sum)", NULL } ,
+  { "deltas", (getter)pyalpm_package_get_deltas, 0, "list of available deltas", NULL } ,
+  /* dependency information */
   { "depends", (getter)pyalpm_package_get_depends, 0, "list of dependencies", NULL } ,
   { "optdepends", (getter)pyalpm_package_get_optdepends, 0, "list of optional dependencies", NULL } ,
   { "conflicts", (getter)pyalpm_package_get_conflicts, 0, "list of conflicts", NULL } ,
   { "provides", (getter)pyalpm_package_get_provides, 0, "list of provided package names", NULL } ,
   { "replaces", (getter)pyalpm_package_get_replaces, 0, "list of replaced packages", NULL } ,
-  { "files", (getter)pyalpm_package_get_files, 0, "list of installed files", NULL } ,
   { NULL }
 };
