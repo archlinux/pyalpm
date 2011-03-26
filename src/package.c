@@ -114,8 +114,7 @@ static PyObject *pyalpm_package_get_filename(AlpmPackage *self, void *closure) {
 
   filename = alpm_pkg_get_filename(self->c_data);
   if (filename == NULL) {
-    PyErr_SetString(PyExc_RuntimeError, "unable to get filename");
-    return NULL;
+    Py_RETURN_NONE;
   }
   return Py_BuildValue("s", filename);
 }
@@ -202,10 +201,8 @@ static PyObject* pyalpm_package_get_md5sum(AlpmPackage *self, void *closure) {
   CHECK_IF_INITIALIZED();
 
   md5sum = alpm_pkg_get_md5sum(self->c_data);
-  if (md5sum == NULL) {
-    PyErr_SetString(PyExc_RuntimeError, "unable to get md5sum");
-    return NULL;
-  }
+  if (md5sum == NULL)
+    Py_RETURN_NONE;
   return Py_BuildValue("s", md5sum);
 }
 
