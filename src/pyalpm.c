@@ -59,43 +59,11 @@ static PyObject * release_alpm(PyObject *self, PyObject *dummy)
   }
 }
 
-void test_cb(pmloglevel_t level, char *fmt, va_list args)
-{
-  if(strlen(fmt))
-  {
-    switch(level)
-    {
-      case PM_LOG_ERROR: printf("%s", error); break;
-      case PM_LOG_WARNING: printf("%s", warning); break;
-      case PM_LOG_DEBUG: printf("%s", debug); break;
-      case PM_LOG_FUNCTION: printf("%s", function); break;
-      default: return;
-    }
-    vprintf(fmt, args);
-  }
-}
-
-static PyObject * option_set_logcb_alpm(PyObject *self, PyObject *args)
-{
-  if(!PyArg_ParseTuple(args, "ssss", &error, &warning, &debug, &function))
-  {
-    PyErr_SetString(alpm_error, "incorrect arguments");
-    return NULL;
-  }
-  
-  else
-  {
-    alpm_option_set_logcb(test_cb);
-    
-    return Py_None;
-  }
-}
-
 static PyObject * alpmversion_alpm(PyObject *self, PyObject *dummy)
 {
   const char *str;
   str = alpm_version();
-  
+
   return Py_BuildValue("s", str);
 }
 
@@ -181,7 +149,6 @@ PyMODINIT_FUNC PyInit_pyalpm()
   init_pyalpm_options(m);
   init_pyalpm_package(m);
   init_pyalpm_db(m);
-  
+
   return m;
 }
-
