@@ -285,39 +285,73 @@ PyObject* option_get_cachedirs_alpm(PyObject *self, void* closure) {
   return alpmlist_to_pylist(alpm_option_get_cachedirs(), pyobject_from_string);
 }
 
+int option_set_cachedirs_alpm(PyObject *self, PyObject *value, void *closure)
+{
+  alpm_list_t *target;
+  if (pylist_string_to_alpmlist(value, &target) == -1)
+    return -1;
+
+  alpm_option_set_cachedirs(target);
+  return 0;
+}
+
 PyObject* option_get_noupgrades_alpm(PyObject *self, void* closure) {
   return alpmlist_to_pylist(alpm_option_get_noupgrades(), pyobject_from_string);
+}
+
+int option_set_noupgrades_alpm(PyObject *self, PyObject *value, void *closure)
+{
+  alpm_list_t *target;
+  if (pylist_string_to_alpmlist(value, &target) == -1)
+    return -1;
+
+  alpm_option_set_noupgrades(target);
+  return 0;
 }
 
 PyObject* option_get_noextracts_alpm(PyObject *self, void* closure) {
   return alpmlist_to_pylist(alpm_option_get_noextracts(), pyobject_from_string);
 }
 
+int option_set_noextracts_alpm(PyObject *self, PyObject *value, void *closure)
+{
+  alpm_list_t *target;
+  if (pylist_string_to_alpmlist(value, &target) == -1)
+    return -1;
+
+  alpm_option_set_noextracts(target);
+  return 0;
+}
+
 PyObject* option_get_ignorepkgs_alpm(PyObject *self, void* closure) {
   return alpmlist_to_pylist(alpm_option_get_ignorepkgs(), pyobject_from_string);
+}
+
+int option_set_ignorepkgs_alpm(PyObject *self, PyObject *value, void *closure)
+{
+  alpm_list_t *target;
+  if (pylist_string_to_alpmlist(value, &target) == -1)
+    return -1;
+
+  alpm_option_set_ignorepkgs(target);
+  return 0;
 }
 
 PyObject* option_get_ignoregrps_alpm(PyObject *self, void* closure) {
   return alpmlist_to_pylist(alpm_option_get_ignoregrps(), pyobject_from_string);
 }
 
-PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args)
+int option_set_ignoregrps_alpm(PyObject *self, PyObject *value, void *closure)
 {
   alpm_list_t *target;
-  PyObject *tmp;
-  
-  if(!PyArg_ParseTuple(args, "O", &tmp))
-  {
-    PyErr_SetString(alpm_error, "error in the args.");
-    return NULL;
-  }
-  else
-  {
-    target = tuple_alpm_list_t(tmp);
-    alpm_option_set_noupgrades(target);
-    return Py_None;
-  }
+  if (pylist_string_to_alpmlist(value, &target) == -1)
+    return -1;
+
+  alpm_option_set_ignoregrps(target);
+  return 0;
 }
+
+/* list options modifiers : add/remove */
 
 PyObject * option_add_noupgrade_alpm(PyObject *self, PyObject *args)
 {
@@ -560,7 +594,6 @@ PyObject * option_remove_ignoregrps_alpm(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef pyalpm_options_methods[] = {
-  {"setnoupgrades", option_set_noupgrades_alpm, METH_VARARGS, "sets noupgrades."},
   {"addnoupgrade", option_add_noupgrade_alpm, METH_VARARGS, "add a noupgrade package."},
   {"removenoupgrade", option_remove_noupgrade_alpm, METH_VARARGS, "removes a noupgrade package."},
   {"addcachedir", option_add_cachedir_alpm, METH_VARARGS, "adds a cachedir."},

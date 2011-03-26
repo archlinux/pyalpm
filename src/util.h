@@ -31,12 +31,9 @@ typedef PyObject *(pyobjectbuilder)(void*);
 
 PyObject* pyobject_from_string(void *s);
 
-/*misc internal functions*/
-void add_alpm_list_t(alpm_list_t *prt);
-void remove_alpm_list_t(alpm_list_t *prt);
-alpm_list_t * tuple_alpm_list_t(PyObject *list);
-
+/** List conversion functions */
 PyObject* alpmlist_to_pylist(alpm_list_t *prt, pyobjectbuilder pybuilder);
+int pylist_string_to_alpmlist(PyObject *list, alpm_list_t* *result);
 
 unsigned short check_init(void);
 void set_init(unsigned short i);

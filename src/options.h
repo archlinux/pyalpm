@@ -60,7 +60,12 @@ PyObject* option_get_noextracts_alpm(PyObject *self, void* closure);
 PyObject* option_get_ignorepkgs_alpm(PyObject *self, void* closure);
 PyObject* option_get_ignoregrps_alpm(PyObject *self, void* closure);
 
-PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args);
+int option_set_cachedirs_alpm(PyObject *self, PyObject *value, void *closure);
+int option_set_noupgrades_alpm(PyObject *self, PyObject *value, void *closure);
+int option_set_noextracts_alpm(PyObject *self, PyObject *value, void *closure);
+int option_set_ignorepkgs_alpm(PyObject *self, PyObject *value, void *closure);
+int option_set_ignoregrps_alpm(PyObject *self, PyObject *value, void *closure);
+
 PyObject * option_add_noupgrade_alpm(PyObject *self, PyObject *args);
 PyObject * option_remove_noupgrade_alpm(PyObject *self, PyObject *args);
 

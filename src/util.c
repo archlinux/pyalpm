@@ -25,40 +25,40 @@
 
 static unsigned short init = 0;
 
-/*converts a Python array to alpm_list_t linked list, returns a pointer to first node*/
-alpm_list_t * tuple_alpm_list_t(PyObject *list)
+/** Converts a Python list of strings to an alpm_list_t linked list.
+ * return 0 on success, -1 on failure
+ */
+int pylist_string_to_alpmlist(PyObject *list, alpm_list_t* *result)
 {
   char *tmp;
-  alpm_list_t *nodetmp, *ret;
+  alpm_list_t *ret = NULL;
   PyObject *iterator = PyObject_GetIter(list);
   PyObject *item;
-  
-  
-  if(iterator == NULL)
-  {
-    return NULL;
+
+  if(iterator == NULL) {
+    PyErr_SetString(PyExc_TypeError, "object is not iterable");
+    return -1;
   }
-  
-  nodetmp = (alpm_list_t*) malloc(sizeof(alpm_list_t));
-  ret = nodetmp;
-  
+
   while((item = PyIter_Next(iterator)))
   {
-    if (PyArg_ParseTuple(item, "s", &tmp)) {
-      alpm_list_add(ret, strdup(tmp));
-      /*nodetmp->data=PyString_AsString(item);*/
-      printf("%s\n", tmp);
-    }
-    else
-    {
+    if (PyBytes_Check(item)) {
+      ret = alpm_list_add(ret, strdup(PyBytes_AS_STRING(item)));
+    } else if (PyUnicode_Check(item)) {
+      PyObject* utf8 = PyUnicode_AsUTF8String(item);
+      ret = alpm_list_add(ret, strdup(PyBytes_AS_STRING(utf8)));
+      Py_DECREF(utf8);
+    } else {
+      PyErr_SetString(PyExc_TypeError, "list must contain only strings");
       FREELIST(ret);
-      return NULL;
+      return -1;
     }
     Py_DECREF(item);
   }
   Py_DECREF(iterator);
 
-  return ret;
+  *result = ret;
+  return 0;
 }
 
 PyObject* pyobject_from_string(void *s) {
