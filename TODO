@@ -5,11 +5,15 @@ pyalpm TODO file
 
 Databases
 
-* alpm_db_*
+alpm_db_unregister
+alpm_db_unregister_all
+alpm_db_setserver
+alpm_db_update
+alpm_db_search
+alpm_db_set_pkgreason
 
 Packages 
 
-* alpm_pkg_{load,free}
 * alpm_pkg_checkmd5sum
 * alpm_fetch_pkgurl
 * alpm_pkg_compute_requiredby
