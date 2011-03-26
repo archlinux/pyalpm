@@ -28,10 +28,9 @@
 extern int init;
 extern PyObject *alpm_error;
 
-/*
-The following functions take a string as argument(*_set_*)
-while other (*_get_*) return a string
-*/
+/**
+ * Path options getters/setters
+ */
 PyObject * option_get_root_alpm(PyObject *self, void *closure)
 {
   const char *str = alpm_option_get_root();
@@ -117,35 +116,6 @@ PyObject* option_get_dbpath_alpm(PyObject *self, void *closure)
   }
 }
 
-int option_set_arch_alpm(PyObject *self, PyObject *value, void* closure)
-{
-  char *string = NULL;
-  if (PyBytes_Check(value)) {
-    string = strdup(PyBytes_AS_STRING(value));
-  } else if (PyUnicode_Check(value)) {
-    PyObject* utf8 = PyUnicode_AsUTF8String(value);
-    string = strdup(PyBytes_AS_STRING(utf8));
-    Py_DECREF(utf8);
-  } else {
-    PyErr_SetString(alpm_error, "arch must be a string");
-    return -1;
-  }
-
-  alpm_option_set_arch(string);
-  free(string);
-  return 0;
-}
-
-PyObject* option_get_arch_alpm(PyObject *self, void* closure) {
-  const char *str = alpm_option_get_arch();
-
-  if(str == NULL) {
-    PyErr_SetString(alpm_error, "failed getting arch.");
-    return NULL;
-  }
-  return Py_BuildValue("s", str);
-}
-
 int option_set_logfile_alpm(PyObject *self, PyObject *value, void* closure)
 {
   char *path = NULL;
@@ -187,6 +157,54 @@ PyObject * option_get_logfile_alpm(PyObject *self, void* closure)
   }
 }
 
+PyObject* option_get_lockfile_alpm(PyObject *self, void *closure)
+{
+  const char *str = alpm_option_get_lockfile();
+
+  if(str == NULL)
+  {
+    PyErr_SetString(alpm_error, "failed getting lockfile");
+    return NULL;
+  }
+  else
+    return PyUnicode_FromString(str);
+}
+
+/**
+ * String options
+ */
+
+int option_set_arch_alpm(PyObject *self, PyObject *value, void* closure)
+{
+  char *string = NULL;
+  if (PyBytes_Check(value)) {
+    string = strdup(PyBytes_AS_STRING(value));
+  } else if (PyUnicode_Check(value)) {
+    PyObject* utf8 = PyUnicode_AsUTF8String(value);
+    string = strdup(PyBytes_AS_STRING(utf8));
+    Py_DECREF(utf8);
+  } else {
+    PyErr_SetString(alpm_error, "arch must be a string");
+    return -1;
+  }
+
+  alpm_option_set_arch(string);
+  free(string);
+  return 0;
+}
+
+PyObject* option_get_arch_alpm(PyObject *self, void* closure) {
+  const char *str = alpm_option_get_arch();
+
+  if(str == NULL) {
+    PyErr_SetString(alpm_error, "failed getting arch.");
+    return NULL;
+  }
+  return Py_BuildValue("s", str);
+}
+
+/** Boolean options
+ */
 /*
 receives and returns an int type
 1 = enabled
@@ -194,7 +212,7 @@ receives and returns an int type
 */
 PyObject * option_get_usesyslog_alpm(PyObject *self, void* closure)
 {
-  unsigned short ret = alpm_option_get_usesyslog();
+  int ret = alpm_option_get_usesyslog();
 
   if(ret == -1)
   {
@@ -202,9 +220,7 @@ PyObject * option_get_usesyslog_alpm(PyObject *self, void* closure)
     return NULL;
   }
   else
-  {
-    return Py_BuildValue("i", ret);
-  }
+    return PyLong_FromLong(ret);
 }
 
 int option_set_usesyslog_alpm(PyObject *self, PyObject *value, void* closure)
@@ -219,39 +235,46 @@ int option_set_usesyslog_alpm(PyObject *self, PyObject *value, void* closure)
   return 0;
 }
 
-/*write only function*/
-
-PyObject * option_set_usedelta_alpm(PyObject *self, PyObject *args)
-{
-  int value;
-  if(!PyArg_ParseTuple(args, "i", &value))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
+PyObject* option_get_usedelta_alpm(PyObject *self, void* closure) {
+  int ret = alpm_option_get_usedelta();
+  if (ret == -1) {
+    PyErr_SetString(alpm_error, "failed getting usedelta");
     return NULL;
-  }
-  else
-  {
-    alpm_option_set_usedelta(value);
-    return Py_None;
-  }
+  } else
+    return PyLong_FromLong(ret);
 }
 
-/*read-only functions*/
-
-PyObject * option_get_lockfile_alpm(PyObject *self, PyObject *args)
+int option_set_usedelta_alpm(PyObject *self, PyObject *value, void* closure)
 {
-  const char *str = NULL;
-  str = alpm_option_get_lockfile();
-  
-  if(str == NULL)
+  if(!PyLong_Check(value))
   {
-    PyErr_SetString(alpm_error, "failed getting lockfile");
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return -1;
+  }
+
+  alpm_option_set_usedelta(PyLong_AsLong(value));
+  return 0;
+}
+
+PyObject* option_get_checkspace_alpm(PyObject *self, void* closure) {
+  int ret = alpm_option_get_checkspace();
+  if (ret == -1) {
+    PyErr_SetString(alpm_error, "failed getting checkspace");
     return NULL;
-  }
-  else
+  } else
+    return PyLong_FromLong(ret);
+}
+
+int option_set_checkspace_alpm(PyObject *self, PyObject *value, void* closure)
+{
+  if(!PyLong_Check(value))
   {
-    return Py_BuildValue("s", str);
+    PyErr_SetString(alpm_error, "wrong arguments");
+    return -1;
   }
+
+  alpm_option_set_checkspace(PyLong_AsLong(value));
+  return 0;
 }
 
 PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args)
