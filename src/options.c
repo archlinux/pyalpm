@@ -48,7 +48,7 @@ PyObject * option_get_root_alpm(PyObject *self, void *closure)
 }
 
 /** Sets root for libalpm
- * @return 0 on success, 1 on failure
+ * @return 0 on success, -1 on failure
  */
 int option_set_root_alpm(PyObject *self, PyObject *value, void* closure)
 {
@@ -117,32 +117,65 @@ PyObject* option_get_dbpath_alpm(PyObject *self, void *closure)
   }
 }
 
-PyObject * option_set_logfile_alpm(PyObject *self, PyObject *args)
+int option_set_arch_alpm(PyObject *self, PyObject *value, void* closure)
 {
-  const char *path;
-  if(!PyArg_ParseTuple(args, "s", &path))
-  {
-    PyErr_SetString(alpm_error, "error in the args");
-    return NULL;
+  char *string = NULL;
+  if (PyBytes_Check(value)) {
+    string = strdup(PyBytes_AS_STRING(value));
+  } else if (PyUnicode_Check(value)) {
+    PyObject* utf8 = PyUnicode_AsUTF8String(value);
+    string = strdup(PyBytes_AS_STRING(utf8));
+    Py_DECREF(utf8);
+  } else {
+    PyErr_SetString(alpm_error, "arch must be a string");
+    return -1;
   }
-  else
-  {
-    if(alpm_option_set_logfile(path) == -1)
-    {
-      PyErr_SetString(alpm_error, "failed setting logfile");
-      return NULL;
-    }
-    else
-    {
-      return Py_None;
-    }
-  }
+
+  alpm_option_set_arch(string);
+  free(string);
+  return 0;
 }
 
-PyObject * option_get_logfile_alpm(PyObject *self, PyObject *args)
+PyObject* option_get_arch_alpm(PyObject *self, void* closure) {
+  const char *str = alpm_option_get_arch();
+
+  if(str == NULL) {
+    PyErr_SetString(alpm_error, "failed getting arch.");
+    return NULL;
+  }
+  return Py_BuildValue("s", str);
+}
+
+int option_set_logfile_alpm(PyObject *self, PyObject *value, void* closure)
+{
+  char *path = NULL;
+  int ret;
+  if (PyBytes_Check(value)) {
+    path = strdup(PyBytes_AS_STRING(value));
+  } else if (PyUnicode_Check(value)) {
+    PyObject* utf8 = PyUnicode_AsUTF8String(value);
+    path = strdup(PyBytes_AS_STRING(utf8));
+    Py_DECREF(utf8);
+  } else {
+    PyErr_SetString(alpm_error, "dbpath must be a string");
+    return -1;
+  }
+
+  if(alpm_option_set_dbpath(path) == -1) {
+    PyErr_SetString(alpm_error, "failed setting logfile path");
+    ret = -1;
+  }
+  else
+    ret = 0;
+
+  free(path);
+  return(ret);
+}
+
+PyObject * option_get_logfile_alpm(PyObject *self, void* closure)
 {
   const char *str = alpm_option_get_logfile();
-  
+
   if(str == NULL)
   {
     PyErr_SetString(alpm_error, "failed getting logfile.");
@@ -159,34 +192,31 @@ receives and returns an int type
 1 = enabled
 0 = disabled
 */
-PyObject * option_get_usesyslog_alpm(PyObject *self, PyObject *args)
+PyObject * option_get_usesyslog_alpm(PyObject *self, void* closure)
 {
-  unsigned short str = alpm_option_get_usesyslog();
-  
-  if(str == -1)
+  unsigned short ret = alpm_option_get_usesyslog();
+
+  if(ret == -1)
   {
     PyErr_SetString(alpm_error, "failed getting usesyslog");
     return NULL;
   }
   else
   {
-    return Py_BuildValue("i", str);
+    return Py_BuildValue("i", ret);
   }
 }
 
-PyObject * option_set_usesyslog_alpm(PyObject *self, PyObject *args)
+int option_set_usesyslog_alpm(PyObject *self, PyObject *value, void* closure)
 {
-  int value;
-  if(!PyArg_ParseTuple(args, "i", &value))
+  if(!PyLong_Check(value))
   {
     PyErr_SetString(alpm_error, "wrong arguments");
-    return NULL;
+    return -1;
   }
-  else
-  {
-    alpm_option_set_usesyslog(value);
-    return Py_None;
-  }
+
+  alpm_option_set_usesyslog(PyLong_AsLong(value));
+  return 0;
 }
 
 /*write only function*/
@@ -495,15 +525,7 @@ PyObject * option_remove_ignoregrps_alpm(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef pyalpm_options_methods[] = {
-  {"getroot", option_get_root_alpm, METH_VARARGS, "gets the root path."},
-  {"setroot", option_set_root_alpm, METH_VARARGS, "sets the root path."},
-  {"getdbpath", option_get_dbpath_alpm, METH_VARARGS, "gets the dbpath."},
-  {"setdbpath", option_set_dbpath_alpm, METH_VARARGS, "sets the dbpath."},
-  {"getlogfile", option_get_logfile_alpm, METH_VARARGS, "gets the logfile."},
-  {"setlogfile", option_set_logfile_alpm, METH_VARARGS, "sets the logfile."},
   {"getlockfile", option_get_lockfile_alpm, METH_VARARGS, "gets the lockfile."},
-  {"getusesyslog", option_get_usesyslog_alpm, METH_VARARGS, "gets usesyslog value."},
-  {"setusesyslog", option_set_usesyslog_alpm, METH_VARARGS, "sets usesyslog value."},
   {"setusedelta", option_set_usedelta_alpm, METH_VARARGS, "sets usedelta value."},
   {"setnoupgrades", option_set_noupgrades_alpm, METH_VARARGS, "sets noupgrades."},
   {"getnoupgrades", option_get_noupgrades_alpm, METH_VARARGS, "gets noupgrades."},

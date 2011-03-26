@@ -32,12 +32,25 @@ struct PyGetSetDef pyalpm_options_getset[] = {
   { "dbpath",
     (getter)option_get_dbpath_alpm,
     (setter)option_set_dbpath_alpm,
-    "alpm database directory", NULL }
+    "alpm database directory", NULL } ,
+  { "arch",
+    (getter)option_get_arch_alpm,
+    (setter)option_set_arch_alpm,
+    "Target archichecture", NULL } ,
+  { "logfile",
+    (getter)option_get_logfile_alpm,
+    (setter)option_set_logfile_alpm,
+    "alpm logfile path", NULL } ,
+  { "usesyslog",
+    (getter)option_get_usesyslog_alpm,
+    (setter)option_set_usesyslog_alpm,
+    "use syslog (an integer, 0 = False, 1 = True)", NULL } ,
+  { NULL }
 };
 
 PyTypeObject AlpmOptionSetType = {
   PyVarObject_HEAD_INIT(NULL, 0)
-  "alpm._OptionSet",    /*tp_name*/
+  "alpm.Options",    /*tp_name*/
   0,                   /*tp_basicsize*/
   0,                   /*tp_itemsize*/
   0,                   /*tp_dealloc*/
@@ -77,7 +90,7 @@ void init_pyalpm_options(PyObject *module) {
     return;
   type = (PyObject*)&AlpmOptionSetType;
   Py_INCREF(type);
-  PyModule_AddObject(module, "_OptionSet", type);
+  PyModule_AddObject(module, "Options", type);
 
   // the static instance
   PyObject* options = (PyObject*)AlpmOptionSetType.tp_alloc(&AlpmOptionSetType, 0);

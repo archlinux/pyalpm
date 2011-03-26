@@ -34,12 +34,18 @@ PyObject * option_set_usedelta_alpm(PyObject *self, PyObject *args);
 /*_{get,set}_ functions*/
 int option_set_root_alpm(PyObject *self, PyObject *args, void* closure);
 PyObject * option_get_root_alpm(PyObject *self, void* closure);
+
 int option_set_dbpath_alpm(PyObject *self, PyObject *args, void* closure);
 PyObject * option_get_dbpath_alpm(PyObject *self, void* closure);
-PyObject * option_set_logfile_alpm(PyObject *self, PyObject *args);
-PyObject * option_get_logfile_alpm(PyObject *self, PyObject *args);
-PyObject * option_set_usesyslog_alpm(PyObject *self, PyObject *args);
-PyObject * option_get_usesyslog_alpm(PyObject *self, PyObject *args);
+
+int option_set_logfile_alpm(PyObject *self, PyObject *value, void* closure);
+PyObject * option_get_logfile_alpm(PyObject *self, void* closure);
+
+int option_set_arch_alpm(PyObject *self, PyObject *value, void* closure);
+PyObject * option_get_arch_alpm(PyObject *self, void* closure);
+
+int option_set_usesyslog_alpm(PyObject *self, PyObject *value, void* closure);
+PyObject * option_get_usesyslog_alpm(PyObject *self, void* closure);
 
 /*_{get,set,add,remove}_ functions*/
 
