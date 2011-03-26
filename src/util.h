@@ -39,5 +39,6 @@ alpm_list_t * tuple_alpm_list_t(PyObject *list);
 PyObject* alpmlist_to_pylist(alpm_list_t *prt, pyobjectbuilder pybuilder);
 
 unsigned short check_init(void);
+void set_init(unsigned short i);
 
 #endif // _PY_ALPM_UTIL_H

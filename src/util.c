@@ -106,6 +106,10 @@ void remove_alpm_list_t(alpm_list_t *prt)
   free(prt);
 }
 
+void set_init(unsigned short i) {
+  init = i;
+}
+
 unsigned short check_init(void)
 {
   switch(init)

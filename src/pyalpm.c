@@ -24,8 +24,6 @@
 #include "db.h"
 #include "optionsobject.h"
 
-extern unsigned short init;
-
 /* pyalpm errors */
 PyObject *alpm_error = NULL;
 
@@ -39,8 +37,8 @@ static PyObject * initialize_alpm(PyObject *self, PyObject *dummy)
   }
   else
   {
-    init = 1;
-    return Py_None;
+    set_init(1);
+    Py_RETURN_NONE;
   }
 }
 
@@ -54,8 +52,8 @@ static PyObject * release_alpm(PyObject *self, PyObject *dummy)
   }
   else
   {
-    init = 0;
-    return Py_None;
+    set_init(0);
+    Py_RETURN_NONE;
   }
 }
 
@@ -74,13 +72,13 @@ static PyObject * version_alpm(PyObject *self, PyObject *dummy)
 
 static PyObject * check_init_alpm(PyObject *self, PyObject *dummy)
 {
-  if(init == 0)
+  if(check_init() == 0)
   {
-    return Py_False;
+    Py_RETURN_FALSE;
   }
-  if(init == 1)
+  if(check_init() == 1)
   {
-    return Py_True;
+    Py_RETURN_TRUE;
   }
   else
   {
