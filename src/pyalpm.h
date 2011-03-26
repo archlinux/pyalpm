@@ -34,17 +34,6 @@ char *error, *warning, *debug, *function;
 unsigned short enable_messages_logcb = 0;
 char VERSION[] = "0.1";
 
-/*copied from pacman db.h as it can't be included, set as pmdb_t in alpm.h*/
-struct __pmdb_t {
-	char *path;
-	char *treename;
-	void *handle;
-	alpm_list_t *pkgcache;
-	alpm_list_t *grpcache;
-	alpm_list_t *servers;
-};
-
-void clean_pmdb_t(pmdb_t *prt);
 unsigned short check_init(void);
 
 /*pyalpm errors*/
@@ -54,7 +43,6 @@ PyObject *alpm_error = NULL;
 PyObject * alpmversion_alpm(PyObject *self);
 PyObject * version_alpm(PyObject *self);
 PyObject * check_init_alpm(PyObject *self);
-PyObject * testconverter(PyObject *self, PyObject *args);
 
 /*initialize and release*/
 PyObject * initialize_alpm(PyObject *self);

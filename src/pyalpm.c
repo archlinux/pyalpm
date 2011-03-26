@@ -118,52 +118,6 @@ PyObject * check_init_alpm(PyObject *self)
   }
 }
 
-/*internal data type converters*/
-pmdb_t * tuple_pmdb_t(char *dbpath, char *dbtreename, alpm_list_t *pkgcache,
-			    alpm_list_t *grpcache, alpm_list_t *servers)
-{
-  pmdb_t *result;
-  
-  result = (pmdb_t*) malloc(sizeof(pmdb_t));
-  
-  result->path = dbpath;
-  result->treename = dbtreename;
-  result->pkgcache = pkgcache;
-  result->grpcache = grpcache;
-  result->servers = servers;
-  
-  return result;
-}
-
-void clean_pmdb_t(pmdb_t *ptr)
-{
-  free(ptr->treename);
-  free(ptr->path);
-  free(ptr);
-}
-
-PyObject * testconverter(PyObject *self, PyObject *args)
-{
-  const char *path, *dbtreename;
-  alpm_list_t *pkgcache, *grpcache, *servers;
-  pmdb_t *test;
-  PyObject *pkgtmp, *grptmp, *srvtmp;
-  
-  if(!PyArg_ParseTuple(args, "ssOOO", &path, &dbtreename, &pkgtmp, &grptmp, &srvtmp))
-  {
-    PyErr_SetString(alpm_error, "bad arguments");
-    return NULL;
-  }
-  else
-  {
-    pkgcache = tuple_alpm_list_t(pkgtmp);
-    grpcache = tuple_alpm_list_t(grptmp);
-    servers = tuple_alpm_list_t(srvtmp);
-    test = tuple_pmdb_t(path, dbtreename, pkgcache, grpcache, servers);
-    return Py_BuildValue("s", test->path);
-  }
-}
-
 static PyObject* pyalpm_get_localdb(PyObject *self) {
   PyObject *db;
 
@@ -177,7 +131,6 @@ static PyObject* pyalpm_get_localdb(PyObject *self) {
 }
 
 static PyMethodDef methods[] = {
-  {"testconv", testconverter, METH_VARARGS, "test type converter."},
   {"initialize", initialize_alpm, METH_VARARGS, "initialize alpm."},
   {"release", release_alpm, METH_VARARGS, "release alpm."},
   {"version", version_alpm, METH_VARARGS, "returns pyalpm version."},
