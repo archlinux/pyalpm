@@ -24,6 +24,7 @@
 #include <alpm.h>
 #include <Python.h>
 #include "package.h"
+#include "db.h"
 #include "util.h"
 
 extern PyObject* alpm_error;
@@ -320,6 +321,25 @@ static PyObject* pyalpm_package_get_backup(AlpmPackage *self, void *closure) {
 			    _pytuple_from_tab_separated);
 }
 
+static PyObject* pyalpm_package_get_db(AlpmPackage *self, void *closure) {
+  CHECK_IF_INITIALIZED();
+  pmdb_t* db = alpm_pkg_get_db(self->c_data);
+  if (db)
+    return pyalpm_db_from_pmdb(db);
+  else
+    Py_RETURN_NONE;
+}
+
+static PyObject* pyalpm_pkg_has_scriptlet(AlpmPackage *self, void *closure) {
+  CHECK_IF_INITIALIZED();
+  return PyBool_FromLong(alpm_pkg_has_scriptlet(self->c_data));
+}
+
+static PyObject* pyalpm_pkg_download_size(AlpmPackage *self, void *closure) {
+  CHECK_IF_INITIALIZED();
+  return PyLong_FromLong(alpm_pkg_download_size(self->c_data));
+}
+
 static PyObject* pyalpm_pkg_compute_requiredby(PyObject *rawself, PyObject *args) {
   AlpmPackage *self = (AlpmPackage*)rawself;
   CHECK_IF_INITIALIZED();
@@ -330,6 +350,7 @@ static PyObject* pyalpm_pkg_compute_requiredby(PyObject *rawself, PyObject *args
 }
 
 static struct PyGetSetDef AlpmPackageGetSet[] = {
+  { "db", (getter)pyalpm_package_get_db, 0, "the database from which the package comes from, or None", NULL } ,
   /* description properties */
   { "name", (getter)pyalpm_package_get_name, 0, "package name", NULL } ,
   { "version", (getter)pyalpm_package_get_version, 0, "package version", NULL } ,
@@ -355,6 +376,9 @@ static struct PyGetSetDef AlpmPackageGetSet[] = {
   { "conflicts", (getter)pyalpm_package_get_conflicts, 0, "list of conflicts", NULL } ,
   { "provides", (getter)pyalpm_package_get_provides, 0, "list of provided package names", NULL } ,
   { "replaces", (getter)pyalpm_package_get_replaces, 0, "list of replaced packages", NULL } ,
+  /* miscellaneous information */
+  { "has_scriptlet", (getter)pyalpm_pkg_has_scriptlet, 0, "True if the package has an install script", NULL },
+  { "download_size", (getter)pyalpm_pkg_download_size, 0, "predicted download size for this package", NULL },
   { NULL }
 };
 
