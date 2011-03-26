@@ -304,7 +304,7 @@ PyObject* option_get_ignoregrps_alpm(PyObject *self, void* closure) {
 
 PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args)
 {
-  alpm_list_t *target, *adtmp;
+  alpm_list_t *target;
   PyObject *tmp;
   
   if(!PyArg_ParseTuple(args, "O", &tmp))

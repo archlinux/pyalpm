@@ -20,6 +20,7 @@
  *
  */
 
+#include <string.h>
 #include <alpm.h>
 #include <Python.h>
 #include "package.h"
@@ -314,7 +315,8 @@ static PyObject* pyalpm_package_get_files(AlpmPackage *self, void *closure) {
  */
 static PyObject* _pytuple_from_tab_separated(void* data) {
   char* s = (char *)data;
-  char* sep = strchrnul(s, '\t');
+  char* sep = strchr(s, '\t');
+  if (!sep) sep = s + strlen(s);
   PyObject* fst;
   PyObject* snd;
   PyObject* tuple;
