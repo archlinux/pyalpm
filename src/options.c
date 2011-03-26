@@ -135,7 +135,7 @@ int option_set_logfile_alpm(PyObject *self, PyObject *value, void* closure)
     return -1;
   }
 
-  if(alpm_option_set_dbpath(path) == -1) {
+  if(alpm_option_set_logfile(path) == -1) {
     PyErr_SetString(alpm_error, "failed setting logfile path");
     ret = -1;
   }
