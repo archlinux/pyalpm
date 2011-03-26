@@ -26,6 +26,8 @@
 #include "package.h"
 #include "util.h"
 
+extern PyObject* alpm_error;
+
 typedef struct _AlpmDB {
   PyObject_HEAD
   pmdb_t *c_data;
@@ -35,10 +37,14 @@ static void pyalpm_db_dealloc(AlpmDB *self) {
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-static PyObject* pyalpm_db_get_pkg(PyObject* self, PyObject* args) {
+#define CHECK_IF_INITIALIZED() if (! self->c_data) { \
+  PyErr_SetString(alpm_error, "data is not initialized"); \
+  return NULL; \
+  }
+
+static PyObject* pyalpm_db_get_pkg(AlpmDB* self, PyObject* args) {
   char *pkgname;
   pmpkg_t *p;
-  AlpmDB *db = (AlpmDB *)self;
 
   if(!PyArg_ParseTuple(args, "s", &pkgname))
   {
@@ -46,7 +52,9 @@ static PyObject* pyalpm_db_get_pkg(PyObject* self, PyObject* args) {
     return NULL;
   }
 
-  p = alpm_db_get_pkg(db->c_data, pkgname);
+  CHECK_IF_INITIALIZED();
+
+  p = alpm_db_get_pkg(self->c_data, pkgname);
 
   if (p == NULL) {
     Py_RETURN_NONE;
@@ -61,18 +69,46 @@ static PyObject* pyalpm_db_get_pkg(PyObject* self, PyObject* args) {
   }
 }
 
-static PyObject* pyalpm_db_get_pkgcache(PyObject* self, PyObject* _dummy) {
-  AlpmDB *db = (AlpmDB *)self;
-  alpm_list_t *pkglist;
+static PyObject* pyalpm_db_get_name(AlpmDB* self, void* closure) {
+  CHECK_IF_INITIALIZED();
+  char* name = alpm_db_get_name(self->c_data);
+  if (!name)
+    Py_RETURN_NONE;
+  return PyUnicode_FromString(name);
+}
 
-  pkglist = alpm_db_get_pkgcache(db->c_data);
+static PyObject* pyalpm_db_get_url(AlpmDB* self, void* closure) {
+  CHECK_IF_INITIALIZED();
+  char* url = alpm_db_get_url(self->c_data);
+  if (!url)
+    Py_RETURN_NONE;
+  return PyUnicode_FromString(url);
+}
+
+static PyObject* pyalpm_db_get_pkgcache(AlpmDB* self, void* closure) {
+  alpm_list_t *pkglist = alpm_db_get_pkgcache(self->c_data);
   return alpmlist_to_pylist(pkglist, pyalpm_package_from_pmpkg);
+}
+
+static PyObject* pyalpm_db_get_grpcache(AlpmDB* self, void* closure) {
+  alpm_list_t *grplist = alpm_db_get_grpcache(self->c_data);
+  // TODO: implement this
+  // return alpmlist_to_pylist(pkglist, pyalpm_package_from_pmgrp);
+  Py_RETURN_NONE;
 }
 
 static struct PyMethodDef db_methods[] = {
   { "get_pkg", pyalpm_db_get_pkg, METH_VARARGS, "get a package by name" },
-  { "get_pkgcache", pyalpm_db_get_pkgcache, METH_NOARGS, "get the DB package list" },
   { NULL },
+};
+
+struct PyGetSetDef db_getset[] = {
+  /* description properties */
+  { "name", (getter)pyalpm_db_get_name, 0, "name", NULL } ,
+  { "url", (getter)pyalpm_db_get_url, 0, "URL", NULL } ,
+  { "pkgcache", (getter)pyalpm_db_get_pkgcache, 0, "list of packages", NULL } ,
+  { "grpcache", (getter)pyalpm_db_get_grpcache, 0, "list of package groups", NULL } ,
+  { NULL }
 };
 
 PyTypeObject AlpmDBType = {
@@ -103,17 +139,10 @@ PyTypeObject AlpmDBType = {
   0,                          /* tp_weaklistoffset */
   0,                          /* tp_iter */
   0,                          /* tp_iternext */
-  db_methods,                          /* tp_methods */
+  db_methods,                 /* tp_methods */
   0,                          /* tp_members */
-  0,                          /* tp_getset */
+  db_getset,                  /* tp_getset */
   0,                          /* tp_base */
-  0,                          /* tp_dict */
-  0,                          /* tp_descr_get */
-  0,                          /* tp_descr_set */
-  0,                          /* tp_dictoffset */
-  0,                          /* tp_init */
-  0,                          /* tp_alloc */
-  0,                          /* tp_new */
 };
 
 /** Initializes Pb class in module */
