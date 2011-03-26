@@ -277,6 +277,31 @@ int option_set_checkspace_alpm(PyObject *self, PyObject *value, void* closure)
   return 0;
 }
 
+/**
+ * List options
+ * in addition to getters/setters, these have add/remove methods
+ */
+
+PyObject* option_get_cachedirs_alpm(PyObject *self, void* closure) {
+  return alpmlist_to_pylist(alpm_option_get_cachedirs(), pyobject_from_string);
+}
+
+PyObject* option_get_noupgrades_alpm(PyObject *self, void* closure) {
+  return alpmlist_to_pylist(alpm_option_get_noupgrades(), pyobject_from_string);
+}
+
+PyObject* option_get_noextracts_alpm(PyObject *self, void* closure) {
+  return alpmlist_to_pylist(alpm_option_get_noextracts(), pyobject_from_string);
+}
+
+PyObject* option_get_ignorepkgs_alpm(PyObject *self, void* closure) {
+  return alpmlist_to_pylist(alpm_option_get_ignorepkgs(), pyobject_from_string);
+}
+
+PyObject* option_get_ignoregrps_alpm(PyObject *self, void* closure) {
+  return alpmlist_to_pylist(alpm_option_get_ignoregrps(), pyobject_from_string);
+}
+
 PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args)
 {
   alpm_list_t *target, *adtmp;
@@ -293,18 +318,6 @@ PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args)
     alpm_option_set_noupgrades(target);
     return Py_None;
   }
-}
-
-PyObject * option_get_noupgrades_alpm(PyObject *self, PyObject *args)
-{
-  PyObject *ret;
-  alpm_list_t *output;
-  
-  output = alpm_option_get_noupgrades();
-  
-  ret = alpmlist_to_pylist(output, pyobject_from_string);
-  
-  return ret;
 }
 
 PyObject * option_add_noupgrade_alpm(PyObject *self, PyObject *args)
@@ -548,10 +561,7 @@ PyObject * option_remove_ignoregrps_alpm(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef pyalpm_options_methods[] = {
-  {"getlockfile", option_get_lockfile_alpm, METH_VARARGS, "gets the lockfile."},
-  {"setusedelta", option_set_usedelta_alpm, METH_VARARGS, "sets usedelta value."},
   {"setnoupgrades", option_set_noupgrades_alpm, METH_VARARGS, "sets noupgrades."},
-  {"getnoupgrades", option_get_noupgrades_alpm, METH_VARARGS, "gets noupgrades."},
   {"addnoupgrade", option_add_noupgrade_alpm, METH_VARARGS, "add a noupgrade package."},
   {"removenoupgrade", option_remove_noupgrade_alpm, METH_VARARGS, "removes a noupgrade package."},
   {"addcachedir", option_add_cachedir_alpm, METH_VARARGS, "adds a cachedir."},

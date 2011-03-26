@@ -25,6 +25,7 @@
 #include "options.h"
 
 struct PyGetSetDef pyalpm_options_getset[] = {
+  /** filepaths */
   { "root",
     (getter)option_get_root_alpm,
     (setter)option_set_root_alpm,
@@ -33,18 +34,58 @@ struct PyGetSetDef pyalpm_options_getset[] = {
     (getter)option_get_dbpath_alpm,
     (setter)option_set_dbpath_alpm,
     "alpm database directory", NULL } ,
-  { "arch",
-    (getter)option_get_arch_alpm,
-    (setter)option_set_arch_alpm,
-    "Target archichecture", NULL } ,
   { "logfile",
     (getter)option_get_logfile_alpm,
     (setter)option_set_logfile_alpm,
     "alpm logfile path", NULL } ,
+  { "lockfile",
+    (getter)option_get_lockfile_alpm,
+    NULL,
+    "alpm lockfile path", NULL } ,
+
+  /** strings */
+  { "arch",
+    (getter)option_get_arch_alpm,
+    (setter)option_set_arch_alpm,
+    "Target archichecture", NULL } ,
+
+  /** booleans */
   { "usesyslog",
     (getter)option_get_usesyslog_alpm,
     (setter)option_set_usesyslog_alpm,
     "use syslog (an integer, 0 = False, 1 = True)", NULL } ,
+  { "usedelta",
+    (getter)option_get_usedelta_alpm,
+    (setter)option_set_usedelta_alpm,
+    "use deltas (an integer, 0 = False, 1 = True)", NULL } ,
+  { "checkspace",
+    (getter)option_get_checkspace_alpm,
+    (setter)option_set_checkspace_alpm,
+    "check disk space before transactions (an integer, 0 = False, 1 = True)", NULL } ,
+
+  /** lists */
+  { "cachedirs",
+    (getter)option_get_cachedirs_alpm,
+    NULL,
+    "list of package cache directories", NULL },
+  { "noupgrades",
+    (getter)option_get_noupgrades_alpm,
+    NULL,
+    "list of ...", NULL },
+  { "noextracts",
+    (getter)option_get_noextracts_alpm,
+    NULL,
+    "list of ...", NULL },
+  { "ignorepkgs",
+    (getter)option_get_ignorepkgs_alpm,
+    NULL,
+    "list of ignored packages", NULL },
+  { "ignoregrps",
+    (getter)option_get_ignoregrps_alpm,
+    NULL,
+    "list of ignored groups", NULL },
+
+  /** terminator */
   { NULL }
 };
 

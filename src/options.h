@@ -54,9 +54,13 @@ PyObject* option_get_checkspace_alpm(PyObject *self, void* closure);
 int option_set_checkspace_alpm(PyObject *self, PyObject *value, void* closure);
 
 /** list options */
+PyObject* option_get_cachedirs_alpm(PyObject *self, void* closure);
+PyObject* option_get_noupgrades_alpm(PyObject *self, void* closure);
+PyObject* option_get_noextracts_alpm(PyObject *self, void* closure);
+PyObject* option_get_ignorepkgs_alpm(PyObject *self, void* closure);
+PyObject* option_get_ignoregrps_alpm(PyObject *self, void* closure);
 
 PyObject * option_set_noupgrades_alpm(PyObject *self, PyObject *args);
-PyObject * option_get_noupgrades_alpm(PyObject *self, PyObject *args);
 PyObject * option_add_noupgrade_alpm(PyObject *self, PyObject *args);
 PyObject * option_remove_noupgrade_alpm(PyObject *self, PyObject *args);
 
