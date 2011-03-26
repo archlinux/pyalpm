@@ -22,6 +22,7 @@
 #include "util.h"
 #include "package.h"
 #include "db.h"
+#include "optionsobject.h"
 
 extern unsigned short init;
 
@@ -202,6 +203,7 @@ PyMODINIT_FUNC PyInit_pyalpm()
 
   alpm_error = PyErr_NewException("alpm.error", NULL, NULL);
 
+  init_pyalpm_options(m);
   init_pyalpm_package(m);
   init_pyalpm_db(m);
   

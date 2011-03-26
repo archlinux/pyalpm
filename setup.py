@@ -8,13 +8,11 @@ alpm = Extension('pyalpm',
         'src/pyalpm.c',
         'src/util.c',
         'src/package.c',
-        'src/db.c'
+        'src/db.c',
+        'src/options.c',
+        'src/optionsobject.c'
         ])
-
-alpm_options = Extension('_alpmoptions',
-                   libraries = ['alpm'],
-                   sources = ['src/options.c', 'src/util.c'])
 
 setup(name = 'pyalpm',
       version = '0.1',
-      ext_modules = [alpm, alpm_options])
+      ext_modules = [alpm])

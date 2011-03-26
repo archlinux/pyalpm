@@ -26,16 +26,16 @@
 #include "util.h"
 
 extern int init;
-static PyObject *alpm_error;
+extern PyObject *alpm_error;
 
 /*
 The following functions take a string as argument(*_set_*)
 while other (*_get_*) return a string
 */
-PyObject * option_get_root_alpm(PyObject *self, PyObject *args)
+PyObject * option_get_root_alpm(PyObject *self, void *closure)
 {
   const char *str = alpm_option_get_root();
-  
+
   if(str == NULL)
   {
     PyErr_SetString(alpm_error, "failed getting root path");
@@ -47,55 +47,59 @@ PyObject * option_get_root_alpm(PyObject *self, PyObject *args)
   }
 }
 
-PyObject * option_set_root_alpm(PyObject *self, PyObject *args)
+/** Sets root for libalpm
+ * @return 0 on success, 1 on failure
+ */
+int option_set_root_alpm(PyObject *self, PyObject *value, void* closure)
 {
-  const char *path;
+  char *path = NULL;
+  int ret;
+  if (PyBytes_Check(value)) {
+    path = strdup(PyBytes_AS_STRING(value));
+  } else {
+    PyErr_SetString(alpm_error, "root path must be a string");
+    return -1;
+  }
 
-  if(!PyArg_ParseTuple(args, "s", &path))
-  {
-    PyErr_SetString(alpm_error, "error in the args");
-    return NULL;
+  puts(path); puts("\n");
+  if(alpm_option_set_root(path) == -1) {
+    PyErr_SetString(alpm_error, "failed setting root");
+    ret = -1;
   }
   else
-  {
-    if(alpm_option_set_root(path) == -1)
-    {
-      PyErr_SetString(alpm_error, "failed setting root path");
-      return NULL;
-    }
-    else
-    {
-      return Py_None;
-    }
-  }
+    ret = 0;
+
+  free(path);
+  return(ret);
 }
 
-PyObject * option_set_dbpath_alpm(PyObject *self, PyObject *args)
+int option_set_dbpath_alpm(PyObject *self, PyObject* value, void *closure)
 {
-  const char *path;
-  if(!PyArg_ParseTuple(args, "s", &path))
-  {
-    PyErr_SetString(alpm_error, "error in the args");
-    return NULL;
+  char *path = NULL;
+  int ret;
+  if (PyBytes_Check(value)) {
+    path = strdup(PyBytes_AS_STRING(value));
+  } else {
+    PyErr_SetString(alpm_error, "dbpath must be a string");
+    return -1;
+  }
+
+  puts(path); puts("\n");
+  if(alpm_option_set_dbpath(path) == -1) {
+    PyErr_SetString(alpm_error, "failed setting dbpath");
+    ret = -1;
   }
   else
-  {
-    if(alpm_option_set_dbpath(path) == -1)
-    {
-      PyErr_SetString(alpm_error, "failed setting dbpath");
-      return NULL;
-    }
-    else
-    {
-      return Py_None;
-    }
-  }
+    ret = 0;
+
+  free(path);
+  return(ret);
 }
 
-PyObject * option_get_dbpath_alpm(PyObject *self, PyObject *args)
+PyObject* option_get_dbpath_alpm(PyObject *self, void *closure)
 {
   const char *str = alpm_option_get_dbpath();
-  
+
   if(str == NULL)
   {
     PyErr_SetString(alpm_error, "failed getting dbpath.");
@@ -517,13 +521,5 @@ static struct PyModuleDef pyalpm_options_def = {
   -1,
   pyalpm_options_methods
 };
-
-PyMODINIT_FUNC PyInit__alpmoptions()
-{
-  PyObject* m = PyModule_Create(&pyalpm_options_def);
-
-  alpm_error = PyErr_NewException("_alpmoptions.error", NULL, NULL);
-  return m;
-}
 
 /* vim: set ts=2 sw=2 et: */
