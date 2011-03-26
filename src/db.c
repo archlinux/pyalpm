@@ -30,8 +30,40 @@ typedef struct _AlpmDB {
   pmdb_t *c_data;
 } AlpmDB;
 
-static void pyalpm_db_dealloc(AlpmDB *self);
-static struct PyMethodDef db_methods[];
+static void pyalpm_db_dealloc(AlpmDB *self) {
+  Py_TYPE(self)->tp_free((PyObject*)self);
+}
+
+static PyObject* pyalpm_db_get_pkg(PyObject* self, PyObject* args) {
+  char *pkgname;
+  pmpkg_t *p;
+  AlpmDB *db = (AlpmDB *)self;
+
+  if(!PyArg_ParseTuple(args, "s", &pkgname))
+  {
+    PyErr_SetString(PyExc_TypeError, "get_pkg() takes a string argument");
+    return NULL;
+  }
+
+  p = alpm_db_get_pkg(db->c_data, pkgname);
+
+  if (p == NULL) {
+    Py_RETURN_NONE;
+  } else {
+    PyObject *result;
+    result = pyalpm_package_from_pmpkg(p);
+    if (result == NULL) {
+      return NULL;
+    } else {
+      return result;
+    }
+  }
+}
+
+static struct PyMethodDef db_methods[] = {
+  { "get_pkg", pyalpm_db_get_pkg, METH_VARARGS, "get a package by name" },
+  { NULL },
+};
 
 PyTypeObject AlpmDBType = {
   PyVarObject_HEAD_INIT(NULL, 0)
@@ -97,36 +129,3 @@ PyObject *pyalpm_db_from_pmdb(pmdb_t *db) {
   return (PyObject *)self;
 }
 
-void pyalpm_db_dealloc(AlpmDB *self) {
-  Py_TYPE(self)->tp_free((PyObject*)self);
-}
-
-static PyObject* pyalpm_db_get_pkg(PyObject* self, PyObject* args) {
-  char *pkgname;
-  pmpkg_t *p;
-  AlpmDB *db = (AlpmDB *)self;
-
-  if(!PyArg_ParseTuple(args, "s", &pkgname))
-  {
-    PyErr_SetString(PyExc_TypeError, "get_pkg() takes a string argument");
-    return NULL;
-  }
-
-  p = alpm_db_get_pkg(db->c_data, pkgname);
-
-  if (p == NULL) {
-    Py_RETURN_NONE;
-  } else {
-    PyObject *result;
-    result = pyalpm_package_from_pmpkg(p);
-    if (result == NULL) {
-      return NULL;
-    } else {
-      return result;
-    }
-  }
-}
-
-static struct PyMethodDef db_methods[] = {
-  { "get_pkg", pyalpm_db_get_pkg, METH_VARARGS, "get a package by name" },
-};
