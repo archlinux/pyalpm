@@ -121,26 +121,45 @@ static PyObject * check_init_alpm(PyObject *self, PyObject *dummy)
   }
 }
 
-static PyObject* pyalpm_get_localdb(PyObject *self) {
-  PyObject *db;
+static PyObject* pyalpm_get_localdb(PyObject *self, PyObject *dummy) {
+  return pyalpm_db_from_pmdb(alpm_option_get_localdb());
+}
 
-  if (self == NULL) {
-    PyErr_SetString(PyExc_RuntimeError, "unable to create DB object");
+static PyObject* pyalpm_get_syncdbs(PyObject *self, PyObject *dummy) {
+  return alpmlist_to_pylist(alpm_option_get_syncdbs(),
+			    pyalpm_db_from_pmdb);
+}
+
+static PyObject* pyalpm_register_syncdb(PyObject *self, PyObject *args) {
+  const char *dbname;
+  pmdb_t *result;
+
+  if (!PyArg_ParseTuple(args, "s", &dbname)) {
+    PyErr_SetString(PyExc_TypeError, "expected a string argument");
     return NULL;
   }
 
-  db = pyalpm_db_from_pmdb(alpm_option_get_localdb());
-  return (PyObject *)db;
+  result = alpm_db_register_sync(dbname);
+  if (! result) {
+    PyErr_Format(alpm_error, "unable to register sync database %s", dbname);
+    return NULL;
+  }
+
+  return pyalpm_db_from_pmdb(result);
 }
 
 static PyMethodDef methods[] = {
-  {"initialize", initialize_alpm, METH_VARARGS, "initialize alpm."},
-  {"release", release_alpm, METH_VARARGS, "release alpm."},
-  {"version", version_alpm, METH_VARARGS, "returns pyalpm version."},
-  {"alpmversion", alpmversion_alpm, METH_VARARGS, "returns alpm version."},
+  {"initialize", initialize_alpm, METH_NOARGS, "initialize alpm."},
+  {"release", release_alpm, METH_NOARGS, "release alpm."},
+  {"version", version_alpm, METH_NOARGS, "returns pyalpm version."},
+  {"alpmversion", alpmversion_alpm, METH_NOARGS, "returns alpm version."},
   {"checkinit", check_init_alpm, METH_VARARGS, "checks if the library was initialized."},
 
+  {"register_syncdb", pyalpm_register_syncdb, METH_VARARGS,
+   "registers the database with the given name\n"
+   "returns the new database on success"},
   {"get_localdb", pyalpm_get_localdb, METH_NOARGS, "returns an object representing the local DB"},
+  {"get_syncdbs", pyalpm_get_syncdbs, METH_NOARGS, "returns a list of sync DBs"},
 
   {NULL, NULL, 0, NULL}
 };
