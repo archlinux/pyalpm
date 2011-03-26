@@ -61,7 +61,7 @@ static PyObject* pyalpm_db_get_pkg(PyObject* self, PyObject* args) {
   }
 }
 
-static PyObject* pyalpm_db_get_pkgcache(PyObject* self) {
+static PyObject* pyalpm_db_get_pkgcache(PyObject* self, PyObject* _dummy) {
   AlpmDB *db = (AlpmDB *)self;
   alpm_list_t *pkglist;
 

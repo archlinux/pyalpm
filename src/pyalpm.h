@@ -36,16 +36,4 @@ char VERSION[] = "0.1";
 
 unsigned short check_init(void);
 
-/*pyalpm errors*/
-PyObject *alpm_error = NULL;
-
-/*miscelaneus functions*/
-PyObject * alpmversion_alpm(PyObject *self);
-PyObject * version_alpm(PyObject *self);
-PyObject * check_init_alpm(PyObject *self);
-
-/*initialize and release*/
-PyObject * initialize_alpm(PyObject *self);
-PyObject * release_alpm(PyObject *self);
-
 #endif /* PYALPM_H */

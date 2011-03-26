@@ -26,8 +26,11 @@
 
 extern unsigned short init;
 
+/* pyalpm errors */
+PyObject *alpm_error = NULL;
+
 /*pyalpm functions*/
-PyObject * initialize_alpm(PyObject *self)
+static PyObject * initialize_alpm(PyObject *self, PyObject *dummy)
 {
   if(alpm_initialize() == -1)
   {
@@ -41,7 +44,7 @@ PyObject * initialize_alpm(PyObject *self)
   }
 }
 
-PyObject * release_alpm(PyObject *self)
+static PyObject * release_alpm(PyObject *self, PyObject *dummy)
 {
   /*clean_memory(addresses);*/
   if(alpm_release() == -1)
@@ -72,7 +75,7 @@ void test_cb(pmloglevel_t level, char *fmt, va_list args)
   }
 }
 
-PyObject * option_set_logcb_alpm(PyObject *self, PyObject *args)
+static PyObject * option_set_logcb_alpm(PyObject *self, PyObject *args)
 {
   if(!PyArg_ParseTuple(args, "ssss", &error, &warning, &debug, &function))
   {
@@ -88,7 +91,7 @@ PyObject * option_set_logcb_alpm(PyObject *self, PyObject *args)
   }
 }
 
-PyObject * alpmversion_alpm(PyObject *self)
+static PyObject * alpmversion_alpm(PyObject *self, PyObject *dummy)
 {
   const char *str;
   str = alpm_version();
@@ -96,12 +99,12 @@ PyObject * alpmversion_alpm(PyObject *self)
   return Py_BuildValue("s", str);
 }
 
-PyObject * version_alpm(PyObject *self)
+static PyObject * version_alpm(PyObject *self, PyObject *dummy)
 {
   return Py_BuildValue("s", VERSION);
 }
 
-PyObject * check_init_alpm(PyObject *self)
+static PyObject * check_init_alpm(PyObject *self, PyObject *dummy)
 {
   if(init == 0)
   {
