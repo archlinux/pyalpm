@@ -1,49 +1,48 @@
 pyalpm TODO file
 
-DONE:
+* errno handling
+* pacman.conf parsing
 
-* alpm_initialize()
-* alpm_release()
+Databases
 
-* alpm_option_{get,set}_root()
-* alpm_option_{get,set}_dbpath()
-* alpm_option_{get,set}_logfile()
-* alpm_option_{get,set}_usesyslog()
-* alpm_option_{get,set}_xfercommand()
-* alpm_option_{get,set}_nopassiveftp()
+* alpm_db_*
 
-* alpm_option_get_lockfile()
+Packages 
 
-* alpm_option_set_usedelta()
+* alpm_pkg_{load,free}
+* alpm_pkg_checkmd5sum
+* alpm_fetch_pkgurl
+* alpm_pkg_compute_requiredby
+* alpm_pkg_has_scriptlet
+* alpm_pkg_download_size
+* alpm_pkg_get_db
 
-* alpm_option_{add,remove}_noupgrade()
-* alpm_option_{add,remove}_cachedir()
-* alpm_option_{add,remove}_noextract()
-* alpm_option_{add,remove}_ignorepkg()
-* alpm_option_{add,remove}_ignoregrps()
-* alpm_option_{add,remove}_holdpkg()
+Deltas
 
-* added array to alpm_list_t converter
+* everything
 
-* alpmversion()
-* version()
+Groups
 
-TODO:
+* everything
+
+Transactions
+
+* everything
+
+Dependencies/Missing/Conflicts
+
+* everything
+
+Options
 
 * alpm_option_{get,set}_logcb()
 * alpm_option_{get,set}_dlcb()
 * alpm_option_{get,set}_totaldlcb()
 
-* alpm_option_{get,set}_cachedirs()
-* alpm_option_{get,set}_noupgrades()
-* alpm_option_{get,set}_noextracts()
-* alpm_option_{get,set}_ignorepkgs()
-* alpm_option_{get,set}_ignoregrps()
-* alpm_option_{get,set}_holdpkgs()
+* alpm_option_{set,add,remove}_cachedirs()
+* alpm_option_{set,add,remove}_noupgrades()
+* alpm_option_{set,add,remove}_noextracts()
+* alpm_option_{set,add,remove}_ignorepkgs()
+* alpm_option_{set,add,remove}_ignoregrps()
 
-* alpm_option_get_localdb()
-* alpm_option_get_syncdb()
 
-* add internal datatype converters
-
-* add more things to this TODO
