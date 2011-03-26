@@ -25,6 +25,25 @@ for db in pyalpm.get_syncdbs():
 print("Package information about glibc")
 pkg = localdb.get_pkg("glibc")
 for attr in dir(pkg):
-    if not attr.startswith('_'):
+    if attr.startswith('_'):
+        continue
+    if attr == "files":
+        print("  ", len(pkg.files), "files")
+    else:
         print("  ", attr, ":", getattr(pkg, attr))
 
+print("Package information about a tarball")
+for i in os.listdir("/var/cache/pacman/pkg"):
+    filename = os.path.join("/var/cache/pacman/pkg", i)
+    pkg = pyalpm.load_pkg(filename)
+    print("Loaded", filename)
+    break
+for attr in dir(pkg):
+    if attr.startswith('_'):
+        continue
+    if attr == "files":
+        print("  ", len(pkg.files), "files")
+    else:
+        print("  ", attr, ":", getattr(pkg, attr))
+
+# vim: set ts=4 sw=4 et:

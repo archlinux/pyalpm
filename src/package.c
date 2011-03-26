@@ -31,9 +31,12 @@ extern PyObject* alpm_error;
 typedef struct _AlpmPackage {
   PyObject_HEAD
   pmpkg_t *c_data;
+  int needs_free;
 } AlpmPackage;
 
 static void pyalpm_package_dealloc(AlpmPackage *self) {
+  if (self->needs_free)
+    alpm_pkg_free(self->c_data);
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
@@ -99,7 +102,31 @@ PyObject *pyalpm_package_from_pmpkg(pmpkg_t *p) {
   }
 
   self->c_data = p;
+  self->needs_free = 0;
   return (PyObject *)self;
+}
+
+PyObject *pyalpm_package_load(PyObject *self, PyObject *args) {
+  char *filename;
+  if (!PyArg_ParseTuple(args, "s", &filename)) {
+    PyErr_SetString(PyExc_TypeError, "expected a string argument");
+    return NULL;
+  }
+
+  AlpmPackage *result;
+  result = (AlpmPackage*)AlpmPackageType.tp_alloc(&AlpmPackageType, 0);
+  if (result == NULL) {
+    PyErr_SetString(PyExc_RuntimeError, "unable to create package object");
+    return NULL;
+  }
+
+  if (alpm_pkg_load(filename, 1, &result->c_data) == -1) {
+    PyErr_SetString(alpm_error, alpm_strerrorlast());
+    return NULL;
+  }
+
+  result->needs_free = 1;
+  return (PyObject *)result;
 }
 
 #define CHECK_IF_INITIALIZED() if (! self->c_data) { \

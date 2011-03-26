@@ -25,7 +25,9 @@
 
 #include <Python.h>
 
-PyObject *pyalpm_package_from_pmpkg(pmpkg_t *p);
 void init_pyalpm_package(PyObject *module);
+
+PyObject *pyalpm_package_from_pmpkg(pmpkg_t *p);
+PyObject *pyalpm_package_load(PyObject *self, PyObject *args);
 
 #endif // _PYALPM_PACKAGE_H

@@ -129,6 +129,9 @@ static PyMethodDef methods[] = {
   {"get_localdb", pyalpm_get_localdb, METH_NOARGS, "returns an object representing the local DB"},
   {"get_syncdbs", pyalpm_get_syncdbs, METH_NOARGS, "returns a list of sync DBs"},
 
+  /* from package.c */
+  {"load_pkg", pyalpm_package_load, METH_VARARGS, "loads package information from a tarball"},
+
   {NULL, NULL, 0, NULL}
 };
 
