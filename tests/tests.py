@@ -1,4 +1,6 @@
+import os
 import pyalpm
+
 pyalpm.initialize()
 pyalpm.options.root = "/"
 pyalpm.options.dbpath = "/var/lib/pacman"
@@ -7,6 +9,9 @@ localdb = pyalpm.get_localdb()
 print("Local database information")
 print("  DB name:", localdb.name, "url:", localdb.url)
 print("  Packages:", len(localdb.pkgcache))
+
+for name, pkgs in localdb.grpcache:
+    print("  Group:", name, [pkg.name for pkg in pkgs])
 
 print("Registering [core], [extra], [community]...")
 pyalpm.register_syncdb("core")

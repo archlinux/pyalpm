@@ -37,6 +37,17 @@ static void pyalpm_db_dealloc(AlpmDB *self) {
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
+static PyObject* _pyobject_from_pmgrp(void *group) {
+  pmgrp_t* grp = (pmgrp_t*)group;
+  PyObject *fst = PyUnicode_FromString(alpm_grp_get_name(grp));
+  PyObject *snd = alpmlist_to_pylist(alpm_grp_get_pkgs(grp),
+				     pyalpm_package_from_pmpkg);
+  PyObject *tuple = PyTuple_Pack(2, fst, snd);
+  Py_DECREF(fst);
+  Py_DECREF(snd);
+  return tuple;
+}
+
 #define CHECK_IF_INITIALIZED() if (! self->c_data) { \
   PyErr_SetString(alpm_error, "data is not initialized"); \
   return NULL; \
@@ -92,9 +103,7 @@ static PyObject* pyalpm_db_get_pkgcache(AlpmDB* self, void* closure) {
 
 static PyObject* pyalpm_db_get_grpcache(AlpmDB* self, void* closure) {
   alpm_list_t *grplist = alpm_db_get_grpcache(self->c_data);
-  // TODO: implement this
-  // return alpmlist_to_pylist(pkglist, pyalpm_package_from_pmgrp);
-  Py_RETURN_NONE;
+  return alpmlist_to_pylist(grplist, _pyobject_from_pmgrp);
 }
 
 static struct PyMethodDef db_methods[] = {
