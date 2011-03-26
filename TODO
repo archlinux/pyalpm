@@ -16,7 +16,6 @@ Packages
 
 * alpm_pkg_checkmd5sum
 * alpm_fetch_pkgurl
-* alpm_pkg_compute_requiredby
 * alpm_pkg_has_scriptlet
 * alpm_pkg_download_size
 * alpm_pkg_get_db

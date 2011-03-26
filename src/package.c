@@ -363,7 +363,16 @@ static PyObject* pyalpm_package_get_backup(AlpmPackage *self, void *closure) {
 			    _pytuple_from_tab_separated);
 }
 
-struct PyGetSetDef AlpmPackageGetSet[] = {
+static PyObject* pyalpm_pkg_compute_requiredby(PyObject *rawself, PyObject *args) {
+  AlpmPackage *self = (AlpmPackage*)rawself;
+  CHECK_IF_INITIALIZED();
+  alpm_list_t *result = alpm_pkg_compute_requiredby(self->c_data);
+  PyObject *pyresult = alpmlist_to_pylist(result, pyobject_from_string);
+  FREELIST(result);
+  return pyresult;
+}
+
+static struct PyGetSetDef AlpmPackageGetSet[] = {
   /* description properties */
   { "name", (getter)pyalpm_package_get_name, 0, "package name", NULL } ,
   { "version", (getter)pyalpm_package_get_version, 0, "package version", NULL } ,
@@ -391,3 +400,11 @@ struct PyGetSetDef AlpmPackageGetSet[] = {
   { "replaces", (getter)pyalpm_package_get_replaces, 0, "list of replaced packages", NULL } ,
   { NULL }
 };
+
+static struct PyMethodDef pyalpm_pkg_methods[] = {
+  { "compute_requiredby", pyalpm_pkg_compute_requiredby, METH_NOARGS,
+      "computes the list of packages requiring this package" },
+  { NULL }
+};
+
+
