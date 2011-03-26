@@ -89,6 +89,24 @@ struct PyGetSetDef pyalpm_options_getset[] = {
   { NULL }
 };
 
+static PyMethodDef pyalpm_options_methods[] = {
+  {"add_noupgrade", option_add_noupgrade_alpm, METH_VARARGS, "add a noupgrade package."},
+  {"remove_noupgrade", option_remove_noupgrade_alpm, METH_VARARGS, "removes a noupgrade package."},
+
+  {"add_cachedir", option_add_cachedir_alpm, METH_VARARGS, "adds a cachedir."},
+  {"remove_cachedir", option_remove_cachedir_alpm, METH_VARARGS, "removes a cachedir."},
+
+  {"add_noextract", option_add_noextract_alpm, METH_VARARGS, "add a noextract package."},
+  {"remove_noextract", option_remove_noextract_alpm, METH_VARARGS, "remove a noextract package."},
+
+  {"add_ignorepkg", option_add_ignorepkg_alpm, METH_VARARGS, "add an ignorepkg."},
+  {"remove_ignorepkg", option_remove_ignorepkg_alpm, METH_VARARGS, "remove an ignorepkg."},
+
+  {"add_ignoregrp", option_add_ignoregrp_alpm, METH_VARARGS, "add an ignoregrp."},
+  {"remove_ignoregrp", option_remove_ignoregrp_alpm, METH_VARARGS, "remove an ignoregrp."},
+  {NULL, NULL, 0, NULL},
+};
+
 PyTypeObject AlpmOptionSetType = {
   PyVarObject_HEAD_INIT(NULL, 0)
   "alpm.Options",    /*tp_name*/
@@ -118,8 +136,8 @@ PyTypeObject AlpmOptionSetType = {
   0,                  /* tp_weaklistoffset */
   0,                  /* tp_iter */
   0,                  /* tp_iternext */
-  0,                  /* tp_methods */
-  0,                  /* tp_members */
+  pyalpm_options_methods, /* tp_methods */
+  0,                      /* tp_members */
   pyalpm_options_getset,  /* tp_getset */
 };
 

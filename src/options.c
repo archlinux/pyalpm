@@ -27,6 +27,11 @@
 
 extern PyObject *alpm_error;
 
+#define CHECK_ALPM_INIT() if (check_init() != 1) { \
+  PyErr_SetString(alpm_error, "pyalpm not initialized"); \
+  return NULL; \
+  }
+
 /**
  * Path options getters/setters
  */
@@ -353,266 +358,134 @@ int option_set_ignoregrps_alpm(PyObject *self, PyObject *value, void *closure)
 
 /* list options modifiers : add/remove */
 
-PyObject * option_add_noupgrade_alpm(PyObject *self, PyObject *args)
+PyObject* option_add_noupgrade_alpm(PyObject *self, PyObject *args)
 {
   const char *str;
-  
-  if(!PyArg_ParseTuple(args, "s", &str))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
+
+  if(!PyArg_ParseTuple(args, "s", &str)) {
+    PyErr_SetString(alpm_error, "expecting a string argument");
     return NULL;
   }
-  else
-  {
-    if(check_init() == 1)
-    {
-      alpm_option_add_noupgrade(str);
-      return Py_None;
-    }
-    else
-    {
-      PyErr_SetString(alpm_error, "pyalpm not initialized");
-      return NULL;
-    }
-  }
+  CHECK_ALPM_INIT();
+  alpm_option_add_noupgrade(str);
+  Py_RETURN_NONE;
 }
 
-PyObject * option_remove_noupgrade_alpm(PyObject *self, PyObject *args)
+PyObject* option_remove_noupgrade_alpm(PyObject *self, PyObject *args)
 {
   const char *str;
-  
-  if(!PyArg_ParseTuple(args, "s", &str))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
+
+  if(!PyArg_ParseTuple(args, "s", &str)) {
+    PyErr_SetString(alpm_error, "expecting a string argument");
     return NULL;
   }
-  else
-  {
-    if(check_init() == 1)
-    {
-      alpm_option_remove_noupgrade(str);
-      return Py_None;
-    }
-    else
-    {
-      PyErr_SetString(alpm_error, "pyalpm not initialized");
-      return NULL;
-    }
-  }
+  CHECK_ALPM_INIT();
+  alpm_option_remove_noupgrade(str);
+  Py_RETURN_NONE;
 }
 
-PyObject * option_add_cachedir_alpm(PyObject *self, PyObject *args)
+PyObject* option_add_cachedir_alpm(PyObject *self, PyObject *args)
 {
   const char *str;
-  
-  if(!PyArg_ParseTuple(args, "s", &str))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
+
+  if(!PyArg_ParseTuple(args, "s", &str)) {
+    PyErr_SetString(alpm_error, "expecting a string argument");
     return NULL;
   }
-  else
-  {
-    if(check_init() == 1)
-    {
-      alpm_option_add_cachedir(str);
-      return Py_None;
-    }
-    else
-    {
-      PyErr_SetString(alpm_error, "pyalpm not initialized");
-      return NULL;
-    }
-  }
+  CHECK_ALPM_INIT();
+  alpm_option_add_cachedir(str);
+  Py_RETURN_NONE;
 }
 
-PyObject * option_remove_cachedir_alpm(PyObject *self, PyObject *args)
+PyObject* option_remove_cachedir_alpm(PyObject *self, PyObject *args)
 {
   const char *str;
-  
-  if(!PyArg_ParseTuple(args, "s", &str))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
+
+  if(!PyArg_ParseTuple(args, "s", &str)) {
+    PyErr_SetString(alpm_error, "expecting a string argument");
     return NULL;
   }
-  else
-  {
-    if(check_init() == 1)
-    {
-      alpm_option_remove_cachedir(str);
-      return Py_None;
-    }
-    else
-    {
-      PyErr_SetString(alpm_error, "pyalpm not initialized");
-      return NULL;
-    }
-  }
+  CHECK_ALPM_INIT();
+  alpm_option_remove_cachedir(str);
+  Py_RETURN_NONE;
 }
 
-PyObject * option_add_noextract_alpm(PyObject *self, PyObject *args)
+PyObject* option_add_noextract_alpm(PyObject *self, PyObject *args)
 {
   const char *str;
-  
-  if(!PyArg_ParseTuple(args, "s", &str))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
+
+  if(!PyArg_ParseTuple(args, "s", &str)) {
+    PyErr_SetString(alpm_error, "expecting a string argument");
     return NULL;
   }
-  else
-  {
-    if(check_init() == 1)
-    {
-      alpm_option_add_noextract(str);
-      return Py_None;
-    }
-    else
-    {
-      PyErr_SetString(alpm_error, "pyalpm not initialized");
-      return NULL;
-    }
-  }
+  CHECK_ALPM_INIT();
+  alpm_option_add_noextract(str);
+  Py_RETURN_NONE;
 }
 
-PyObject * option_remove_noextract_alpm(PyObject *self, PyObject *args)
+PyObject* option_remove_noextract_alpm(PyObject *self, PyObject *args)
 {
   const char *str;
-  
-  if(!PyArg_ParseTuple(args, "s", &str))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
+
+  if(!PyArg_ParseTuple(args, "s", &str)) {
+    PyErr_SetString(alpm_error, "expecting a string argument");
     return NULL;
   }
-  else
-  {
-    if(check_init() == 1)
-    {
-      alpm_option_remove_noextract(str);
-      return Py_None;
-    }
-    else
-    {
-      PyErr_SetString(alpm_error, "pyalpm not initialized");
-      return NULL;
-    }
-  }
+  CHECK_ALPM_INIT();
+  alpm_option_remove_noextract(str);
+  Py_RETURN_NONE;
 }
 
-PyObject * option_add_ignorepkg_alpm(PyObject *self, PyObject *args)
+PyObject* option_add_ignorepkg_alpm(PyObject *self, PyObject *args)
 {
   const char *str;
-  
-  if(!PyArg_ParseTuple(args, "s", &str))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
+
+  if(!PyArg_ParseTuple(args, "s", &str)) {
+    PyErr_SetString(alpm_error, "expecting a string argument");
     return NULL;
   }
-  else
-  {
-    if(check_init() == 1)
-    {
-      alpm_option_add_ignorepkg(str);
-      return Py_None;
-    }
-    else
-    {
-      PyErr_SetString(alpm_error, "pyalpm not initialized");
-      return NULL;
-    }
-  }
+  CHECK_ALPM_INIT();
+  alpm_option_add_ignorepkg(str);
+  Py_RETURN_NONE;
 }
 
-PyObject * option_remove_ignorepkg_alpm(PyObject *self, PyObject *args)
+PyObject* option_remove_ignorepkg_alpm(PyObject *self, PyObject *args)
 {
   const char *str;
-  
-  if(!PyArg_ParseTuple(args, "s", &str))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
+
+  if(!PyArg_ParseTuple(args, "s", &str)) {
+    PyErr_SetString(alpm_error, "expecting a string argument");
     return NULL;
   }
-  else
-  {
-    if(check_init() == 1)
-    {
-      alpm_option_remove_ignorepkg(str);
-      return Py_None;
-    }
-    else
-    {
-      PyErr_SetString(alpm_error, "pyalpm not initialized");
-      return NULL;
-    }
-  }
+  CHECK_ALPM_INIT();
+  alpm_option_remove_ignorepkg(str);
+  Py_RETURN_NONE;
 }
 
-PyObject * option_add_ignoregrps_alpm(PyObject *self, PyObject *args)
+PyObject* option_add_ignoregrp_alpm(PyObject *self, PyObject *args)
 {
   const char *str;
-  
-  if(!PyArg_ParseTuple(args, "s", &str))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
+
+  if(!PyArg_ParseTuple(args, "s", &str)) {
+    PyErr_SetString(alpm_error, "expecting a string argument");
     return NULL;
   }
-  else
-  {
-    if(check_init() == 1)
-    {
-      alpm_option_add_ignoregrp(str);
-      return Py_None;
-    }
-    else
-    {
-      PyErr_SetString(alpm_error, "pyalpm not initialized");
-      return NULL;
-    }
-  }
+  CHECK_ALPM_INIT();
+  alpm_option_add_ignoregrp(str);
+  Py_RETURN_NONE;
 }
 
-PyObject * option_remove_ignoregrps_alpm(PyObject *self, PyObject *args)
+PyObject* option_remove_ignoregrp_alpm(PyObject *self, PyObject *args)
 {
   const char *str;
-  
-  if(!PyArg_ParseTuple(args, "s", &str))
-  {
-    PyErr_SetString(alpm_error, "wrong arguments");
+
+  if(!PyArg_ParseTuple(args, "s", &str)) {
+    PyErr_SetString(alpm_error, "expecting a string argument");
     return NULL;
   }
-  else
-  {
-    if(check_init() == 1)
-    {
-      alpm_option_remove_ignoregrp(str);
-      return Py_None;
-    }
-    else
-    {
-      PyErr_SetString(alpm_error, "pyalpm not initialized");
-      return NULL;
-    }
-  }
+  CHECK_ALPM_INIT();
+  alpm_option_remove_ignoregrp(str);
+  Py_RETURN_NONE;
 }
-
-static PyMethodDef pyalpm_options_methods[] = {
-  {"addnoupgrade", option_add_noupgrade_alpm, METH_VARARGS, "add a noupgrade package."},
-  {"removenoupgrade", option_remove_noupgrade_alpm, METH_VARARGS, "removes a noupgrade package."},
-  {"addcachedir", option_add_cachedir_alpm, METH_VARARGS, "adds a cachedir."},
-  {"removecachedir", option_remove_cachedir_alpm, METH_VARARGS, "removes a cachedir."},
-  {"addnoextract", option_add_noextract_alpm, METH_VARARGS, "add a noextract package."},
-  {"removenoextract", option_remove_noextract_alpm, METH_VARARGS, "remove a noextract package."},
-  {"addignorepkg", option_add_ignorepkg_alpm, METH_VARARGS, "add an ignorepkg."},
-  {"removeignorepkg", option_remove_ignorepkg_alpm, METH_VARARGS, "remove an ignorepkg."},
-  {"addignoregrps", option_add_ignoregrps_alpm, METH_VARARGS, "add an ignoregrps."},
-  {"removeignoregrps", option_remove_ignoregrps_alpm, METH_VARARGS, "remove an ignoregrps."},
-  {NULL, NULL, 0, NULL},
-};
-
-static struct PyModuleDef pyalpm_options_def = {
-  PyModuleDef_HEAD_INIT,
-  "_alpmoptions",
-  "This module handles options getting and setting for pyalpm",
-  -1,
-  pyalpm_options_methods
-};
 
 /* vim: set ts=2 sw=2 et: */

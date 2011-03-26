@@ -78,8 +78,8 @@ PyObject * option_remove_noextract_alpm(PyObject *self, PyObject *args);
 PyObject * option_add_ignorepkg_alpm(PyObject *self, PyObject *args);
 PyObject * option_remove_ignorepkg_alpm(PyObject *self, PyObject *args);
 
-PyObject * option_add_ignoregrps_alpm(PyObject *self, PyObject *args);
-PyObject * option_remove_ignoregrps_alpm(PyObject *self, PyObject *args);
+PyObject * option_add_ignoregrp_alpm(PyObject *self, PyObject *args);
+PyObject * option_remove_ignoregrp_alpm(PyObject *self, PyObject *args);
 
 #endif // _PY_ALPM_OPTIONS_H
 
