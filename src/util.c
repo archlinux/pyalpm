@@ -23,7 +23,7 @@
 
 #include "util.h"
 
-unsigned short init = 0;
+static unsigned short init = 0;
 
 /*converts a Python array to alpm_list_t linked list, returns a pointer to first node*/
 alpm_list_t * tuple_alpm_list_t(PyObject *list)

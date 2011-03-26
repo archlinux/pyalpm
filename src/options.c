@@ -25,7 +25,6 @@
 #include "options.h"
 #include "util.h"
 
-extern int init;
 extern PyObject *alpm_error;
 
 /**
