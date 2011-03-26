@@ -61,15 +61,14 @@ alpm_list_t * tuple_alpm_list_t(PyObject *list)
   return ret;
 }
 
-PyObject* string_alpmlist_to_pylist(alpm_list_t *prt)
+PyObject* pyobject_from_string(void *s) {
+  return Py_BuildValue("s", (char*)s);
+}
+
+PyObject* alpmlist_to_pylist(alpm_list_t *prt, pyobjectbuilder pybuilder)
 {
   PyObject *output, *stritem;
   alpm_list_t *tmp;
-
-  if(prt == NULL) {
-    PyErr_SetString(PyExc_RuntimeError, "invalid argument for conversion from alpm_list_t");
-    return NULL;
-  }
 
   output = PyList_New(0);
   if(output == NULL) {
@@ -78,7 +77,7 @@ PyObject* string_alpmlist_to_pylist(alpm_list_t *prt)
   }
 
   for(tmp = prt; tmp; tmp = alpm_list_next(tmp)) {
-    stritem = Py_BuildValue("s", (char*)alpm_list_getdata(tmp));
+    stritem = pybuilder(alpm_list_getdata(tmp));
     PyList_Append(output, stritem);
     Py_DECREF(stritem);
   }

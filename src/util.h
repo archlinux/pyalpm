@@ -27,12 +27,16 @@
 #include <alpm.h>
 #include <alpm_list.h>
 
+typedef PyObject *(pyobjectbuilder)(void*);
+
+PyObject* pyobject_from_string(void *s);
+
 /*misc internal functions*/
 void add_alpm_list_t(alpm_list_t *prt);
 void remove_alpm_list_t(alpm_list_t *prt);
 alpm_list_t * tuple_alpm_list_t(PyObject *list);
 
-PyObject* string_alpmlist_to_pylist(alpm_list_t *prt);
+PyObject* alpmlist_to_pylist(alpm_list_t *prt, pyobjectbuilder pybuilder);
 
 unsigned short check_init(void);
 

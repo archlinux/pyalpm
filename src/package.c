@@ -157,9 +157,15 @@ static PyObject* pyalpm_package_get_desc(AlpmPackage *self, void *closure) {
   return Py_BuildValue("s", desc);
 }
 
+static PyObject* pyobject_from_pmdepend(void* dep) {
+  char *depstring = alpm_dep_compute_string((pmdepend_t*)dep);
+  PyObject *item = Py_BuildValue("s", depstring);
+  free(depstring);
+  return item;
+};
+
 static PyObject* pyalpm_package_get_depends(AlpmPackage *self, void *closure) {
-  alpm_list_t *depends = NULL, *p;
-  PyObject *output, *stritem;
+  alpm_list_t *depends = NULL;
 
   if (! self->c_data) {
     PyErr_SetString(PyExc_RuntimeError, "data is not initialized");
@@ -167,23 +173,7 @@ static PyObject* pyalpm_package_get_depends(AlpmPackage *self, void *closure) {
   }
 
   depends = alpm_pkg_get_depends(self->c_data);
-  output = PyList_New(0);
-  if(output == NULL) {
-    PyErr_SetString(PyExc_RuntimeError, "unable to create list object");
-    return NULL;
-  }
-
-  for(p = depends; p; p = alpm_list_next(p)) {
-    char *depstring = alpm_dep_compute_string(alpm_list_getdata(p));
-    stritem = Py_BuildValue("s", depstring);
-    PyList_Append(output, stritem);
-    Py_DECREF(stritem);
-    free(depstring);
-  }
-
-  return output;
-
-  return string_alpmlist_to_pylist(depends);
+  return alpmlist_to_pylist(depends, pyobject_from_pmdepend);
 }
 
 struct PyGetSetDef AlpmPackageGetSet[] = {
