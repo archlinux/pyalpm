@@ -24,10 +24,6 @@ Deltas
 
 * everything
 
-Groups
-
-* everything
-
 Transactions
 
 * everything
@@ -41,11 +37,4 @@ Options
 * alpm_option_{get,set}_logcb()
 * alpm_option_{get,set}_dlcb()
 * alpm_option_{get,set}_totaldlcb()
-
-* alpm_option_{set,add,remove}_cachedirs()
-* alpm_option_{set,add,remove}_noupgrades()
-* alpm_option_{set,add,remove}_noextracts()
-* alpm_option_{set,add,remove}_ignorepkgs()
-* alpm_option_{set,add,remove}_ignoregrps()
-
 

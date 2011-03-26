@@ -34,6 +34,8 @@ typedef struct _AlpmPackage {
   int needs_free;
 } AlpmPackage;
 
+static PyTypeObject AlpmPackageType;
+
 static void pyalpm_package_dealloc(AlpmPackage *self) {
   if (self->needs_free)
     alpm_pkg_free(self->c_data);
@@ -46,52 +48,6 @@ static PyObject* _pyobject_from_pmdepend(void* dep) {
   free(depstring);
   return item;
 };
-
-struct PyGetSetDef AlpmPackageGetSet[];
-
-PyTypeObject AlpmPackageType = {
-  PyVarObject_HEAD_INIT(NULL, 0)
-  "alpm.Package",             /*tp_name*/
-  sizeof(AlpmPackage),        /*tp_basicsize*/
-  0,                          /*tp_itemsize*/
-  (destructor)pyalpm_package_dealloc,     /*tp_dealloc*/
-  0,                          /*tp_print*/
-  0,                          /*tp_getattr*/
-  0,                          /*tp_setattr*/
-  NULL,                       /*tp_reserved*/
-  0,                          /*tp_repr*/
-  0,                          /*tp_as_number*/
-  0,                          /*tp_as_sequence*/
-  0,                          /*tp_as_mapping*/
-  0,                          /*tp_hash */
-  0,                          /*tp_call*/
-  0,                          /*tp_str*/
-  0,                          /*tp_getattro*/
-  0,                          /*tp_setattro*/
-  0,                          /*tp_as_buffer*/
-  Py_TPFLAGS_DEFAULT,         /*tp_flags*/
-  "Package object",            /* tp_doc */
-  0,                          /* tp_traverse */
-  0,                          /* tp_clear */
-  0,                          /* tp_richcompare */
-  0,                          /* tp_weaklistoffset */
-  0,                          /* tp_iter */
-  0,                          /* tp_iternext */
-  0,                          /* tp_methods */
-  0,                          /* tp_members */
-  AlpmPackageGetSet,          /* tp_getset */
-};
-
-/** Initializes Package class in module */
-void init_pyalpm_package(PyObject *module) {
-  PyObject *type;
-
-  if (PyType_Ready(&AlpmPackageType) < 0)
-    return;
-  type = (PyObject*)&AlpmPackageType;
-  Py_INCREF(type);
-  PyModule_AddObject(module, "Package", type);
-}
 
 PyObject *pyalpm_package_from_pmpkg(pmpkg_t *p) {
   AlpmPackage *self;
@@ -407,4 +363,47 @@ static struct PyMethodDef pyalpm_pkg_methods[] = {
   { NULL }
 };
 
+static PyTypeObject AlpmPackageType = {
+  PyVarObject_HEAD_INIT(NULL, 0)
+  "alpm.Package",             /*tp_name*/
+  sizeof(AlpmPackage),        /*tp_basicsize*/
+  0,                          /*tp_itemsize*/
+  (destructor)pyalpm_package_dealloc,     /*tp_dealloc*/
+  0,                          /*tp_print*/
+  0,                          /*tp_getattr*/
+  0,                          /*tp_setattr*/
+  NULL,                       /*tp_reserved*/
+  0,                          /*tp_repr*/
+  0,                          /*tp_as_number*/
+  0,                          /*tp_as_sequence*/
+  0,                          /*tp_as_mapping*/
+  0,                          /*tp_hash */
+  0,                          /*tp_call*/
+  0,                          /*tp_str*/
+  0,                          /*tp_getattro*/
+  0,                          /*tp_setattro*/
+  0,                          /*tp_as_buffer*/
+  Py_TPFLAGS_DEFAULT,         /*tp_flags*/
+  "Package object",            /* tp_doc */
+  0,                          /* tp_traverse */
+  0,                          /* tp_clear */
+  0,                          /* tp_richcompare */
+  0,                          /* tp_weaklistoffset */
+  0,                          /* tp_iter */
+  0,                          /* tp_iternext */
+  pyalpm_pkg_methods,         /* tp_methods */
+  0,                          /* tp_members */
+  AlpmPackageGetSet,          /* tp_getset */
+};
+
+/** Initializes Package class in module */
+void init_pyalpm_package(PyObject *module) {
+  PyObject *type;
+
+  if (PyType_Ready(&AlpmPackageType) < 0)
+    return;
+  type = (PyObject*)&AlpmPackageType;
+  Py_INCREF(type);
+  PyModule_AddObject(module, "Package", type);
+}
 

@@ -31,6 +31,7 @@ for attr in dir(pkg):
         print("  ", len(pkg.files), "files")
     else:
         print("  ", attr, ":", getattr(pkg, attr))
+print("  Required by:", ' '.join(pkg.compute_requiredby()))
 
 print("Package information about a tarball")
 for i in os.listdir("/var/cache/pacman/pkg"):
