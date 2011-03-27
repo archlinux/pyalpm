@@ -1,1 +1,11 @@
-python bindings for the alpm library.
+pyalpm - python bindings for the libalpm library
+
+pyalpm is a C extension for Python 3 that give access to the
+libalpm API for package management, which is used, for example
+in the Arch Linux distribution.
+
+Requirements :
+
+* Python 3 or later
+
+* libalpm 3.5 or later
