@@ -25,11 +25,9 @@
 #include "options.h"
 #include "util.h"
 
-extern PyObject *alpm_error;
-
-#define CHECK_ALPM_INIT() if (check_init() != 1) { \
+#define CHECK_ALPM_INIT(value) if (check_init() != 1) { \
   PyErr_SetString(alpm_error, "pyalpm not initialized"); \
-  return NULL; \
+  return (value);					 \
   }
 
 /**
@@ -64,10 +62,11 @@ int option_set_root_alpm(PyObject *self, PyObject *value, void* closure)
     path = strdup(PyBytes_AS_STRING(utf8));
     Py_DECREF(utf8);
   } else {
-    PyErr_SetString(alpm_error, "root path must be a string");
+    PyErr_SetString(PyExc_TypeError, "root path must be a string");
     return -1;
   }
 
+  CHECK_ALPM_INIT(-1);
   if(alpm_option_set_root(path) == -1) {
     PyErr_SetString(alpm_error, "failed setting root");
     ret = -1;
@@ -90,10 +89,11 @@ int option_set_dbpath_alpm(PyObject *self, PyObject* value, void *closure)
     path = strdup(PyBytes_AS_STRING(utf8));
     Py_DECREF(utf8);
   } else {
-    PyErr_SetString(alpm_error, "dbpath must be a string");
+    PyErr_SetString(PyExc_TypeError, "dbpath must be a string");
     return -1;
   }
 
+  CHECK_ALPM_INIT(-1);
   if(alpm_option_set_dbpath(path) == -1) {
     PyErr_SetString(alpm_error, "failed setting dbpath");
     ret = -1;
@@ -131,9 +131,11 @@ int option_set_logfile_alpm(PyObject *self, PyObject *value, void* closure)
     path = strdup(PyBytes_AS_STRING(utf8));
     Py_DECREF(utf8);
   } else {
-    PyErr_SetString(alpm_error, "dbpath must be a string");
+    PyErr_SetString(PyExc_TypeError, "logfile path must be a string");
     return -1;
   }
+
+  CHECK_ALPM_INIT(-1);
 
   if(alpm_option_set_logfile(path) == -1) {
     PyErr_SetString(alpm_error, "failed setting logfile path");
@@ -198,6 +200,7 @@ int option_set_arch_alpm(PyObject *self, PyObject *value, void* closure)
 }
 
 PyObject* option_get_arch_alpm(PyObject *self, void* closure) {
+  CHECK_ALPM_INIT(NULL);
   const char *str = alpm_option_get_arch();
 
   if(str == NULL) {
@@ -231,10 +234,11 @@ int option_set_usesyslog_alpm(PyObject *self, PyObject *value, void* closure)
 {
   if(!PyLong_Check(value))
   {
-    PyErr_SetString(alpm_error, "wrong arguments");
+    PyErr_SetString(PyExc_TypeError, "wrong arguments");
     return -1;
   }
 
+  CHECK_ALPM_INIT(-1);
   alpm_option_set_usesyslog(PyLong_AsLong(value));
   return 0;
 }
@@ -252,10 +256,11 @@ int option_set_usedelta_alpm(PyObject *self, PyObject *value, void* closure)
 {
   if(!PyLong_Check(value))
   {
-    PyErr_SetString(alpm_error, "wrong arguments");
+    PyErr_SetString(PyExc_TypeError, "wrong arguments");
     return -1;
   }
 
+  CHECK_ALPM_INIT(-1);
   alpm_option_set_usedelta(PyLong_AsLong(value));
   return 0;
 }
@@ -273,10 +278,10 @@ int option_set_checkspace_alpm(PyObject *self, PyObject *value, void* closure)
 {
   if(!PyLong_Check(value))
   {
-    PyErr_SetString(alpm_error, "wrong arguments");
+    PyErr_SetString(PyExc_TypeError, "wrong arguments");
     return -1;
   }
-
+  CHECK_ALPM_INIT(-1);
   alpm_option_set_checkspace(PyLong_AsLong(value));
   return 0;
 }
@@ -363,10 +368,10 @@ PyObject* option_add_noupgrade_alpm(PyObject *self, PyObject *args)
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
-    PyErr_SetString(alpm_error, "expecting a string argument");
+    PyErr_SetString(PyExc_TypeError, "expecting a string argument");
     return NULL;
   }
-  CHECK_ALPM_INIT();
+  CHECK_ALPM_INIT(NULL);
   alpm_option_add_noupgrade(str);
   Py_RETURN_NONE;
 }
@@ -376,10 +381,10 @@ PyObject* option_remove_noupgrade_alpm(PyObject *self, PyObject *args)
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
-    PyErr_SetString(alpm_error, "expecting a string argument");
+    PyErr_SetString(PyExc_TypeError, "expecting a string argument");
     return NULL;
   }
-  CHECK_ALPM_INIT();
+  CHECK_ALPM_INIT(NULL);
   alpm_option_remove_noupgrade(str);
   Py_RETURN_NONE;
 }
@@ -389,10 +394,10 @@ PyObject* option_add_cachedir_alpm(PyObject *self, PyObject *args)
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
-    PyErr_SetString(alpm_error, "expecting a string argument");
+    PyErr_SetString(PyExc_TypeError, "expecting a string argument");
     return NULL;
   }
-  CHECK_ALPM_INIT();
+  CHECK_ALPM_INIT(NULL);
   alpm_option_add_cachedir(str);
   Py_RETURN_NONE;
 }
@@ -402,10 +407,10 @@ PyObject* option_remove_cachedir_alpm(PyObject *self, PyObject *args)
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
-    PyErr_SetString(alpm_error, "expecting a string argument");
+    PyErr_SetString(PyExc_TypeError, "expecting a string argument");
     return NULL;
   }
-  CHECK_ALPM_INIT();
+  CHECK_ALPM_INIT(NULL);
   alpm_option_remove_cachedir(str);
   Py_RETURN_NONE;
 }
@@ -415,10 +420,10 @@ PyObject* option_add_noextract_alpm(PyObject *self, PyObject *args)
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
-    PyErr_SetString(alpm_error, "expecting a string argument");
+    PyErr_SetString(PyExc_TypeError, "expecting a string argument");
     return NULL;
   }
-  CHECK_ALPM_INIT();
+  CHECK_ALPM_INIT(NULL);
   alpm_option_add_noextract(str);
   Py_RETURN_NONE;
 }
@@ -428,10 +433,10 @@ PyObject* option_remove_noextract_alpm(PyObject *self, PyObject *args)
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
-    PyErr_SetString(alpm_error, "expecting a string argument");
+    PyErr_SetString(PyExc_TypeError, "expecting a string argument");
     return NULL;
   }
-  CHECK_ALPM_INIT();
+  CHECK_ALPM_INIT(NULL);
   alpm_option_remove_noextract(str);
   Py_RETURN_NONE;
 }
@@ -441,10 +446,10 @@ PyObject* option_add_ignorepkg_alpm(PyObject *self, PyObject *args)
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
-    PyErr_SetString(alpm_error, "expecting a string argument");
+    PyErr_SetString(PyExc_TypeError, "expecting a string argument");
     return NULL;
   }
-  CHECK_ALPM_INIT();
+  CHECK_ALPM_INIT(NULL);
   alpm_option_add_ignorepkg(str);
   Py_RETURN_NONE;
 }
@@ -454,10 +459,10 @@ PyObject* option_remove_ignorepkg_alpm(PyObject *self, PyObject *args)
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
-    PyErr_SetString(alpm_error, "expecting a string argument");
+    PyErr_SetString(PyExc_TypeError, "expecting a string argument");
     return NULL;
   }
-  CHECK_ALPM_INIT();
+  CHECK_ALPM_INIT(NULL);
   alpm_option_remove_ignorepkg(str);
   Py_RETURN_NONE;
 }
@@ -467,10 +472,10 @@ PyObject* option_add_ignoregrp_alpm(PyObject *self, PyObject *args)
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
-    PyErr_SetString(alpm_error, "expecting a string argument");
+    PyErr_SetString(PyExc_TypeError, "expecting a string argument");
     return NULL;
   }
-  CHECK_ALPM_INIT();
+  CHECK_ALPM_INIT(NULL);
   alpm_option_add_ignoregrp(str);
   Py_RETURN_NONE;
 }
@@ -480,10 +485,10 @@ PyObject* option_remove_ignoregrp_alpm(PyObject *self, PyObject *args)
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
-    PyErr_SetString(alpm_error, "expecting a string argument");
+    PyErr_SetString(PyExc_TypeError, "expecting a string argument");
     return NULL;
   }
-  CHECK_ALPM_INIT();
+  CHECK_ALPM_INIT(NULL);
   alpm_option_remove_ignoregrp(str);
   Py_RETURN_NONE;
 }

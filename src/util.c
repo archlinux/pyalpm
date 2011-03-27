@@ -21,7 +21,35 @@
  *
  */
 
-#include "util.h"
+#include <Python.h>
+#include <alpm.h>
+#include <alpm_list.h>
+
+PyObject* alpm_error = NULL;
+
+/** Formats an alpm.error exception using errno from libalpm. */
+static PyObject* pyalpm_error_str(PyObject* exception) {
+  PyObject* args = PyObject_GetAttrString(exception, "args");
+  PyObject* errstring;
+  if (!PyArg_ParseTuple(args, "O!", &PyUnicode_Type, &errstring)) {
+    PyErr_SetString(PyExc_TypeError, "error object takes a string as argument");
+    Py_DECREF(args);
+    return NULL;
+  }
+
+  PyObject *result = PyUnicode_FromFormat
+    ("%S (code %d: %s)", errstring, pm_errno, alpm_strerrorlast());
+  Py_DECREF(args);
+  Py_DECREF(errstring);
+  return result;
+}
+
+void init_pyalpm_error(PyObject* module) {
+  alpm_error = PyErr_NewException("alpm.error", NULL, NULL);
+  ((PyTypeObject*)alpm_error)->tp_str = pyalpm_error_str;
+  PyModule_AddObject(module, "error", alpm_error);
+  Py_INCREF(alpm_error);
+}
 
 static unsigned short init = 0;
 
@@ -64,7 +92,7 @@ PyObject* pyobject_from_string(void *s) {
   return Py_BuildValue("s", (char*)s);
 }
 
-PyObject* alpmlist_to_pylist(alpm_list_t *prt, pyobjectbuilder pybuilder)
+PyObject* alpmlist_to_pylist(alpm_list_t *prt, PyObject* pybuilder(void*))
 {
   PyObject *output, *stritem;
   alpm_list_t *tmp;

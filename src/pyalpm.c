@@ -145,10 +145,7 @@ PyMODINIT_FUNC PyInit_pyalpm()
 {
   PyObject* m = PyModule_Create(&pyalpm_def);
 
-  alpm_error = PyErr_NewException("alpm.error", NULL, NULL);
-  PyModule_AddObject(m, "error", alpm_error);
-  Py_INCREF(alpm_error);
-
+  init_pyalpm_error(m);
   init_pyalpm_options(m);
   init_pyalpm_package(m);
   init_pyalpm_db(m);

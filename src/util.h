@@ -27,8 +27,11 @@
 #include <alpm.h>
 #include <alpm_list.h>
 
-typedef PyObject *(pyobjectbuilder)(void*);
+/** error objects */
+extern PyObject* alpm_error;
+void init_pyalpm_error(PyObject* module);
 
+typedef PyObject *(pyobjectbuilder)(void*);
 PyObject* pyobject_from_string(void *s);
 
 /** List conversion functions */

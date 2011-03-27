@@ -26,8 +26,6 @@
 #include "package.h"
 #include "util.h"
 
-extern PyObject* alpm_error;
-
 typedef struct _AlpmDB {
   PyObject_HEAD
   pmdb_t *c_data;
