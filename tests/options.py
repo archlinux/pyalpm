@@ -23,18 +23,18 @@ class TestOptions(unittest.TestCase):
 
     def test_paths_wrong_type(self):
         opts = pyalpm.options
-        with self.assertRaises(pyalpm.error):
+        with self.assertRaises(TypeError):
             opts.root = 3
-        with self.assertRaises(pyalpm.error):
+        with self.assertRaises(TypeError):
             opts.dbpath = 3
-        with self.assertRaises(pyalpm.error):
+        with self.assertRaises(TypeError):
             opts.logfile = 3
 
     def test_string(self):
         "Test getter/setters for string options"
         pyalpm.options.arch = 'i686'
         self.assertEqual(pyalpm.options.arch, 'i686')
-        with self.assertRaises(pyalpm.error):
+        with self.assertRaises(TypeError):
             pyalpm.options.arch = ["i686"]
 
     def test_booleans(self):
@@ -62,6 +62,61 @@ class TestOptions(unittest.TestCase):
 
         opts.ignorepkgs = ["glibc", "pacman"]
         self.assertEqual(set(opts.ignorepkgs), set(["glibc", "pacman"]))
+
+class TestOptionsNotInit(unittest.TestCase):
+    def test_root(self):
+        opts = pyalpm.options
+        with self.assertRaises(pyalpm.error):
+            opts.root = "/root"
+        with self.assertRaises(pyalpm.error):
+            s = opts.root
+
+    def test_dbpath(self):
+        opts = pyalpm.options
+        with self.assertRaises(pyalpm.error):
+            opts.dbpath = "/var/lib/pacman"
+        with self.assertRaises(pyalpm.error):
+            s = opts.dbpath
+
+    def test_logfile(self):
+        opts = pyalpm.options
+        with self.assertRaises(pyalpm.error):
+            opts.logfile = "/var/log/pacman.log"
+        with self.assertRaises(pyalpm.error):
+            s = opts.logfile
+
+    def test_lockfile(self):
+        opts = pyalpm.options
+        with self.assertRaises(pyalpm.error):
+            s = opts.lockfile
+
+    def test_arch(self):
+        with self.assertRaises(pyalpm.error):
+            pyalpm.options.arch = "i686"
+        with self.assertRaises(pyalpm.error):
+            s = pyalpm.options.arch
+
+    def test_usesyslog(self):
+        "Test get/set for boolean options"
+        opts = pyalpm.options
+        with self.assertRaises(pyalpm.error):
+            opts.usesyslog = 1
+        with self.assertRaises(pyalpm.error):
+            x = opts.usesyslog
+
+    def test_usedelta(self):
+        opts = pyalpm.options
+        with self.assertRaises(pyalpm.error):
+            opts.usedelta = 1
+        with self.assertRaises(pyalpm.error):
+            x = opts.usedelta
+
+    def test_checkspace(self):
+        opts = pyalpm.options
+        with self.assertRaises(pyalpm.error):
+            opts.checkspace = 1
+        with self.assertRaises(pyalpm.error):
+            x = opts.checkspace
 
 if __name__ == "__main__":
     unittest.main(verbosity = 2)
