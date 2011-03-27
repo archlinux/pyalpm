@@ -24,22 +24,16 @@
 #include "db.h"
 #include "optionsobject.h"
 
-/* pyalpm errors */
-PyObject *alpm_error = NULL;
-
 /*pyalpm functions*/
 static PyObject * initialize_alpm(PyObject *self, PyObject *dummy)
 {
-  if(alpm_initialize() == -1)
-  {
-    PyErr_SetString(alpm_error, "failed to initialize alpm");
+  if(alpm_initialize() == -1) {
+    PyErr_SetString(alpm_error, "could not initialize libalpm");
     return NULL;
   }
-  else
-  {
-    set_init(1);
-    Py_RETURN_NONE;
-  }
+
+  set_init(1);
+  Py_RETURN_NONE;
 }
 
 static PyObject * release_alpm(PyObject *self, PyObject *dummy)

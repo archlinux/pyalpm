@@ -36,16 +36,11 @@
 PyObject * option_get_root_alpm(PyObject *self, void *closure)
 {
   const char *str = alpm_option_get_root();
-
-  if(str == NULL)
-  {
+  if(str == NULL) {
     PyErr_SetString(alpm_error, "failed getting root path");
     return NULL;
   }
-  else
-  {
-    return Py_BuildValue("s", str);
-  }
+  return Py_BuildValue("s", str);
 }
 
 /** Sets root for libalpm
@@ -190,10 +185,11 @@ int option_set_arch_alpm(PyObject *self, PyObject *value, void* closure)
     string = strdup(PyBytes_AS_STRING(utf8));
     Py_DECREF(utf8);
   } else {
-    PyErr_SetString(alpm_error, "arch must be a string");
+    PyErr_SetString(PyExc_TypeError, "arch must be a string");
     return -1;
   }
 
+  CHECK_ALPM_INIT(-1);
   alpm_option_set_arch(string);
   free(string);
   return 0;
@@ -204,7 +200,7 @@ PyObject* option_get_arch_alpm(PyObject *self, void* closure) {
   const char *str = alpm_option_get_arch();
 
   if(str == NULL) {
-    PyErr_SetString(alpm_error, "failed getting arch.");
+    PyErr_SetString(alpm_error, "failed getting arch");
     return NULL;
   }
   return Py_BuildValue("s", str);
