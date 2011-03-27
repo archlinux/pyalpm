@@ -1,0 +1,4 @@
+Version 0.1 :
+  * databases and packages are wrapped by Python classes
+  * support for registering databases
+  * support for getting/setting libalpm options (except callbacks)
