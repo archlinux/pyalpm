@@ -95,6 +95,28 @@ static PyObject* pyalpm_db_get_url(AlpmDB* self, void* closure) {
   return PyUnicode_FromString(url);
 }
 
+static PyObject* pyalpm_db_set_server(AlpmDB* self, PyObject* value, void* closure) {
+  char *path = NULL;
+  PyObject *utf8 = NULL;
+  int ret;
+  if (PyBytes_Check(value)) {
+    path = PyBytes_AS_STRING(value);
+  } else if (PyUnicode_Check(value)) {
+    utf8 = PyUnicode_AsUTF8String(value);
+    path = PyBytes_AS_STRING(utf8);
+  } else {
+    PyErr_SetString(PyExc_TypeError, "expected a string value");
+    return -1;
+  }
+
+  ret = alpm_db_setserver(self->c_data, path);
+  if (utf8) Py_DECREF(utf8);
+  if (ret == -1)
+    PyErr_SetString(alpm_error, alpm_strerrorlast());
+
+  return ret;
+}
+
 static PyObject* pyalpm_db_get_pkgcache(AlpmDB* self, void* closure) {
   alpm_list_t *pkglist = alpm_db_get_pkgcache(self->c_data);
   return alpmlist_to_pylist(pkglist, pyalpm_package_from_pmpkg);
@@ -106,16 +128,19 @@ static PyObject* pyalpm_db_get_grpcache(AlpmDB* self, void* closure) {
 }
 
 static struct PyMethodDef db_methods[] = {
-  { "get_pkg", pyalpm_db_get_pkg, METH_VARARGS, "get a package by name" },
+  { "get_pkg", pyalpm_db_get_pkg, METH_VARARGS,
+    "get a package by name\n"
+    "args: a package name (string)" },
   { NULL },
 };
 
 struct PyGetSetDef db_getset[] = {
   /* description properties */
-  { "name", (getter)pyalpm_db_get_name, 0, "name", NULL } ,
-  { "url", (getter)pyalpm_db_get_url, 0, "URL", NULL } ,
-  { "pkgcache", (getter)pyalpm_db_get_pkgcache, 0, "list of packages", NULL } ,
-  { "grpcache", (getter)pyalpm_db_get_grpcache, 0, "list of package groups", NULL } ,
+  { "name", (getter)pyalpm_db_get_name, 0,
+    "database name (e.g. \"core\", \"extra\")", NULL } ,
+  { "url", (getter)pyalpm_db_get_url, (setter)pyalpm_db_set_server, "URL (for sync DBs)", NULL } ,
+  { "pkgcache", (getter)pyalpm_db_get_pkgcache, 0, "(read only) list of packages", NULL } ,
+  { "grpcache", (getter)pyalpm_db_get_grpcache, 0, "(read only) list of package groups", NULL } ,
   { NULL }
 };
 
@@ -177,3 +202,4 @@ PyObject *pyalpm_db_from_pmdb(void* data) {
   return (PyObject *)self;
 }
 
+/* vim: set ts=2 sw=2 et: */

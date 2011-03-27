@@ -7,7 +7,6 @@ Databases
 
 alpm_db_unregister
 alpm_db_unregister_all
-alpm_db_setserver
 alpm_db_update
 alpm_db_search
 alpm_db_set_pkgreason
