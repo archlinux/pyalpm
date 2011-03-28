@@ -35,6 +35,21 @@ typedef struct _AlpmPackage {
 
 static PyTypeObject AlpmPackageType;
 
+static PyObject* pyalpm_pkg_repr(AlpmPackage *self) {
+  return PyUnicode_FromFormat("<alpm.Package(\"%s-%s-%s\") at %p>",
+			      alpm_pkg_get_name(self->c_data),
+			      alpm_pkg_get_version(self->c_data),
+			      alpm_pkg_get_arch(self->c_data),
+			      self);
+}
+
+static PyObject* pyalpm_pkg_str(AlpmPackage *self) {
+  return PyUnicode_FromFormat("alpm.Package(\"%s-%s-%s\")",
+			      alpm_pkg_get_name(self->c_data),
+			      alpm_pkg_get_version(self->c_data),
+			      alpm_pkg_get_arch(self->c_data));
+}
+
 static void pyalpm_package_dealloc(AlpmPackage *self) {
   if (self->needs_free)
     alpm_pkg_free(self->c_data);
@@ -396,13 +411,13 @@ static PyTypeObject AlpmPackageType = {
   0,                          /*tp_getattr*/
   0,                          /*tp_setattr*/
   NULL,                       /*tp_reserved*/
-  0,                          /*tp_repr*/
+  pyalpm_pkg_repr,            /*tp_repr*/
   0,                          /*tp_as_number*/
   0,                          /*tp_as_sequence*/
   0,                          /*tp_as_mapping*/
   0,                          /*tp_hash */
   0,                          /*tp_call*/
-  0,                          /*tp_str*/
+  pyalpm_pkg_str,             /*tp_str*/
   0,                          /*tp_getattro*/
   0,                          /*tp_setattro*/
   0,                          /*tp_as_buffer*/
