@@ -12,15 +12,18 @@ print("  Packages:", len(localdb.pkgcache))
 
 for name, pkgs in localdb.grpcache:
     print("  Group:", name, [pkg.name for pkg in pkgs])
+print("")
 
 print("Registering [core], [extra], [community]...")
-pyalpm.register_syncdb("core")
-pyalpm.register_syncdb("extra")
-pyalpm.register_syncdb("community")
+core = pyalpm.register_syncdb("core")
+extra = pyalpm.register_syncdb("extra")
+community = pyalpm.register_syncdb("community")
+print("")
 
 print("Available sync DBs")
 for db in pyalpm.get_syncdbs():
     print("  DB:", db.name, "url:", db.url)
+print("")
 
 print("Package information about glibc")
 pkg = localdb.get_pkg("glibc")
@@ -32,6 +35,7 @@ for attr in dir(pkg):
     else:
         print("  ", attr, ":", getattr(pkg, attr))
 print("  Required by:", ' '.join(pkg.compute_requiredby()))
+print("")
 
 print("Package information about a tarball")
 for i in os.listdir("/var/cache/pacman/pkg"):
@@ -46,5 +50,12 @@ for attr in dir(pkg):
         print("  ", len(pkg.files), "files")
     else:
         print("  ", attr, ":", getattr(pkg, attr))
+print("")
+
+print("Information about group gnome")
+l = pyalpm.find_grp_pkgs([core, extra, community], "gnome")
+for pkg in l:
+    print("  ", pkg.name, "from", pkg.db.name)
+print("")
 
 # vim: set ts=4 sw=4 et:

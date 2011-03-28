@@ -124,6 +124,11 @@ static PyMethodDef methods[] = {
   /* from package.c */
   {"load_pkg", pyalpm_package_load, METH_VARARGS, "loads package information from a tarball"},
 
+  /* from db.c */
+  {"find_grp_pkgs", pyalpm_find_grp_pkgs, METH_VARARGS,
+   "find packages from a given group across databases\n"
+   "args: a list of databases, a group name"},
+
   {NULL, NULL, 0, NULL}
 };
 

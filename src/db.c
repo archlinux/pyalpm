@@ -127,10 +127,27 @@ static PyObject* pyalpm_db_get_grpcache(AlpmDB* self, void* closure) {
   return alpmlist_to_pylist(grplist, _pyobject_from_pmgrp);
 }
 
+static PyObject* pyalpm_db_readgrp(PyObject* rawself, PyObject* args) {
+  AlpmDB* self = (AlpmDB*)rawself;
+  char *grpname;
+  pmgrp_t *grp;
+  if (!PyArg_ParseTuple(args, "s", &grpname)) {
+    PyErr_SetString(PyExc_TypeError, "expected string argument");
+    return NULL;
+  }
+
+  grp = alpm_db_readgrp(self->c_data, grpname);
+  return _pyobject_from_pmgrp(grp);
+}
+
 static struct PyMethodDef db_methods[] = {
   { "get_pkg", pyalpm_db_get_pkg, METH_VARARGS,
     "get a package by name\n"
     "args: a package name (string)" },
+  { "read_grp", pyalpm_db_readgrp, METH_VARARGS,
+    "get contents of a group\n"
+    "args: a group name (string)\n"
+    "returns: a tuple (group name, list of packages)" },
   { NULL },
 };
 
@@ -189,6 +206,7 @@ void init_pyalpm_db(PyObject *module) {
   PyModule_AddObject(module, "DB", type);
 }
 
+
 PyObject *pyalpm_db_from_pmdb(void* data) {
   pmdb_t *db = (pmdb_t*)data;
   AlpmDB *self;
@@ -200,6 +218,45 @@ PyObject *pyalpm_db_from_pmdb(void* data) {
 
   self->c_data = db;
   return (PyObject *)self;
+}
+
+/** non-class methods */
+PyObject* pyalpm_find_grp_pkgs(PyObject* self, PyObject *args) {
+  PyObject *dbs, *db_iter, *db;
+  char *grpname;
+  alpm_list_t *db_list = NULL;
+  alpm_list_t *pkg_list;
+  PyObject *result;
+
+  if (!PyArg_ParseTuple(args, "Os", &dbs, &grpname)) {
+    PyErr_SetString(PyExc_TypeError, "expected arguments (list of dbs, group name)");
+    return NULL;
+  }
+
+  db_iter = PyObject_GetIter(dbs);
+  if(db_iter == NULL) {
+    PyErr_SetString(PyExc_TypeError, "argument is not iterable");
+    return NULL;
+  }
+
+  while((db = PyIter_Next(db_iter))) {
+    if (!PyObject_IsInstance(db, (PyObject*)&AlpmDBType)) {
+      PyErr_SetString(PyExc_TypeError, "non-DB in sequence");
+      Py_DECREF(db);
+      Py_DECREF(db_iter);
+      return NULL;
+    }
+
+    db_list = alpm_list_add(db_list, ((AlpmDB*)db)->c_data);
+    Py_DECREF(db);
+  }
+
+  Py_DECREF(db_iter);
+  pkg_list = alpm_find_grp_pkgs(db_list, grpname);
+  result = alpmlist_to_pylist(pkg_list, pyalpm_package_from_pmpkg);
+  alpm_list_free(db_list);
+  alpm_list_free(pkg_list);
+  return result;
 }
 
 /* vim: set ts=2 sw=2 et: */

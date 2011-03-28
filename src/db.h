@@ -28,4 +28,6 @@
 PyObject *pyalpm_db_from_pmdb(void* data);
 void init_pyalpm_db(PyObject *module);
 
+PyObject* pyalpm_find_grp_pkgs(PyObject* self, PyObject* args);
+
 #endif // _PYALPM_DB_H
