@@ -81,6 +81,11 @@ static PyObject * check_init_alpm(PyObject *self, PyObject *dummy)
   }
 }
 
+static PyObject *pyalpm_strerrorlast(PyObject *self, PyObject *dummy)
+{
+  return Py_BuildValue("s", alpm_strerrorlast());
+}
+
 static PyObject* pyalpm_get_localdb(PyObject *self, PyObject *dummy) {
   return pyalpm_db_from_pmdb(alpm_option_get_localdb());
 }
@@ -114,6 +119,7 @@ static PyMethodDef methods[] = {
   {"version", version_alpm, METH_NOARGS, "returns pyalpm version."},
   {"alpmversion", alpmversion_alpm, METH_NOARGS, "returns alpm version."},
   {"checkinit", check_init_alpm, METH_VARARGS, "checks if the library was initialized."},
+  {"strerrorlast", pyalpm_strerrorlast, METH_NOARGS, "a string representation of the last error"},
 
   {"register_syncdb", pyalpm_register_syncdb, METH_VARARGS,
    "registers the database with the given name\n"
