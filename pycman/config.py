@@ -25,26 +25,33 @@ This module handles pacman.conf files as well as pycman options that
 are common to all action modes.
 """
 
-import optparse
+import argparse
 import pyalpm
 
 def read_config(path):
 	pass
 
-def make_parser():
-	parser = optparse.OptionParser()
-	parser.add_option('-b', '--dbpath',
-			action = 'store', dest = 'dbpath', type = "string",
+def make_parser(*args, **kwargs):
+	parser = argparse.ArgumentParser(*args, **kwargs)
+	common = parser.add_argument_group('Common options')
+	common.add_argument('-b', '--dbpath', metavar = '<path>',
+			action = 'store', dest = 'dbpath', type = str,
 			help = 'set an alternate database location')
-	parser.add_option('-r', '--root',
-			action = 'store', dest = 'root', type = "string",
+	common.add_argument('-r', '--root', metavar = '<path>',
+			action = 'store', dest = 'root', type = str,
 			help = 'set an alternate installation root')
-	parser.add_option('--arch',
-			action = 'store', dest = 'arch', type = "string",
+	common.add_argument('-v', '--verbose',
+			action = 'store_true', dest = 'verbose', default = False,
+			help = 'be verbose')
+	common.add_argument('--arch', metavar = '<arch>',
+			action = 'store', dest = 'arch', type = str,
 			help = 'set an alternate architecture')
-	parser.add_option('--config', action = 'store', dest = 'config', type = "string")
-	parser.add_option('--logfile', action = 'store', dest = 'logfile', type = "string")
-	parser.add_option('-v', '--verbose', action = 'store_true', dest = 'verbose', default = False)
+	common.add_argument('--config', metavar = '<file>',
+			action = 'store', dest = 'config', type = str,
+			help = 'set an alternate configuration file')
+	common.add_argument('--logfile', metavar = '<file>',
+			action = 'store', dest = 'logfile', type = str,
+			help = 'set an alternate log file')
 	return parser
 
 def init_with_config(options):

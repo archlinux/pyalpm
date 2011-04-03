@@ -47,23 +47,24 @@ def display_pkg(pkg, options):
 		else:
 			[print(pkg.name, '/' + f) for f in pkg.files]
 
-def main(args):
-	parser = config.make_parser()
-	parser.add_option('-q', '--quiet',
-			action = 'store_true', dest = 'quiet', default = False,
-			help = 'show less information for query and search')
-	parser.add_option('-i', '--info',
+def main(rawargs):
+	parser = config.make_parser(prog = 'pycman-query')
+	group = parser.add_argument_group("Query options")
+	group.add_argument('-i', '--info',
 			action = 'count', dest = 'info', default = 0,
 			help = 'view package information')
-	parser.add_option('-l', '--list',
+	group.add_argument('-l', '--list',
 			action = 'store_true', dest = 'listfiles', default = False,
 			help = 'list the contents of the queried package')
+	group.add_argument('-q', '--quiet',
+			action = 'store_true', dest = 'quiet', default = False,
+			help = 'show less information for query and search')
 
-	options, realargs = parser.parse_args(args)
-	config.init_with_config(options)
+	args = parser.parse_args(rawargs)
+	config.init_with_config(args)
 
-	if options.verbose:
-		print("query " + " ".join(args), file = sys.stderr)
+	if args.verbose:
+		print("query " + " ".join(rawargs), file = sys.stderr)
 
 	for pkg in pyalpm.get_localdb().pkgcache:
 		display_pkg(pkg, options)

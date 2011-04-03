@@ -33,11 +33,16 @@ def deptest(deps):
 	missing = [dep for dep in deps if pyalpm.find_satisfier(db.pkgcache, dep) is None]
 	return missing
 
-def main(args):
+def main(rawargs):
 	parser = config.make_parser()
-	options, args = parser.parse_args(args)
-	config.init_with_config(options)
-	missing = deptest(args)
+	parser.add_argument('deps', metavar = 'dep', nargs='*',
+			help = "a dependency string, e.g. 'pacman>=3.4.0'")
+	args = parser.parse_args(rawargs)
+	config.init_with_config(args)
+
+	if args.verbose:
+		print("deptest " + " ".join(rawargs), file = sys.stderr)
+	missing = deptest(args.deps)
 
 	if len(missing) == 0:
 		return 0
