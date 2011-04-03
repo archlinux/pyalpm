@@ -33,14 +33,14 @@ def display_pkginfo(pkg):
 
 def display_pkg(pkg, options):
 	if options.info > 0:
-		display_pkginfo(pkg)
-
-	if not options.listfiles:
+		display_pkginfo(pkg, options.info)
+	elif not options.listfiles:
 		if options.quiet:
 			print(pkg.name)
 		else:
 			print(pkg.name, pkg.version)
-	else:
+
+	if options.listfiles:
 		if options.quiet:
 			[print('/' + f) for f in pkg.files]
 		else:
