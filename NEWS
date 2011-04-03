@@ -1,4 +1,10 @@
-Version 0.1 :
+pyalpm 0.2 :
+  * handles alpm error strings
+  * wraps alpm_db_read_grp()
+  * wraps alpm_find_grp_pkgs()
+  * wraps alpm_find_satisfier()
+
+pyalpm 0.1 :
   * databases and packages are wrapped by Python classes
   * support for registering databases
   * support for getting/setting libalpm options (except callbacks)
