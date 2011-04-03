@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+# 
+# pycman - A Python implementation of Pacman
+# Copyright (C) 2011 Rémy Oudompheng <remy@archlinux.org>
+# 
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+"""
+A Python implementation of pacman
+"""
+
+import sys
+from pycman import action_deptest
+from pycman import action_version
+
+SHORT_ACTIONS = {
+	'T': 'deptest',
+	'V': 'version'
+}
+
+ACTIONS = {
+	'deptest': action_deptest.main,
+	'version': action_version.main
+}
+
+HELP = """
+Available actions:
+    deptest, -T : test dependencies
+    version, -V : print version information
+
+Use the '-h' or '--help' for more information.
+"""
+
+def usage():
+	print("Usage:", sys.argv[0], "action", "[options]", "[arguments]")
+	print(HELP)
+
+def parse_action(args):
+	# cases where to print usage
+	if len(args) == 0:
+		usage()
+		return None, 2
+	if args[0].startswith("-h"):
+		usage()
+		return None, 2
+	elif args[0] == "--help":
+		usage()
+		return None, 2
+
+	if not args[0].startswith("-"):
+		# action name style (sync, query...)
+		action = args[0]
+		newargs = args[1:]
+		return action, newargs
+	else:
+		# pacman style for action (-S, -Q...)
+		actions = [char for char in args[0] if char.isupper()]
+		if len(actions) == 0:
+			print("No operation specified.")
+			usage()
+			return None, 2
+		elif len(actions) == 1:
+			if actions[0] not in SHORT_ACTIONS:
+				print("Invalid action specified (%s are supported)" % ', '.join(SHORT_ACTIONS.keys()))
+				return None, 1
+			else:
+				options = [char for char in args[0][1:] if not char.isupper()]
+				if len(options) > 0:
+					optarg = '-' + ''.join(options)
+					newargs = [optarg] + args[1:]
+				else:
+					newargs = args[1:]
+				return SHORT_ACTIONS[actions[0]], newargs
+		elif len(actions) > 1:
+			print("Only one operation may be used at a time (received %s)."
+					% ", ".join(opts.actions))
+			return None, 1
+
+def main(args):
+	action, data = parse_action(args)
+	if action is None:
+		return data
+	if action not in ACTIONS:
+		print("Invalid action specified (%s are supported)" % ', '.join(ACTIONS.keys()))
+		return None, 1
+
+	callback = ACTIONS[action]
+	ret = callback(data)
+	return ret
+
+if __name__ == "__main__":
+	ret = main(sys.argv[1:])
+	sys.exit(ret)
+
+# vim: set ts=4 sw=4 tw=0 noet:
