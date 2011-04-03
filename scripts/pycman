@@ -26,6 +26,7 @@ import sys
 import pycman
 
 SHORT_ACTIONS = {
+	'Q': 'query',
 	'T': 'deptest',
 	'V': 'version'
 }

@@ -19,10 +19,12 @@
 #
 
 from . import action_deptest
+from . import action_query
 from . import action_version
 
 ACTIONS = {
 	'deptest': action_deptest.main,
+	'query': action_query.main,
 	'version': action_version.main
 }
 
