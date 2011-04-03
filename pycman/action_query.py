@@ -59,6 +59,8 @@ def main(rawargs):
 	group.add_argument('-q', '--quiet',
 			action = 'store_true', dest = 'quiet', default = False,
 			help = 'show less information for query and search')
+	group.add_argument('pkgnames', metavar = 'pkg', nargs = '*',
+			help = 'packages to show (show all packages if no arguments)')
 
 	args = parser.parse_args(rawargs)
 	config.init_with_config(args)
@@ -66,8 +68,19 @@ def main(rawargs):
 	if args.verbose:
 		print("query " + " ".join(rawargs), file = sys.stderr)
 
-	for pkg in pyalpm.get_localdb().pkgcache:
-		display_pkg(pkg, options)
+	db = pyalpm.get_localdb()
+	if len(args.pkgnames) > 0:
+		# a list of package names was specified
+		for pkgname in args.pkgnames:
+			pkg = db.get_pkg(pkgname)
+			if pkg is None:
+				print('error: package "%s" not found' % pkgname)
+			else:
+				display_pkg(pkg, args)
+	else:
+		# no package was specified, display all
+		for pkg in db.pkgcache:
+			display_pkg(pkg, args)
 
 	return 0
 

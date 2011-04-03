@@ -33,6 +33,7 @@ SHORT_ACTIONS = {
 
 HELP = """
 Available actions:
+    query, -Q : list installed packages
     deptest, -T : test dependencies
     version, -V : print version information
 
