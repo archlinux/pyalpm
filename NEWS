@@ -3,6 +3,7 @@ pyalpm 0.2 :
   * wraps alpm_db_read_grp()
   * wraps alpm_find_grp_pkgs()
   * wraps alpm_find_satisfier()
+  * add pycman (Python clone of pacman), with read-only actions
 
 pyalpm 0.1 :
   * databases and packages are wrapped by Python classes
