@@ -129,12 +129,15 @@ def main(rawargs):
 		print("query " + " ".join(rawargs), file = sys.stderr)
 
 	db = pyalpm.get_localdb()
+	retcode = 0
+
 	if len(args.pkgnames) > 0:
 		# a list of package names was specified
 		for pkgname in args.pkgnames:
 			pkg = db.get_pkg(pkgname)
 			if pkg is None:
 				print('error: package "%s" not found' % pkgname)
+				retcode = 1
 			else:
 				display_pkg(pkg, args)
 	else:
@@ -142,7 +145,7 @@ def main(rawargs):
 		for pkg in db.pkgcache:
 			display_pkg(pkg, args)
 
-	return 0
+	return retcode
 
 if __name__ == "__main__":
 	ret = main(sys.argv[1:])
