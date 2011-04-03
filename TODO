@@ -1,7 +1,6 @@
 pyalpm TODO file
 
-* errno handling
-* pacman.conf parsing
+* handle Include statements in pacman.conf
 
 Databases
 
@@ -11,7 +10,7 @@ alpm_db_update
 alpm_db_search
 alpm_db_set_pkgreason
 
-Packages 
+Packages
 
 * alpm_pkg_checkmd5sum
 * alpm_fetch_pkgurl
@@ -33,4 +32,11 @@ Options
 * alpm_option_{get,set}_logcb()
 * alpm_option_{get,set}_dlcb()
 * alpm_option_{get,set}_totaldlcb()
+
+Pycman
+
+Missing options:
+* -D, -R, -U
+* -Q[dekmopstu]
+* -S[cdfksuvwy]
 
