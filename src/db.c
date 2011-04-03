@@ -37,6 +37,8 @@ static void pyalpm_db_dealloc(AlpmDB *self) {
 
 static PyObject* _pyobject_from_pmgrp(void *group) {
   pmgrp_t* grp = (pmgrp_t*)group;
+  if (!grp)
+    Py_RETURN_NONE;
   PyObject *fst = PyUnicode_FromString(alpm_grp_get_name(grp));
   PyObject *snd = alpmlist_to_pylist(alpm_grp_get_pkgs(grp),
 				     pyalpm_package_from_pmpkg);
