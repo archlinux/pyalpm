@@ -34,10 +34,10 @@ SHORT_ACTIONS = {
 
 HELP = """
 Available actions:
-    query, -Q   : list installed packages
-    sync, -S    : list/install/update/remove remote packages
-    deptest, -T : test dependencies
-    version, -V : print version information
+    -Q, query   : list installed packages
+    -S, sync    : list/install/update/remove remote packages
+    -T, deptest : test dependencies
+    -V, version : print version information
 
 Use the '-h' or '--help' for more information.
 """

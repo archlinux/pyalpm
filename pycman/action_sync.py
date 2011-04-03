@@ -114,8 +114,8 @@ def main(rawargs):
 			action = 'store_true', dest = 'quiet', default = False,
 			help = 'show less information for query and search')
 	group.add_argument('args', metavar = 'arg', nargs = '*',
-			help = 'arguments (group names for -g, repo names for -l,'
-			'packages to show (show all packages if no arguments)')
+			help = 'arguments (group names for -g, repo names for -l, '
+			'package names for -i)')
 
 	args = parser.parse_args(rawargs)
 	config.init_with_config(args)
