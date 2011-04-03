@@ -27,13 +27,15 @@ import pycman
 
 SHORT_ACTIONS = {
 	'Q': 'query',
+	'S': 'sync',
 	'T': 'deptest',
 	'V': 'version'
 }
 
 HELP = """
 Available actions:
-    query, -Q : list installed packages
+    query, -Q   : list installed packages
+    sync, -S    : list/install/update/remove remote packages
     deptest, -T : test dependencies
     version, -V : print version information
 
