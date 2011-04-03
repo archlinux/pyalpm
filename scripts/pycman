@@ -84,7 +84,7 @@ def parse_action(args):
 				return SHORT_ACTIONS[actions[0]], newargs
 		elif len(actions) > 1:
 			print("Only one operation may be used at a time (received %s)."
-					% ", ".join(opts.actions))
+					% ", ".join(actions))
 			return None, 1
 
 def main(args):
