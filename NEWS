@@ -1,6 +1,7 @@
 pyalpm 0.2 :
   * handles alpm error strings
   * wraps alpm_db_read_grp()
+  * wraps alpm_pkg_get_reason()
   * wraps alpm_find_grp_pkgs()
   * wraps alpm_find_satisfier()
   * add pycman (Python clone of pacman), with read-only actions

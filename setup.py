@@ -16,7 +16,7 @@ alpm = setuptools.Extension('pyalpm',
         ])
 
 setuptools.setup(name = 'pyalpm',
-      version = '0.1',
+      version = '0.2',
       description = 'libalpm bindings for Python 3',
       author = "Rémy Oudompheng",
       author_email = "remy@archlinux.org",

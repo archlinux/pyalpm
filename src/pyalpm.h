@@ -32,7 +32,7 @@ This file is part of pyalpm.
 /*pyalpm internal variables*/
 char *error, *warning, *debug, *function;
 unsigned short enable_messages_logcb = 0;
-char VERSION[] = "0.1";
+char VERSION[] = "0.2";
 
 unsigned short check_init(void);
 
