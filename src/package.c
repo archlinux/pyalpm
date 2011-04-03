@@ -58,6 +58,8 @@ static void pyalpm_package_dealloc(AlpmPackage *self) {
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
+/* Internal utility functions */
+
 static PyObject* _pyobject_from_pmdepend(void* dep) {
   char *depstring = alpm_dep_compute_string((pmdepend_t*)dep);
   PyObject *item = Py_BuildValue("s", depstring);
@@ -78,6 +80,8 @@ PyObject *pyalpm_package_from_pmpkg(void* data) {
   self->needs_free = 0;
   return (PyObject *)self;
 }
+
+/* Python bindings */
 
 PyObject *pyalpm_package_load(PyObject *self, PyObject *args) {
   char *filename;
@@ -447,3 +451,4 @@ void init_pyalpm_package(PyObject *module) {
   PyModule_AddObject(module, "Package", type);
 }
 
+/* vim: set ts=2 sw=2 et: */

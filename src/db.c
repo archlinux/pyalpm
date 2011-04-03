@@ -143,7 +143,8 @@ static PyObject* pyalpm_db_readgrp(PyObject* rawself, PyObject* args) {
 static struct PyMethodDef db_methods[] = {
   { "get_pkg", pyalpm_db_get_pkg, METH_VARARGS,
     "get a package by name\n"
-    "args: a package name (string)" },
+    "args: a package name (string)\n"
+    "returns: a Package object or None if not found" },
   { "read_grp", pyalpm_db_readgrp, METH_VARARGS,
     "get contents of a group\n"
     "args: a group name (string)\n"
