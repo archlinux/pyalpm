@@ -32,7 +32,7 @@ from pycman import pkginfo
 
 def display_pkg(pkg, options):
 	if options.info > 0:
-		pkginfo.display_pkginfo(pkg, options.info)
+		pkginfo.display_pkginfo(pkg, level = options.info, style = 'local')
 	elif not options.listfiles:
 		if options.quiet:
 			print(pkg.name)
