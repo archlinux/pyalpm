@@ -73,7 +73,13 @@ def display_pkginfo(pkg, level):
 	print(format_attr('Architecture', pkg.arch))
 	print(format_attr('Build Date', pkg.builddate, format = 'time'))
 	print(format_attr('Install Date', pkg.installdate, format = 'time'))
-	#print(format_attr('Install Reason', pkg.reason))
+	if pkg.reason == pyalpm.PKG_REASON_EXPLICIT:
+		reason = 'Explicitly installed'
+	elif pkg.reason == pyalpm.PKG_REASON_DEPEND:
+		reason = 'Installed as a dependency for another package'
+	else:
+		reason = 'N/A'
+	print(format_attr('Install Reason', reason))
 	print(format_attr('Install Script', 'Yes' if pkg.has_scriptlet else 'No'))
 	print(format_attr('Description', pkg.desc))
 

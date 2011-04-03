@@ -263,6 +263,11 @@ static PyObject* pyalpm_package_get_isize(AlpmPackage *self, void *closure) {
   return PyLong_FromLong(alpm_pkg_get_isize(self->c_data));
 }
 
+static PyObject* pyalpm_package_get_reason(AlpmPackage *self, void *closure) {
+  CHECK_IF_INITIALIZED();
+  return PyLong_FromLong(alpm_pkg_get_reason(self->c_data));
+}
+
 static PyObject* pyalpm_package_get_licenses(AlpmPackage *self, void *closure) {
   alpm_list_t *licenses = NULL;
 
@@ -414,6 +419,7 @@ static struct PyGetSetDef AlpmPackageGetSet[] = {
   { "filename", (getter)pyalpm_package_get_filename, 0, "package filename", NULL } ,
   { "size", (getter)pyalpm_package_get_size, 0, "package size", NULL } ,
   { "isize", (getter)pyalpm_package_get_isize, 0, "installed size", NULL } ,
+  { "reason", (getter)pyalpm_package_get_reason, 0, "install reason (0 = explicit, 1 = depend)", NULL } ,
   { "builddate", (getter)pyalpm_package_get_builddate, 0, "building time", NULL } ,
   { "installdate", (getter)pyalpm_package_get_installdate, 0, "install time", NULL } ,
   { "files", (getter)pyalpm_package_get_files, 0, "list of installed files", NULL } ,
@@ -479,6 +485,8 @@ void init_pyalpm_package(PyObject *module) {
   type = (PyObject*)&AlpmPackageType;
   Py_INCREF(type);
   PyModule_AddObject(module, "Package", type);
+  PyModule_AddIntConstant(module, "PKG_REASON_EXPLICIT", 0);
+  PyModule_AddIntConstant(module, "PKG_REASON_DEPEND", 1);
 }
 
 /* vim: set ts=2 sw=2 et: */
