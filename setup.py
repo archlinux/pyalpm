@@ -22,4 +22,5 @@ setuptools.setup(name = 'pyalpm',
       author_email = "remy@archlinux.org",
       url = "http://projects.archlinux.org/users/remy/pyalpm.git",
       packages = ["pycman"],
+      scripts = ["scripts/pycman"],
       ext_modules = [alpm])

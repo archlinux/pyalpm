@@ -2,3 +2,5 @@ include NEWS
 include INSTALL
 include LICENSE
 include src/*.h
+include scripts/pycman
+
