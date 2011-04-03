@@ -28,6 +28,8 @@
 void init_pyalpm_package(PyObject *module);
 
 PyObject *pyalpm_package_from_pmpkg(void* data);
+int pylist_pkg_to_alpmlist(PyObject *list, alpm_list_t **result);
+
 PyObject *pyalpm_package_load(PyObject *self, PyObject *args);
 
 #endif // _PYALPM_PACKAGE_H

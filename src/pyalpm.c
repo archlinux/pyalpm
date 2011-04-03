@@ -113,6 +113,37 @@ static PyObject* pyalpm_register_syncdb(PyObject *self, PyObject *args) {
   return pyalpm_db_from_pmdb(result);
 }
 
+static PyObject* pyalpm_find_satisfier(PyObject *self, PyObject* args) {
+  PyObject *pkglist;
+  char *depspec;
+  alpm_list_t *alpm_pkglist;
+  pmpkg_t *p;
+
+  if(!PyArg_ParseTuple(args, "Os", &pkglist, &depspec))
+  {
+    PyErr_SetString(PyExc_TypeError, "find_satisfier() takes a Package list and a string");
+    return NULL;
+  }
+
+  if(pylist_pkg_to_alpmlist(pkglist, &alpm_pkglist) == -1)
+    return NULL;
+
+  p = alpm_find_satisfier(alpm_pkglist, depspec);
+  alpm_list_free(alpm_pkglist);
+
+  if (p == NULL) {
+    Py_RETURN_NONE;
+  } else {
+    PyObject *result;
+    result = pyalpm_package_from_pmpkg(p);
+    if (result == NULL) {
+      return NULL;
+    } else {
+      return result;
+    }
+  }
+}
+
 static PyMethodDef methods[] = {
   {"initialize", initialize_alpm, METH_NOARGS, "initialize alpm."},
   {"release", release_alpm, METH_NOARGS, "release alpm."},
@@ -126,6 +157,11 @@ static PyMethodDef methods[] = {
    "returns the new database on success"},
   {"get_localdb", pyalpm_get_localdb, METH_NOARGS, "returns an object representing the local DB"},
   {"get_syncdbs", pyalpm_get_syncdbs, METH_NOARGS, "returns a list of sync DBs"},
+
+  { "find_satisfier", pyalpm_find_satisfier, METH_VARARGS,
+    "finds a package satisfying the given dependency among a list\n"
+    "args: a list of packages, a dependency string\n"
+    "returns: a Package object or None" },
 
   /* from package.c */
   {"load_pkg", pyalpm_package_load, METH_VARARGS, "loads package information from a tarball"},

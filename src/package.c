@@ -81,6 +81,36 @@ PyObject *pyalpm_package_from_pmpkg(void* data) {
   return (PyObject *)self;
 }
 
+/** Converts a Python list of packages to an alpm_list_t linked list.
+ * return 0 on success, -1 on failure
+ */
+int pylist_pkg_to_alpmlist(PyObject *list, alpm_list_t **result) {
+  alpm_list_t *ret = NULL;
+  PyObject *iterator = PyObject_GetIter(list);
+  PyObject *item;
+
+  if(iterator == NULL) {
+    PyErr_SetString(PyExc_TypeError, "object is not iterable");
+    return -1;
+  }
+
+  while((item = PyIter_Next(iterator)))
+  {
+    if (PyObject_TypeCheck(item, &AlpmPackageType)) {
+      ret = alpm_list_add(ret, ((AlpmPackage*)item)->c_data);
+    } else {
+      PyErr_SetString(PyExc_TypeError, "list must contain only Package objects");
+      FREELIST(ret);
+      return -1;
+    }
+    Py_DECREF(item);
+  }
+  Py_DECREF(iterator);
+
+  *result = ret;
+  return 0;
+}
+
 /* Python bindings */
 
 PyObject *pyalpm_package_load(PyObject *self, PyObject *args) {
