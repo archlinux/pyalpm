@@ -25,6 +25,7 @@ This script checks whether specified dependencies are satisfied
 and prints out a list of those which are missing.
 """
 
+import sys
 import pyalpm
 from . import config
 
@@ -51,7 +52,6 @@ def main(rawargs):
 		return 127
 
 if __name__ == "__main__":
-	import sys
 	ret = main(sys.argv[1:])
 	sys.exit(ret)
 
