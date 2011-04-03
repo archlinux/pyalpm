@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # 
-# pycman-deptest - A Python implementation of Pacman
+# pycman-query - A Python implementation of Pacman
 # Copyright (C) 2011 Rémy Oudompheng <remy@archlinux.org>
 # 
 #   This program is free software; you can redistribute it and/or modify
@@ -19,10 +19,9 @@
 #
 
 """
-A Python implementation of pacman -T
+A Python implementation of pacman -Q
 
-This script checks whether specified dependencies are satisfied
-and prints out a list of those which are missing.
+This script displays information about installed packages.
 """
 
 import sys
