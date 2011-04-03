@@ -26,10 +26,18 @@ are common to all action modes.
 """
 
 import argparse
+import configparser
+
 import pyalpm
 
 def read_config(path):
-	pass
+	parser = configparser.ConfigParser(
+			allow_no_value = True,
+			delimiters = ['='],
+			comment_prefixes = ['#'],
+			empty_lines_in_values = False)
+	parser.read(path)
+	return parser
 
 def make_parser(*args, **kwargs):
 	parser = argparse.ArgumentParser(*args, **kwargs)
@@ -64,18 +72,36 @@ def init_with_config(options):
 		config_file = "/etc/pacman.conf"
 	config = read_config(config_file)
 
+	try:
+		config_options = config["options"]
+	except KeyError:
+		config_options = {}
+
 	# set libalpm options
 	if options.root is not None:
 		pyalpm.options.root = options.root
 	else:
-		pyalpm.options.root = "/"
+		pyalpm.options.root = config_options.get("rootdir", "/")
 
 	if options.dbpath is not None:
 		pyalpm.options.dbpath = options.dbpath
 	else:
-		pyalpm.options.dbpath = "/var/lib/pacman"
+		pyalpm.options.dbpath = config_options.get("dbpath", "/var/lib/pacman")
 
 	if options.arch is not None:
 		pyalpm.options.arch = options.arch
+	else:
+		pyalpm.options.arch = config_options.get("architecture", "auto")
+
+	if options.logfile is not None:
+		pyalpm.options.logfile = options.logfile
+	else:
+		pyalpm.options.logfile = config_options.get("logfile", "/var/log/pacman.log")
+
+	# set sync databases
+	for repo in config.sections():
+		if repo == "options":
+			continue
+		pyalpm.register_syncdb(repo)
 
 # vim: set ts=4 sw=4 tw=0 noet:
