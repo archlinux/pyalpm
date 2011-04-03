@@ -95,7 +95,7 @@ static PyObject* pyalpm_db_get_url(AlpmDB* self, void* closure) {
   return PyUnicode_FromString(url);
 }
 
-static PyObject* pyalpm_db_set_server(AlpmDB* self, PyObject* value, void* closure) {
+static int pyalpm_db_set_server(AlpmDB* self, PyObject* value, void* closure) {
   char *path = NULL;
   PyObject *utf8 = NULL;
   int ret;

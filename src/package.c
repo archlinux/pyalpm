@@ -35,7 +35,8 @@ typedef struct _AlpmPackage {
 
 static PyTypeObject AlpmPackageType;
 
-static PyObject* pyalpm_pkg_repr(AlpmPackage *self) {
+static PyObject* pyalpm_pkg_repr(PyObject *rawself) {
+  AlpmPackage *self = (AlpmPackage *)rawself;
   return PyUnicode_FromFormat("<alpm.Package(\"%s-%s-%s\") at %p>",
 			      alpm_pkg_get_name(self->c_data),
 			      alpm_pkg_get_version(self->c_data),
@@ -43,7 +44,8 @@ static PyObject* pyalpm_pkg_repr(AlpmPackage *self) {
 			      self);
 }
 
-static PyObject* pyalpm_pkg_str(AlpmPackage *self) {
+static PyObject* pyalpm_pkg_str(PyObject *rawself) {
+  AlpmPackage *self = (AlpmPackage *)rawself;
   return PyUnicode_FromFormat("alpm.Package(\"%s-%s-%s\")",
 			      alpm_pkg_get_name(self->c_data),
 			      alpm_pkg_get_version(self->c_data),
