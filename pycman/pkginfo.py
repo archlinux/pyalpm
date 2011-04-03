@@ -45,7 +45,9 @@ def format_attr(attrname, value, format = None):
 			valuestring = str(value)
 	return textwrap.fill(valuestring, width = 80,
 			initial_indent = ATTRNAME_FORMAT % attrname,
-			subsequent_indent = ATTR_INDENT)
+			subsequent_indent = ATTR_INDENT,
+			break_on_hyphens = False,
+			break_long_words = False)
 
 def format_attr_oneperline(attrname, value):
 	if len(value) == 0:
