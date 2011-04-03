@@ -26,10 +26,7 @@ and prints out a list of those which are missing.
 """
 
 import pyalpm
-
-def init():
-	pyalpm.initialize()
-	pyalpm.options.dbpath = "/var/lib/pacman"
+from . import config
 
 def deptest(deps):
 	db = pyalpm.get_localdb()
@@ -37,7 +34,9 @@ def deptest(deps):
 	return missing
 
 def main(args):
-	init()
+	parser = config.make_parser()
+	options, args = parser.parse_args(args)
+	config.init_with_config(options)
 	missing = deptest(args)
 
 	if len(missing) == 0:

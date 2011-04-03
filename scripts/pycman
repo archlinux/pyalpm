@@ -23,17 +23,11 @@ A Python implementation of pacman
 """
 
 import sys
-from pycman import action_deptest
-from pycman import action_version
+import pycman
 
 SHORT_ACTIONS = {
 	'T': 'deptest',
 	'V': 'version'
-}
-
-ACTIONS = {
-	'deptest': action_deptest.main,
-	'version': action_version.main
 }
 
 HELP = """
@@ -93,12 +87,8 @@ def main(args):
 	action, data = parse_action(args)
 	if action is None:
 		return data
-	if action not in ACTIONS:
-		print("Invalid action specified (%s are supported)" % ', '.join(ACTIONS.keys()))
-		return None, 1
 
-	callback = ACTIONS[action]
-	ret = callback(data)
+	ret = pycman.run_action_with_args(action, data)
 	return ret
 
 if __name__ == "__main__":
