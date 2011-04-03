@@ -33,9 +33,15 @@ def read_config(path):
 
 def make_parser():
 	parser = optparse.OptionParser()
-	parser.add_option('-b', '--dbpath', action = 'store', dest = 'dbpath', type = "string")
-	parser.add_option('-r', '--root', action = 'store', dest = 'root', type = "string")
-	parser.add_option('--arch', action = 'store', dest = 'arch', type = "string")
+	parser.add_option('-b', '--dbpath',
+			action = 'store', dest = 'dbpath', type = "string",
+			help = 'set an alternate database location')
+	parser.add_option('-r', '--root',
+			action = 'store', dest = 'root', type = "string",
+			help = 'set an alternate installation root')
+	parser.add_option('--arch',
+			action = 'store', dest = 'arch', type = "string",
+			help = 'set an alternate architecture')
 	parser.add_option('--config', action = 'store', dest = 'config', type = "string")
 	parser.add_option('--logfile', action = 'store', dest = 'logfile', type = "string")
 	parser.add_option('-v', '--verbose', action = 'store_true', dest = 'verbose', default = False)
