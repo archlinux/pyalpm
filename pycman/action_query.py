@@ -25,11 +25,66 @@ This script displays information about installed packages.
 """
 
 import sys
-import pyalpm
-from . import config
+import time
+import textwrap
 
-def display_pkginfo(pkg):
-	pass
+import pyalpm
+from pycman import config
+
+ATTRNAME_FORMAT = '%-14s : '
+ATTR_INDENT = 17 * ' '
+
+def format_attr(attrname, value, format = None):
+	if isinstance(value, list):
+		if len(value) == 0:
+			valuestring = 'None'
+		else:
+			valuestring = '  '.join(str(v) for v in value)
+	else:
+		if format == "time":
+			valuestring = time.strftime("%a %d %b %Y %X %Z", time.localtime(value))
+		else:
+			valuestring = str(value)
+	return textwrap.fill(valuestring, width = 80,
+			initial_indent = ATTRNAME_FORMAT % attrname,
+			subsequent_indent = ATTR_INDENT)
+
+def format_attr_oneperline(attrname, value):
+	if len(value) == 0:
+		value = ['None']
+	s = ATTRNAME_FORMAT % attrname
+	s += ('\n' + ATTR_INDENT).join(value)
+	return s
+
+def display_pkginfo(pkg, level):
+	print(format_attr('Name', pkg.name))
+	print(format_attr('Version', pkg.version))
+	print(format_attr('URL', pkg.url))
+	print(format_attr('Licenses', pkg.licenses))
+	print(format_attr('Groups', pkg.groups))
+	print(format_attr('Provides', pkg.provides))
+	print(format_attr('Depends on', pkg.depends))
+	print(format_attr_oneperline('Optional deps', pkg.optdepends))
+	print(format_attr('Required by', pkg.compute_requiredby()))
+	print(format_attr('Conflicts with', pkg.conflicts))
+	print(format_attr('Replaces', pkg.replaces))
+	print(format_attr('Installed size', '%.2f K' % (pkg.isize / 1024)))
+	print(format_attr('Packager', pkg.packager))
+	print(format_attr('Architecture', pkg.arch))
+	print(format_attr('Build Date', pkg.builddate, format = 'time'))
+	print(format_attr('Install Date', pkg.installdate, format = 'time'))
+	#print(format_attr('Install Reason', pkg.reason))
+	print(format_attr('Install Script', 'Yes' if pkg.has_scriptlet else 'No'))
+	print(format_attr('Description', pkg.desc))
+
+	if level >= 2:
+		# print backup information
+		print('Backup files:')
+		if len(pkg.backup) == 0:
+			print('(none)')
+		else:
+			print('\n'.join(["%s %s" % (md5, file) for (file, md5) in pkg.backup]))
+	print('')
 
 def display_pkg(pkg, options):
 	if options.info > 0:
