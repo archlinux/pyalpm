@@ -53,33 +53,7 @@ static PyObject* _pyobject_from_pmgrp(void *group) {
   return NULL; \
   }
 
-static PyObject* pyalpm_db_get_pkg(PyObject *rawself, PyObject* args) {
-  char *pkgname;
-  pmpkg_t *p;
-  AlpmDB *self = (AlpmDB*)rawself;
-
-  if(!PyArg_ParseTuple(args, "s", &pkgname))
-  {
-    PyErr_SetString(PyExc_TypeError, "get_pkg() takes a string argument");
-    return NULL;
-  }
-
-  CHECK_IF_INITIALIZED();
-
-  p = alpm_db_get_pkg(self->c_data, pkgname);
-
-  if (p == NULL) {
-    Py_RETURN_NONE;
-  } else {
-    PyObject *result;
-    result = pyalpm_package_from_pmpkg(p);
-    if (result == NULL) {
-      return NULL;
-    } else {
-      return result;
-    }
-  }
-}
+/** Database properties */
 
 static PyObject* pyalpm_db_get_name(AlpmDB* self, void* closure) {
   CHECK_IF_INITIALIZED();
@@ -127,6 +101,36 @@ static PyObject* pyalpm_db_get_pkgcache(AlpmDB* self, void* closure) {
 static PyObject* pyalpm_db_get_grpcache(AlpmDB* self, void* closure) {
   alpm_list_t *grplist = alpm_db_get_grpcache(self->c_data);
   return alpmlist_to_pylist(grplist, _pyobject_from_pmgrp);
+}
+
+/** Package get/set operations */
+
+static PyObject* pyalpm_db_get_pkg(PyObject *rawself, PyObject* args) {
+  char *pkgname;
+  pmpkg_t *p;
+  AlpmDB *self = (AlpmDB*)rawself;
+
+  if(!PyArg_ParseTuple(args, "s", &pkgname))
+  {
+    PyErr_SetString(PyExc_TypeError, "get_pkg() takes a string argument");
+    return NULL;
+  }
+
+  CHECK_IF_INITIALIZED();
+
+  p = alpm_db_get_pkg(self->c_data, pkgname);
+
+  if (p == NULL) {
+    Py_RETURN_NONE;
+  } else {
+    PyObject *result;
+    result = pyalpm_package_from_pmpkg(p);
+    if (result == NULL) {
+      return NULL;
+    } else {
+      return result;
+    }
+  }
 }
 
 static PyObject* pyalpm_db_readgrp(PyObject* rawself, PyObject* args) {

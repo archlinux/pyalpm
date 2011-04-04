@@ -36,10 +36,7 @@
 PyObject * option_get_root_alpm(PyObject *self, void *closure)
 {
   const char *str = alpm_option_get_root();
-  if(str == NULL) {
-    PyErr_SetString(alpm_error, "failed getting root path");
-    return NULL;
-  }
+  PYALPM_ERR(str == NULL, "failed getting root path");
   return Py_BuildValue("s", str);
 }
 

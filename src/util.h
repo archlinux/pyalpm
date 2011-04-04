@@ -31,6 +31,12 @@
 extern PyObject* alpm_error;
 void init_pyalpm_error(PyObject* module);
 
+#define PYALPM_ERR(condition, msg) do { \
+    if ((condition)) { \
+        PyErr_SetString(alpm_error, msg); \
+        return NULL; } \
+    } while(0)
+
 typedef PyObject *(pyobjectbuilder)(void*);
 PyObject* pyobject_from_string(void *s);
 
@@ -42,3 +48,5 @@ unsigned short check_init(void);
 void set_init(unsigned short i);
 
 #endif // _PY_ALPM_UTIL_H
+
+/* vim: set ts=2 sw=2 et: */
