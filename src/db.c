@@ -133,6 +133,23 @@ static PyObject* pyalpm_db_get_pkg(PyObject *rawself, PyObject* args) {
   }
 }
 
+static PyObject* pyalpm_db_set_pkgreason(PyObject* rawself, PyObject* args) {
+  char *pkgname;
+  int reason;
+  AlpmDB *self = (AlpmDB*)rawself;
+  int ret;
+  if (!PyArg_ParseTuple(args, "si", &pkgname, &reason)) {
+    PyErr_SetString(PyExc_TypeError, "expected arguments (str, int)");
+    return NULL;
+  }
+
+  PYALPM_ERR(self->c_data == NULL, "data is not initialized");
+  ret = alpm_db_set_pkgreason(self->c_data, pkgname, reason);
+
+  PYALPM_ERR(ret == -1, "failed setting install reason");
+  Py_RETURN_NONE;
+}
+
 static PyObject* pyalpm_db_readgrp(PyObject* rawself, PyObject* args) {
   AlpmDB* self = (AlpmDB*)rawself;
   char *grpname;
@@ -155,6 +172,10 @@ static struct PyMethodDef db_methods[] = {
     "get contents of a group\n"
     "args: a group name (string)\n"
     "returns: a tuple (group name, list of packages)" },
+  { "set_pkgreason", pyalpm_db_set_pkgreason, METH_VARARGS,
+    "set install reason for a package\n"
+    "args: a package name (string), a reason (PKG_REASON_DEPEND, PKG_REASON_EXPLICIT)\n"
+    "returns: None" },
   { NULL },
 };
 
