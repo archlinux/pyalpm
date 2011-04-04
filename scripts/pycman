@@ -26,6 +26,7 @@ import sys
 import pycman
 
 SHORT_ACTIONS = {
+	'D': 'db',
 	'Q': 'query',
 	'S': 'sync',
 	'T': 'deptest',
@@ -34,6 +35,7 @@ SHORT_ACTIONS = {
 
 HELP = """
 Available actions:
+    -D, db      : modify local database
     -Q, query   : list installed packages
     -S, sync    : list/install/update/remove remote packages
     -T, deptest : test dependencies

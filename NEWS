@@ -1,3 +1,7 @@
+pyalpm 0.3 :
+  * wraps alpm_db_set_pkgreason()
+  * support pycman -D
+
 pyalpm 0.2 :
   * handles alpm error strings
   * wraps alpm_db_read_grp()
