@@ -113,6 +113,7 @@ static PyObject* pyalpm_register_syncdb(PyObject *self, PyObject *args) {
   return pyalpm_db_from_pmdb(result);
 }
 
+/** Finds a package satisfying a dependency constraint in a package list */
 static PyObject* pyalpm_find_satisfier(PyObject *self, PyObject* args) {
   PyObject *pkglist;
   char *depspec;
@@ -163,6 +164,11 @@ static PyMethodDef methods[] = {
     "args: a list of packages, a dependency string\n"
     "returns: a Package object or None" },
 
+  {"sync_newversion", pyalpm_sync_newversion, METH_VARARGS,
+    "finds an available upgrade for a package in a list of databases\n"
+    "args: a package, a list of databases\n"
+    "returns: an upgrade candidate or None" },
+
   /* from package.c */
   {"load_pkg", pyalpm_package_load, METH_VARARGS, "loads package information from a tarball"},
 
@@ -193,3 +199,6 @@ PyMODINIT_FUNC PyInit_pyalpm()
 
   return m;
 }
+
+/* vim: set ts=2 sw=2 et: */
+

@@ -306,4 +306,29 @@ PyObject* pyalpm_find_grp_pkgs(PyObject* self, PyObject *args) {
   return result;
 }
 
+/** Finds an available upgrade for a package in a list of databases */
+PyObject* pyalpm_sync_newversion(PyObject *self, PyObject* args) {
+  PyObject *pkg;
+  PyObject *dbs;
+  alpm_list_t *db_list;
+  pmpkg_t *result;
+  if(!PyArg_ParseTuple(args, "OO", &pkg, &dbs)
+      || !PyAlpmPkg_Check(pkg)
+      || pylist_db_to_alpmlist(dbs, &db_list) == -1)
+  {
+    PyErr_SetString(PyExc_TypeError, "sync_newversion() takes a Package and a list of DBs");
+    return NULL;
+  }
+
+  pmpkg_t *rawpkg = pmpkg_from_pyalpm_pkg(pkg);
+  if (!rawpkg)
+    return NULL;
+
+  result = alpm_sync_newversion(pmpkg_from_pyalpm_pkg((void*)rawpkg), db_list);
+  if (!result)
+    Py_RETURN_NONE;
+  else
+    return pyalpm_package_from_pmpkg(result);
+}
+
 /* vim: set ts=2 sw=2 et: */
