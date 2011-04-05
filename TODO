@@ -36,7 +36,7 @@ Options
 Pycman
 
 Missing options:
-* -D, -R, -U
-* -Q[dekmopstu]
+* -R, -U
+* -Q[kops]
 * -S[cdfksuvwy]
 

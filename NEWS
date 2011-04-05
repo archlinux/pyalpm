@@ -1,6 +1,6 @@
 pyalpm 0.3 :
   * wraps alpm_db_set_pkgreason()
-  * support pycman -D
+  * support pycman -D, -Q[demtu]
 
 pyalpm 0.2 :
   * handles alpm error strings
