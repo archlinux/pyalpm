@@ -31,6 +31,8 @@ typedef struct _AlpmDB {
   pmdb_t *c_data;
 } AlpmDB;
 
+static PyTypeObject AlpmDBType;
+
 static void pyalpm_db_dealloc(AlpmDB *self) {
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
@@ -189,7 +191,7 @@ struct PyGetSetDef db_getset[] = {
   { NULL }
 };
 
-PyTypeObject AlpmDBType = {
+static PyTypeObject AlpmDBType = {
   PyVarObject_HEAD_INIT(NULL, 0)
   "alpm.DB",             /*tp_name*/
   sizeof(AlpmDB),        /*tp_basicsize*/
