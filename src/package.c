@@ -35,6 +35,10 @@ typedef struct _AlpmPackage {
 
 static PyTypeObject AlpmPackageType;
 
+int PyAlpmPkg_Check(PyObject *object) {
+  return PyObject_TypeCheck(object, &AlpmPackageType);
+}
+
 static PyObject* pyalpm_pkg_repr(PyObject *rawself) {
   AlpmPackage *self = (AlpmPackage *)rawself;
   return PyUnicode_FromFormat("<alpm.Package(\"%s-%s-%s\") at %p>",
@@ -79,6 +83,17 @@ PyObject *pyalpm_package_from_pmpkg(void* data) {
   self->c_data = p;
   self->needs_free = 0;
   return (PyObject *)self;
+}
+
+#define CHECK_IF_INITIALIZED() if (! self->c_data) { \
+  PyErr_SetString(alpm_error, "data is not initialized"); \
+  return NULL; \
+  }
+
+pmpkg_t *pmpkg_from_pyalpm_pkg(PyObject *object) {
+  AlpmPackage *self = (AlpmPackage*)object;
+  CHECK_IF_INITIALIZED();
+  return self->c_data;
 }
 
 /** Converts a Python list of packages to an alpm_list_t linked list.
@@ -135,11 +150,6 @@ PyObject *pyalpm_package_load(PyObject *self, PyObject *args) {
   result->needs_free = 1;
   return (PyObject *)result;
 }
-
-#define CHECK_IF_INITIALIZED() if (! self->c_data) { \
-  PyErr_SetString(alpm_error, "data is not initialized"); \
-  return NULL; \
-  }
 
 static PyObject *pyalpm_package_get_filename(AlpmPackage *self, void *closure) {
   const char *filename;
