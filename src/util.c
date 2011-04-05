@@ -78,6 +78,7 @@ int pylist_string_to_alpmlist(PyObject *list, alpm_list_t* *result)
     } else {
       PyErr_SetString(PyExc_TypeError, "list must contain only strings");
       FREELIST(ret);
+      Py_DECREF(item);
       return -1;
     }
     Py_DECREF(item);
