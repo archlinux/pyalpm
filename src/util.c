@@ -112,27 +112,6 @@ PyObject* alpmlist_to_pylist(alpm_list_t *prt, PyObject* pybuilder(void*))
   return output;
 }
 
-/*alpm_list_t related functions*/
-void add_alpm_list_t(alpm_list_t *prt)
-{
-  alpm_list_t *new;
-  new = (alpm_list_t*) malloc(sizeof(alpm_list_t));
-  
-  prt->next = new;
-  new->prev = prt;
-}
-
-void remove_alpm_list_t(alpm_list_t *prt)
-{
-  alpm_list_t *old;
-  
-  old = prt->prev;
-  old->next = NULL;
-  
-  free(prt->data);
-  free(prt);
-}
-
 void set_init(unsigned short i) {
   init = i;
 }
