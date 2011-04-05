@@ -50,6 +50,38 @@ static PyObject* _pyobject_from_pmgrp(void *group) {
   return tuple;
 }
 
+/** Converts a Python list of databases to an alpm_list_t linked list.
+ * return 0 on success, -1 on failure
+ */
+int pylist_db_to_alpmlist(PyObject *list, alpm_list_t **result) {
+  alpm_list_t *ret = NULL;
+  PyObject *iterator = PyObject_GetIter(list);
+  PyObject *item;
+
+  if(iterator == NULL) {
+    PyErr_SetString(PyExc_TypeError, "object is not iterable");
+    return -1;
+  }
+
+  while((item = PyIter_Next(iterator)))
+  {
+    if (PyObject_TypeCheck(item, &AlpmDBType)) {
+      ret = alpm_list_add(ret, ((AlpmDB*)item)->c_data);
+    } else {
+      PyErr_SetString(PyExc_TypeError, "list must contain only Database objects");
+      FREELIST(ret);
+      Py_DECREF(item);
+      Py_DECREF(iterator);
+      return -1;
+    }
+    Py_DECREF(item);
+  }
+  Py_DECREF(iterator);
+
+  *result = ret;
+  return 0;
+}
+
 #define CHECK_IF_INITIALIZED() if (! self->c_data) { \
   PyErr_SetString(alpm_error, "data is not initialized"); \
   return NULL; \
@@ -252,7 +284,7 @@ PyObject *pyalpm_db_from_pmdb(void* data) {
 
 /** non-class methods */
 PyObject* pyalpm_find_grp_pkgs(PyObject* self, PyObject *args) {
-  PyObject *dbs, *db_iter, *db;
+  PyObject *dbs;
   char *grpname;
   alpm_list_t *db_list = NULL;
   alpm_list_t *pkg_list;
@@ -263,25 +295,10 @@ PyObject* pyalpm_find_grp_pkgs(PyObject* self, PyObject *args) {
     return NULL;
   }
 
-  db_iter = PyObject_GetIter(dbs);
-  if(db_iter == NULL) {
-    PyErr_SetString(PyExc_TypeError, "argument is not iterable");
+  int ret = pylist_db_to_alpmlist(dbs, &db_list);
+  if (ret == -1)
     return NULL;
-  }
 
-  while((db = PyIter_Next(db_iter))) {
-    if (!PyObject_IsInstance(db, (PyObject*)&AlpmDBType)) {
-      PyErr_SetString(PyExc_TypeError, "non-DB in sequence");
-      Py_DECREF(db);
-      Py_DECREF(db_iter);
-      return NULL;
-    }
-
-    db_list = alpm_list_add(db_list, ((AlpmDB*)db)->c_data);
-    Py_DECREF(db);
-  }
-
-  Py_DECREF(db_iter);
   pkg_list = alpm_find_grp_pkgs(db_list, grpname);
   result = alpmlist_to_pylist(pkg_list, pyalpm_package_from_pmpkg);
   alpm_list_free(db_list);
