@@ -30,6 +30,26 @@ import pyalpm
 from pycman import config
 from pycman import pkginfo
 
+def filter_pkglist(pkglist, options):
+	result = []
+	if options.foreign:
+		syncpkgs = set()
+		for db in pyalpm.get_syncdbs():
+			syncpkgs |= set(p.name for p in db.pkgcache)
+	for pkg in pkglist:
+		if options.deps and pkg.reason == pyalpm.PKG_REASON_EXPLICIT:
+			continue
+		if options.explicit and pkg.reason == pyalpm.PKG_REASON_DEPEND:
+			continue
+		if options.unrequired and len(pkg.compute_requiredby()) > 0:
+			continue
+		if options.foreign and pkg.name in syncpkgs:
+			continue
+		if options.upgrades and pyalpm.sync_newversion(pkg, pyalpm.get_syncdbs()) is None:
+			continue
+		result.append(pkg)
+	return result
+
 def display_pkg(pkg, options):
 	if options.info > 0:
 		pkginfo.display_pkginfo(pkg, level = options.info, style = 'local')
@@ -48,15 +68,30 @@ def display_pkg(pkg, options):
 def main(rawargs):
 	parser = config.make_parser(prog = 'pycman-query')
 	group = parser.add_argument_group("Query options")
+	group.add_argument('-d', '--deps',
+			action = 'store_true', default = False,
+			help = 'list packages installed as dependencies [filter]')
+	group.add_argument('-e', '--explicit',
+			action = 'store_true', default = False,
+			help = 'list packages explicitly installed [filter]')
 	group.add_argument('-i', '--info',
 			action = 'count', dest = 'info', default = 0,
 			help = 'view package information')
 	group.add_argument('-l', '--list',
 			action = 'store_true', dest = 'listfiles', default = False,
 			help = 'list the contents of the queried package')
+	group.add_argument('-m', '--foreign',
+			action = 'store_true', default = False,
+			help = 'list installed packages not found in sync db(s) [filter]')
 	group.add_argument('-q', '--quiet',
 			action = 'store_true', dest = 'quiet', default = False,
 			help = 'show less information for query and search')
+	group.add_argument('-t', '--unrequired',
+			action = 'store_true', default = False,
+			help = "list packages not required by any package [filter]")
+	group.add_argument('-u', '--upgrades',
+			action = 'store_true', default = False,
+			help = "list outdated packages [filter]")
 	group.add_argument('pkgnames', metavar = 'pkg', nargs = '*',
 			help = 'packages to show (show all packages if no arguments)')
 
@@ -69,6 +104,7 @@ def main(rawargs):
 	db = pyalpm.get_localdb()
 	retcode = 0
 
+	pkglist = []
 	if len(args.pkgnames) > 0:
 		# a list of package names was specified
 		for pkgname in args.pkgnames:
@@ -77,11 +113,14 @@ def main(rawargs):
 				print('error: package "%s" not found' % pkgname)
 				retcode = 1
 			else:
-				display_pkg(pkg, args)
+				pkglist.append(pkg)
 	else:
 		# no package was specified, display all
-		for pkg in db.pkgcache:
-			display_pkg(pkg, args)
+		pkglist = db.pkgcache
+	# determine the list of package to actually display
+	pkglist = filter_pkglist(pkglist, args)
+	for pkg in pkglist:
+		display_pkg(pkg, args)
 
 	return retcode
 
