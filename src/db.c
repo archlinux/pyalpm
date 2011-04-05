@@ -324,7 +324,7 @@ PyObject* pyalpm_sync_newversion(PyObject *self, PyObject* args) {
   if (!rawpkg)
     return NULL;
 
-  result = alpm_sync_newversion(pmpkg_from_pyalpm_pkg((void*)rawpkg), db_list);
+  result = alpm_sync_newversion(rawpkg, db_list);
   if (!result)
     Py_RETURN_NONE;
   else
