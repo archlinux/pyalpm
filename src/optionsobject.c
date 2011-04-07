@@ -85,6 +85,31 @@ struct PyGetSetDef pyalpm_options_getset[] = {
     (setter)option_set_ignoregrps_alpm,
     "list of ignored groups", NULL },
 
+  /** callbacks */
+  { "logcb",
+    (getter)pyalpm_option_get_logcb,
+    (setter)pyalpm_option_set_logcb,
+    "logging callback, with arguments (loglevel, format string, tuple)", NULL },
+  { "dlcb",
+    (getter)pyalpm_option_get_dlcb,
+    (setter)pyalpm_option_set_dlcb,
+    "download status callback (a function)\n"
+    "args: filename    :: str\n"
+    "      transferred :: int\n"
+    "      total       :: int\n", NULL },
+  { "totaldlcb",
+    (getter)pyalpm_option_get_totaldlcb,
+    (setter)pyalpm_option_set_totaldlcb,
+    "total download size callback: totaldlcb(total_size)", NULL },
+  { "fetchcb",
+    (getter)pyalpm_option_get_fetchcb,
+    (setter)pyalpm_option_set_fetchcb,
+    "download function\n"
+    "args: url              :: string\n"
+    "      destination path :: string\n"
+    "      overwrite        :: bool\n"
+    "returns: 0 on success, 1 if file exists, -1 on error", NULL },
+
   /** terminator */
   { NULL }
 };

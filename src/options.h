@@ -81,6 +81,16 @@ PyObject * option_remove_ignorepkg_alpm(PyObject *self, PyObject *args);
 PyObject * option_add_ignoregrp_alpm(PyObject *self, PyObject *args);
 PyObject * option_remove_ignoregrp_alpm(PyObject *self, PyObject *args);
 
+/** Callback options */
+int pyalpm_option_set_logcb(PyObject *self, PyObject *value, void *closure);
+int pyalpm_option_set_dlcb(PyObject *self, PyObject *value, void *closure);
+int pyalpm_option_set_totaldlcb(PyObject *self, PyObject *value, void *closure);
+int pyalpm_option_set_fetchcb(PyObject *self, PyObject *value, void *closure);
+PyObject* pyalpm_option_get_logcb(PyObject *self, void *closure);
+PyObject* pyalpm_option_get_dlcb(PyObject *self, void *closure);
+PyObject* pyalpm_option_get_totaldlcb(PyObject *self, void *closure);
+PyObject* pyalpm_option_get_fetchcb(PyObject *self, void *closure);
+
 #endif // _PY_ALPM_OPTIONS_H
 
 /* vim: set ts=2 sw=2 et: */

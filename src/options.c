@@ -486,4 +486,172 @@ PyObject* option_remove_ignoregrp_alpm(PyObject *self, PyObject *args)
   Py_RETURN_NONE;
 }
 
+/** Callback options
+ * We use Python callable objects as callbacks: they are
+ * stored in static variables, and the reference count is
+ * increased accordingly.
+ *
+ * These Python functions are wrapped into C functions 
+ * that are passed to libalpm.
+ */
+
+static PyObject *pyalpm_logcb = NULL;
+static PyObject *pyalpm_dlcb = NULL;
+static PyObject *pyalpm_totaldlcb = NULL;
+static PyObject *pyalpm_fetchcb = NULL;
+
+/** callback wrappers */
+
+static void pyalpm_logcb_wrapper(pmloglevel_t level, const char *fmt, va_list va_args) {
+  return;
+}
+
+static void pyalpm_dlcb_wrapper(const char *filename, off_t xfered, off_t total) {
+  PyObject *result;
+  result = PyObject_CallFunction(pyalpm_dlcb, "sii", filename, xfered, total);
+  Py_XDECREF(result);
+}
+
+static void pyalpm_totaldlcb_wrapper(off_t total) {
+  PyObject *result;
+  result = PyObject_CallFunction(pyalpm_totaldlcb, "i", total);
+  Py_XDECREF(result);
+}
+
+static int pyalpm_fetchcb_wrapper(const char *url, const char *localpath, int force) {
+  PyObject *result;
+  result = PyObject_CallFunction(pyalpm_fetchcb, "ssi", url, localpath, force);
+  if (!result) return -1;
+  if (!PyLong_Check(result)) {
+    return -1;
+  } else {
+    int overflow;
+    long ret = PyLong_AsLongAndOverflow(result, &overflow);
+    Py_DECREF(result);
+    if (overflow != 0)
+      return -1;
+    else
+      return ret;
+  }
+}
+
+/** callback setters */
+
+#define SET_CALLABLE_OR_NULL(dest, value) \
+  if (value == Py_None) {     \
+    Py_XDECREF(dest); \
+    dest = NULL;      \
+    return 0;         \
+  } else if (PyCallable_Check(value)) { \
+    Py_XDECREF(dest);  \
+    Py_INCREF(value);  \
+    dest = value;      \
+    return 0;          \
+  }
+
+int pyalpm_option_set_logcb(PyObject *self, PyObject *value, void *closure)
+{
+  CHECK_ALPM_INIT(-1);
+  if (value == Py_None) {
+    Py_CLEAR(pyalpm_logcb);
+    alpm_option_set_logcb(NULL);
+  } else if (PyCallable_Check(value)) {
+    Py_XDECREF(pyalpm_logcb);
+    Py_INCREF(value);
+    pyalpm_logcb = value;
+    alpm_option_set_logcb(pyalpm_logcb_wrapper);
+  } else {
+    PyErr_SetString(PyExc_TypeError, "logcb must be None or a function");
+    return -1;
+  }
+
+  return 0;
+}
+
+int pyalpm_option_set_dlcb(PyObject *self, PyObject *value, void *closure)
+{
+  CHECK_ALPM_INIT(-1);
+  if (value == Py_None) {
+    Py_CLEAR(pyalpm_dlcb);
+    alpm_option_set_dlcb(NULL);
+    return 0;
+  } else if (PyCallable_Check(value)) {
+    Py_XDECREF(pyalpm_dlcb);
+    Py_INCREF(value);
+    pyalpm_dlcb = value;
+    alpm_option_set_dlcb(pyalpm_dlcb_wrapper);
+    return 0;
+  } else {
+    PyErr_SetString(PyExc_TypeError, "dlcb must be None or a function");
+    return -1;
+  }
+}
+
+int pyalpm_option_set_totaldlcb(PyObject *self, PyObject *value, void *closure)
+{
+  CHECK_ALPM_INIT(-1);
+  if (value == Py_None) {
+    Py_CLEAR(pyalpm_totaldlcb);
+    alpm_option_set_totaldlcb(NULL);
+    return 0;
+  } else if (PyCallable_Check(value)) {
+    Py_XDECREF(pyalpm_totaldlcb);
+    Py_INCREF(value);
+    pyalpm_totaldlcb = value;
+    alpm_option_set_totaldlcb(pyalpm_totaldlcb_wrapper);
+    return 0;
+  } else {
+    PyErr_SetString(PyExc_TypeError, "totaldlcb must be None or a function");
+    return -1;
+  }
+}
+
+int pyalpm_option_set_fetchcb(PyObject *self, PyObject *value, void *closure)
+{
+  CHECK_ALPM_INIT(-1);
+  if (value == Py_None) {
+    Py_CLEAR(pyalpm_fetchcb);
+    alpm_option_set_fetchcb(NULL);
+    return 0;
+  } else if (PyCallable_Check(value)) {
+    Py_XDECREF(pyalpm_fetchcb);
+    Py_INCREF(value);
+    pyalpm_fetchcb = value;
+    alpm_option_set_fetchcb(pyalpm_fetchcb_wrapper);
+    return 0;
+  } else {
+    PyErr_SetString(PyExc_TypeError, "fetchcb must be None or a function");
+    return -1;
+  }
+}
+
+/** callback getters */
+
+#define RETURN_OR_NONE(obj) if (obj == NULL) { \
+    Py_RETURN_NONE; \
+  } else {          \
+    Py_INCREF(obj); \
+    return obj;     \
+  }
+
+PyObject* pyalpm_option_get_logcb(PyObject *self, void *closure)
+{
+  RETURN_OR_NONE(pyalpm_logcb);
+}
+
+PyObject* pyalpm_option_get_dlcb(PyObject *self, void *closure)
+{
+  RETURN_OR_NONE(pyalpm_dlcb);
+}
+
+PyObject* pyalpm_option_get_totaldlcb(PyObject *self, void *closure)
+{
+  RETURN_OR_NONE(pyalpm_totaldlcb);
+}
+
+PyObject* pyalpm_option_get_fetchcb(PyObject *self, void *closure)
+{
+  RETURN_OR_NONE(pyalpm_fetchcb);
+}
+
 /* vim: set ts=2 sw=2 et: */
