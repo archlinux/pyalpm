@@ -8,7 +8,6 @@ alpm_db_unregister
 alpm_db_unregister_all
 alpm_db_update
 alpm_db_search
-alpm_db_set_pkgreason
 
 Packages
 
@@ -30,8 +29,6 @@ Dependencies/Missing/Conflicts
 Options
 
 * alpm_option_{get,set}_logcb()
-* alpm_option_{get,set}_dlcb()
-* alpm_option_{get,set}_totaldlcb()
 
 Pycman
 
