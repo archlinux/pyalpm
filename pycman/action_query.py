@@ -24,6 +24,7 @@ A Python implementation of pacman -Q
 This script displays information about installed packages.
 """
 
+import os
 import sys
 
 import pyalpm
@@ -65,6 +66,57 @@ def display_pkg(pkg, options):
 		else:
 			[print(pkg.name, '/' + f) for f in pkg.files]
 
+def find_file(filenames, options):
+	"lookup for files in local packages"
+	ret = 0
+	if len(filenames) == 0:
+		print("error: no targets specified")
+		ret = 1
+
+	localpkgs = pyalpm.get_localdb().pkgcache
+	n_pkg = len(localpkgs)
+	filelists = [None] * n_pkg
+
+	for name in filenames:
+		lookupname = None
+		if not os.path.isabs(name):
+			# lookup in PATH
+			for dirname in os.getenv('PATH').split(':'):
+				if os.path.lexists(os.path.join(dirname, name)):
+					name = os.path.join(dirname, name)
+					lookupname = name
+			if lookupname is None:
+				print("error: failed to find '%s' in PATH: No such file or directory" % name)
+				ret = 1
+				continue
+		else:
+			if not os.path.lexists(name):
+				print("error: failed to read file '%s': No such file or directory" % name)
+				ret = 1
+				continue
+			lookupname = name
+		lookupname = os.path.normpath(lookupname)
+		lookupname = lookupname.lstrip('/')
+		found = False
+		for i, pkg, files in zip(range(n_pkg), localpkgs, filelists):
+			if files is None:
+				files = pkg.files
+				filelists[i] = files
+
+			if lookupname in files:
+				if options.quiet:
+					print(pkg.name)
+				else:
+					print(pkg.name, "is owned by", pkg.name, pkg.version)
+				found = True
+				break
+
+		if not found:
+			print('error: no package owns', name)
+			ret = 1
+
+	return ret
+
 def main(rawargs):
 	parser = config.make_parser(prog = 'pycman-query')
 	group = parser.add_argument_group("Query options")
@@ -83,6 +135,9 @@ def main(rawargs):
 	group.add_argument('-m', '--foreign',
 			action = 'store_true', default = False,
 			help = 'list installed packages not found in sync db(s) [filter]')
+	group.add_argument('-o', '--owns',
+			action = 'store_true', default = False,
+			help = 'query the package that owns <file>')
 	group.add_argument('-q', '--quiet',
 			action = 'store_true', dest = 'quiet', default = False,
 			help = 'show less information for query and search')
@@ -93,7 +148,9 @@ def main(rawargs):
 			action = 'store_true', default = False,
 			help = "list outdated packages [filter]")
 	group.add_argument('pkgnames', metavar = 'pkg', nargs = '*',
-			help = 'packages to show (show all packages if no arguments)')
+			help = 'packages to show (show all packages if no arguments) '
+			'(when used with -o: a filename, '
+			'when used with -p: the path to a package file)')
 
 	args = parser.parse_args(rawargs)
 	config.init_with_config(args)
@@ -103,6 +160,10 @@ def main(rawargs):
 
 	db = pyalpm.get_localdb()
 	retcode = 0
+
+	# actions other than listing packages
+	if args.owns:
+		return find_file(args.pkgnames, args)
 
 	pkglist = []
 	if len(args.pkgnames) > 0:
