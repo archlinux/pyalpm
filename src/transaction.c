@@ -88,11 +88,38 @@ static PyObject* pyobject_from_pmfileconflict(void *item) {
 }
 
 /* Standard methods */
+const char* flagnames[19] = {
+  "nodeps",
+  "force",
+  "nosave",
+  "nodepversion",
+  "cascade",
+  "recurse",
+  "dbonly",
+  NULL,
+  "alldeps",
+  "downloadonly",
+  "noscriptlet",
+  "noconflicts",
+  NULL,
+  "needed",
+  "allexplicit",
+  "unneeded",
+  "recurseall",
+  "nolock",
+  NULL
+};
+
 static PyObject *pyalpm_trans_get_flags(PyObject *self, void *closure)
 {
   int flags = alpm_trans_get_flags();
   if (flags == -1) RET_ERR("no transaction defined", NULL);
-  return PyLong_FromLong(flags);
+  PyObject *result = PyDict_New();
+  for (int i = 0; i < 18; i++) {
+    if(flagnames[i])
+      PyDict_SetItemString(result, flagnames[i], flags & (1 << i) ? Py_True : Py_False);
+  }
+  return result;
 }
 
 static PyObject *pyalpm_trans_get_add(PyObject *self, void *closure)
@@ -116,9 +143,66 @@ static PyObject *pyalpm_trans_get_remove(PyObject *self, void *closure)
 }
 
 /** Transaction flow */
-PyObject* pyalpm_trans_init(PyObject *self, PyObject *args) {
-  /* TODO: pass arguments to alpm_trans_init() */
-  int ret = alpm_trans_init(0, NULL, NULL, NULL);
+#define INDEX_FLAGS(array) \
+  array[0], array[1], array[2], \
+  array[3], array[4], array[5], \
+  array[6], array[8], array[9], \
+  array[10], array[11], array[13], \
+  array[14], array[15], array[16], \
+  array[17]
+
+static PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs) {
+  const char* keywords[] = {
+    INDEX_FLAGS(flagnames),
+    "event_callback",
+    "conv_callback",
+    "progress_callback", NULL };
+  char flags[18] = "\0\0\0\0\0" /* 5 */ "\0\0\0\0\0" /* 10 */ "\0\0\0\0\0" /* 15 */ "\0\0\0";
+  Py_CLEAR(event_cb);
+  Py_CLEAR(conv_cb);
+  Py_CLEAR(progress_cb);
+
+  /* check all arguments */
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+        "|iiiiiiiiiiiiiiiiOOO", keywords,
+        INDEX_FLAGS(&flags), &event_cb, &conv_cb, &progress_cb)) {
+    return NULL;
+  }
+  /* build arguments */
+  int flag_int = 0;
+  for (int i = 0; i < 18; i++) {
+    if (flags[i]) flag_int |= 1 << i;
+  }
+  if (event_cb) {
+    if (!PyCallable_Check(event_cb)) {
+      event_cb = NULL;
+      PyErr_SetString(PyExc_TypeError, "event_callback is not callable!");
+    } else {
+      Py_INCREF(event_cb);
+    }
+  }
+  if (conv_cb) {
+    if (!PyCallable_Check(conv_cb)) {
+      conv_cb = NULL;
+      PyErr_SetString(PyExc_TypeError, "conv_callback is not callable!");
+    } else {
+      Py_INCREF(conv_cb);
+    }
+  }
+  if (progress_cb) {
+    if(!PyCallable_Check(progress_cb)) {
+      progress_cb = NULL;
+      PyErr_SetString(PyExc_TypeError, "progress_callback is not callable!");
+    } else {
+      Py_INCREF(progress_cb);
+    }
+  }
+
+  /* run alpm_trans_init() */
+  int ret = alpm_trans_init(flag_int
+      , event_cb ? pyalpm_trans_eventcb : NULL
+      , conv_cb ? pyalpm_trans_convcb : NULL
+      , progress_cb ? pyalpm_trans_progresscb : NULL);
   if (ret == -1) {
     RET_ERR("transaction could not be initialized", NULL);
   }
@@ -214,7 +298,17 @@ static struct PyGetSetDef pyalpm_trans_getset[] = {
 
 static struct PyMethodDef pyalpm_trans_methods[] = {
   /* Execution flow */
-  {"init",    pyalpm_trans_init,       METH_VARARGS, "init" },
+  {"init",    (PyCFunction)pyalpm_trans_init, METH_VARARGS | METH_KEYWORDS,
+    "Initializes a transaction.\n"
+    "Arguments:\n"
+    "  nodeps, force, nosave, nodepversion, cascade, recurse,\n"
+    "  dbonly, alldeps, downloadonly, noscriptlet, noconflicts,\n"
+    "  needed, allexplicit, inneeded, recurseall, nolock\n"
+    "    -- the transaction options (booleans)\n"
+    "  event_callback -- a function called when an event occurs\n"
+    "  conv_callback -- a function called to get user input\n"
+    "  progress_callback -- a function called to indicate progress\n"
+  },
   {"prepare", pyalpm_trans_prepare,    METH_NOARGS, "prepare" },
   {"commit",  pyalpm_trans_commit,     METH_NOARGS, "commit" },
   {"interrupt", pyalpm_trans_interrupt,METH_NOARGS,  "Interrupt the transaction." },
