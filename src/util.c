@@ -21,6 +21,7 @@
  *
  */
 
+#include <string.h>
 #include <regex.h>
 
 #include <Python.h>

@@ -6,6 +6,7 @@ os.putenv('LC_CTYPE', 'en_US.UTF-8')
 
 alpm = setuptools.Extension('pyalpm',
     libraries = ['alpm'],
+    extra_compile_args = ['-std=c99', '-D_POSIX_C_SOURCE=200809L'],
     sources = [
         'src/pyalpm.c',
         'src/util.c',
@@ -17,7 +18,7 @@ alpm = setuptools.Extension('pyalpm',
         ])
 
 setuptools.setup(name = 'pyalpm',
-      version = '0.2',
+      version = '0.3',
       description = 'libalpm bindings for Python 3',
       author = "Rémy Oudompheng",
       author_email = "remy@archlinux.org",

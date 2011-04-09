@@ -1,42 +1,43 @@
-pyalpm TODO file
-
-* handle Include statements in pacman.conf
+pacman.conf
+-----------
+* handle Include statements
+* handle $repo and $arch substitutions
 
 Databases
-
+---------
 alpm_db_unregister
 alpm_db_unregister_all
 alpm_db_update
 alpm_db_search
 
 Packages
-
+--------
 * alpm_pkg_checkmd5sum
 * alpm_fetch_pkgurl
 
 Deltas
-
+------
 * everything
 
 Transactions
-
-* alpm_trans_init()
+------------
 * callbacks
 
 Dependencies/Missing/Conflicts
-
+------------------------------
 * alpm_checkconflicts()
 * alpm_checkdeps()
 * more readable output of conversion functions.
 
 Options
-
+-------
 * alpm_option_{get,set}_logcb()
 
 Pycman
-
-Missing options:
-* -R, -U
+------
+Implement missing options:
+* -R[cdknsu]
+* -U[fk], asdeps, asexplicit
 * -Q[kops]
-* -S[cdfksuvwy]
+* -S[cdfksuvwy], asdeps, asexplicit
 

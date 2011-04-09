@@ -1,7 +1,8 @@
 pyalpm 0.3 :
   * wraps alpm_db_set_pkgreason()
   * wraps alpm_sync_newversion()
-  * support for getting/setting Python functions as libalpm callbacks
+  * wraps transaction control functions
+  * initial support for getting/setting Python functions as libalpm callbacks
   * pycman: support -D, -Q[demotu]
 
 pyalpm 0.2 :
