@@ -40,6 +40,15 @@ static void pyalpm_trans_convcb(pmtransconv_t question,
 
 static void pyalpm_trans_progresscb(pmtransprog_t op,
         const char* target_name, int percentage, size_t n_targets, size_t cur_target) {
+  PyObject *result = NULL;
+  if (progress_cb) {
+    result = PyObject_CallFunction(progress_cb, "sinn",
+      target_name, percentage, n_targets, cur_target);
+  } else {
+    PyErr_SetString(PyExc_RuntimeError, "progress callback was called but it's not set!");
+  }
+  if (PyErr_Occurred()) PyErr_Print();
+  Py_CLEAR(result);
 }
 
 /** Transaction info translation */
