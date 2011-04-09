@@ -76,6 +76,8 @@ void init_pyalpm_error(PyObject* module) {
 
 static unsigned short init = 0;
 
+/** Python lists and libalpm lists */
+
 /** Converts a Python list of strings to an alpm_list_t linked list.
  * return 0 on success, -1 on failure
  */
@@ -129,8 +131,12 @@ PyObject* alpmlist_to_pylist(alpm_list_t *prt, PyObject* pybuilder(void*))
 
   for(tmp = prt; tmp; tmp = alpm_list_next(tmp)) {
     stritem = pybuilder(alpm_list_getdata(tmp));
+    if (!stritem) {
+      Py_CLEAR(stritem);
+      return NULL;
+    }
     PyList_Append(output, stritem);
-    Py_DECREF(stritem);
+    Py_CLEAR(stritem);
   }
 
   return output;
