@@ -25,6 +25,7 @@
 
 #include <Python.h>
 
+extern PyTypeObject AlpmPackageType;
 int PyAlpmPkg_Check(PyObject *object);
 
 PyObject *pyalpm_package_from_pmpkg(void* data);

@@ -23,7 +23,6 @@
 #include <string.h>
 #include <alpm.h>
 #include <Python.h>
-#include "package.h"
 #include "db.h"
 #include "util.h"
 
@@ -33,7 +32,7 @@ typedef struct _AlpmPackage {
   int needs_free;
 } AlpmPackage;
 
-static PyTypeObject AlpmPackageType;
+PyTypeObject AlpmPackageType;
 
 int PyAlpmPkg_Check(PyObject *object) {
   return PyObject_TypeCheck(object, &AlpmPackageType);
@@ -453,7 +452,7 @@ static struct PyMethodDef pyalpm_pkg_methods[] = {
   { NULL }
 };
 
-static PyTypeObject AlpmPackageType = {
+PyTypeObject AlpmPackageType = {
   PyVarObject_HEAD_INIT(NULL, 0)
   "alpm.Package",             /*tp_name*/
   sizeof(AlpmPackage),        /*tp_basicsize*/

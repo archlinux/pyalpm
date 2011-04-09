@@ -24,7 +24,6 @@
 #include <alpm.h>
 #include <Python.h>
 #include "package.h"
-#include "db.h"
 #include "util.h"
 
 /** Transaction callbacks */
