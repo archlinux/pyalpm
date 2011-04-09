@@ -31,14 +31,14 @@ static PyObject *event_cb = NULL;
 static PyObject *conv_cb = NULL;
 static PyObject *progress_cb = NULL;
 
-void pyalpm_trans_eventcb(pmtransevt_t event, void* data1, void *data2) {
+static void pyalpm_trans_eventcb(pmtransevt_t event, void* data1, void *data2) {
 }
 
-void pyalpm_trans_convcb(pmtransconv_t question,
+static void pyalpm_trans_convcb(pmtransconv_t question,
         void* data1, void *data2, void* data3, int* retcode) {
 }
 
-void pyalpm_trans_progresscb(pmtransprog_t op,
+static void pyalpm_trans_progresscb(pmtransprog_t op,
         const char* target_name, int percentage, size_t n_targets, size_t cur_target) {
 }
 
@@ -108,7 +108,7 @@ PyObject* pyalpm_trans_init(PyObject *self, PyObject *args) {
   Py_RETURN_NONE;
 }
 
-PyObject* pyalpm_trans_prepare(PyObject *self, PyObject *args) {
+static PyObject* pyalpm_trans_prepare(PyObject *self, PyObject *args) {
   alpm_list_t *data;
 
   int ret = alpm_trans_prepare(&data);
@@ -122,8 +122,8 @@ PyObject* pyalpm_trans_prepare(PyObject *self, PyObject *args) {
   Py_RETURN_NONE;
 }
 
-PyObject* pyalpm_trans_commit(PyObject *self, PyObject *args) {
-  alpm_list_t *data;
+static PyObject* pyalpm_trans_commit(PyObject *self, PyObject *args) {
+  alpm_list_t *data = NULL;
 
   int ret = alpm_trans_commit(&data);
   if (ret == -1) {
@@ -136,7 +136,7 @@ PyObject* pyalpm_trans_commit(PyObject *self, PyObject *args) {
   Py_RETURN_NONE;
 }
 
-PyObject* pyalpm_trans_interrupt(PyObject *self, PyObject *args) {
+static PyObject* pyalpm_trans_interrupt(PyObject *self, PyObject *args) {
   int ret = alpm_trans_interrupt();
   if (ret == -1) RET_ERR("unable to interrupt transaction", NULL);
   Py_RETURN_NONE;
@@ -149,7 +149,7 @@ PyObject* pyalpm_trans_release(PyObject *self, PyObject *args) {
 }
 
 /** Transaction contents */
-PyObject* pyalpm_trans_add_pkg(PyObject *self, PyObject *args) {
+static PyObject* pyalpm_trans_add_pkg(PyObject *self, PyObject *args) {
   PyObject *pkg;
   if (!PyArg_ParseTuple(args, "O!", &AlpmPackageType, &pkg)) {
     return NULL;
@@ -161,7 +161,7 @@ PyObject* pyalpm_trans_add_pkg(PyObject *self, PyObject *args) {
   Py_RETURN_NONE;
 }
 
-PyObject* pyalpm_trans_remove_pkg(PyObject *self, PyObject *args) {
+static PyObject* pyalpm_trans_remove_pkg(PyObject *self, PyObject *args) {
   PyObject *pkg;
   if (!PyArg_ParseTuple(args, "O!", &AlpmPackageType, &pkg)) {
     return NULL;
@@ -173,7 +173,7 @@ PyObject* pyalpm_trans_remove_pkg(PyObject *self, PyObject *args) {
   Py_RETURN_NONE;
 }
 
-PyObject* pyalpm_trans_sysupgrade(PyObject *self, PyObject *args, PyObject *kwargs) {
+static PyObject* pyalpm_trans_sysupgrade(PyObject *self, PyObject *args, PyObject *kwargs) {
   char* keyword[] = {"downgrade", NULL};
   PyObject *downgrade;
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!", keyword, &PyBool_Type, &downgrade))
@@ -213,7 +213,7 @@ static struct PyMethodDef pyalpm_trans_methods[] = {
   { NULL }
 };
 
-PyTypeObject AlpmTransactionType = {
+static PyTypeObject AlpmTransactionType = {
   PyVarObject_HEAD_INIT(NULL, 0)
   "alpm.TransactionClass",    /*tp_name*/
   0,                   /*tp_basicsize*/
