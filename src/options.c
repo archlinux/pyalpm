@@ -479,19 +479,25 @@ static PyObject *pyalpm_fetchcb = NULL;
 /** callback wrappers */
 
 static void pyalpm_logcb_wrapper(pmloglevel_t level, const char *fmt, va_list va_args) {
-  return;
+  char *log;
+  vasprintf(&log, fmt, va_args);
+  PyObject *result = PyObject_CallFunction(pyalpm_logcb, "s", log);
+  if (!result) PyErr_Print();
+  Py_CLEAR(result);
 }
 
 static void pyalpm_dlcb_wrapper(const char *filename, off_t xfered, off_t total) {
   PyObject *result;
   result = PyObject_CallFunction(pyalpm_dlcb, "sii", filename, xfered, total);
-  Py_XDECREF(result);
+  if (!result) PyErr_Print();
+  Py_CLEAR(result);
 }
 
 static void pyalpm_totaldlcb_wrapper(off_t total) {
   PyObject *result;
   result = PyObject_CallFunction(pyalpm_totaldlcb, "i", total);
-  Py_XDECREF(result);
+  if (!result) PyErr_Print();
+  Py_CLEAR(result);
 }
 
 static int pyalpm_fetchcb_wrapper(const char *url, const char *localpath, int force) {
