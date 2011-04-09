@@ -25,8 +25,6 @@
 
 #include <Python.h>
 
-void init_pyalpm_package(PyObject *module);
-
 int PyAlpmPkg_Check(PyObject *object);
 
 PyObject *pyalpm_package_from_pmpkg(void* data);

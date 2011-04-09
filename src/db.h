@@ -27,7 +27,6 @@
 
 PyObject *pyalpm_db_from_pmdb(void* data);
 int pylist_db_to_alpmlist(PyObject *list, alpm_list_t **result);
-void init_pyalpm_db(PyObject *module);
 
 PyObject* pyalpm_find_grp_pkgs(PyObject* self, PyObject* args);
 PyObject* pyalpm_sync_newversion(PyObject *self, PyObject* args);

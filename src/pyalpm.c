@@ -22,7 +22,6 @@
 #include "util.h"
 #include "package.h"
 #include "db.h"
-#include "optionsobject.h"
 
 /*pyalpm functions*/
 static PyObject * initialize_alpm(PyObject *self, PyObject *dummy)

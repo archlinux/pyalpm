@@ -36,4 +36,9 @@ char VERSION[] = "0.2";
 
 unsigned short check_init(void);
 
+/* submodules init */
+void init_pyalpm_db(PyObject *module);
+void init_pyalpm_package(PyObject *module);
+void init_pyalpm_options(PyObject *module);
+
 #endif /* PYALPM_H */
