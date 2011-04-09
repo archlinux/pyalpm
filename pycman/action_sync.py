@@ -118,7 +118,7 @@ def main(rawargs):
 			'package names for -i)')
 
 	args = parser.parse_args(rawargs)
-	config.init_with_config(args)
+	config.init_with_config_and_options(args)
 
 	if args.verbose:
 		print("sync " + " ".join(rawargs), file = sys.stderr)

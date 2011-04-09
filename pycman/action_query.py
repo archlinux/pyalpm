@@ -153,7 +153,7 @@ def main(rawargs):
 			'when used with -p: the path to a package file)')
 
 	args = parser.parse_args(rawargs)
-	config.init_with_config(args)
+	config.init_with_config_and_options(args)
 
 	if args.verbose:
 		print("query " + " ".join(rawargs), file = sys.stderr)

@@ -62,7 +62,26 @@ def make_parser(*args, **kwargs):
 			help = 'set an alternate log file')
 	return parser
 
-def init_with_config(options):
+def init_with_config(configpath):
+	"Reads configuration from given path and apply it to libalpm"
+	config = read_config(configpath)
+	try:
+		config_options = config["options"]
+	except KeyError:
+		config_options = {}
+
+	pyalpm.options.root = config_options.get("rootdir", "/")
+	pyalpm.options.dbpath = config_options.get("dbpath", "/var/lib/pacman")
+	pyalpm.options.arch = config_options.get("architecture", "auto")
+	pyalpm.options.logfile = config_options.get("logfile", "/var/log/pacman.log")
+	# set sync databases
+	for repo in config.sections():
+		if repo == "options":
+			continue
+		pyalpm.register_syncdb(repo)
+
+def init_with_config_and_options(options):
+	"Reads configuration from file and commandline options, and apply it to libalpm"
 	pyalpm.initialize()
 
 	# read config file

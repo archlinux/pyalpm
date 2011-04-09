@@ -39,7 +39,7 @@ def main(rawargs):
 	parser.add_argument('deps', metavar = 'dep', nargs='*',
 			help = "a dependency string, e.g. 'pacman>=3.4.0'")
 	args = parser.parse_args(rawargs)
-	config.init_with_config(args)
+	config.init_with_config_and_options(args)
 
 	if args.verbose:
 		print("deptest " + " ".join(rawargs), file = sys.stderr)
