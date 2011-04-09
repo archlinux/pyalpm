@@ -40,5 +40,6 @@ unsigned short check_init(void);
 void init_pyalpm_db(PyObject *module);
 void init_pyalpm_package(PyObject *module);
 void init_pyalpm_options(PyObject *module);
+int init_pyalpm_transaction(PyObject *module);
 
 #endif /* PYALPM_H */

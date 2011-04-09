@@ -12,7 +12,8 @@ alpm = setuptools.Extension('pyalpm',
         'src/package.c',
         'src/db.c',
         'src/options.c',
-        'src/optionsobject.c'
+        'src/optionsobject.c',
+        'src/transaction.c'
         ])
 
 setuptools.setup(name = 'pyalpm',

@@ -195,6 +195,7 @@ PyMODINIT_FUNC PyInit_pyalpm()
   init_pyalpm_options(m);
   init_pyalpm_package(m);
   init_pyalpm_db(m);
+  init_pyalpm_transaction(m);
 
   return m;
 }
