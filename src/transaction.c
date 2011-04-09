@@ -73,10 +73,18 @@ static PyObject* pyobject_from_pmconflict(void *item) {
 
 static PyObject* pyobject_from_pmfileconflict(void *item) {
   pmfileconflict_t* conflict = (pmfileconflict_t*)item;
-  return Py_BuildValue("(sss)",
-      alpm_fileconflict_get_target(conflict),
-      alpm_fileconflict_get_file(conflict),
+  const char *target = alpm_fileconflict_get_target(conflict);
+  const char *filename = alpm_fileconflict_get_file(conflict);
+  switch(alpm_fileconflict_get_type(conflict)) {
+  case PM_FILECONFLICT_TARGET:
+    return Py_BuildValue("(sss)", target, filename,
       alpm_fileconflict_get_ctarget(conflict));
+  case PM_FILECONFLICT_FILESYSTEM:
+    return Py_BuildValue("(ssO)", target, filename, Py_None);
+  default:
+    PyErr_SetString(PyExc_RuntimeError, "invalid type for pmfileconflict_t object");
+    return NULL;
+  }
 }
 
 /* Standard methods */
