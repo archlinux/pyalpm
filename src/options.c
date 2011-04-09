@@ -36,7 +36,7 @@
 PyObject * option_get_root_alpm(PyObject *self, void *closure)
 {
   const char *str = alpm_option_get_root();
-  PYALPM_ERR(str == NULL, "failed getting root path");
+  if (!str) RET_ERR("failed getting root path", NULL);
   return Py_BuildValue("s", str);
 }
 
@@ -59,15 +59,11 @@ int option_set_root_alpm(PyObject *self, PyObject *value, void* closure)
   }
 
   CHECK_ALPM_INIT(-1);
-  if(alpm_option_set_root(path) == -1) {
-    PyErr_SetString(alpm_error, "failed setting root");
-    ret = -1;
-  }
-  else
-    ret = 0;
-
+  int ok = alpm_option_set_root(path);
   free(path);
-  return(ret);
+
+  if (ok == -1) RET_ERR("failed setting root", -1);
+  return(0);
 }
 
 int option_set_dbpath_alpm(PyObject *self, PyObject* value, void *closure)

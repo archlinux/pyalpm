@@ -177,10 +177,10 @@ static PyObject* pyalpm_db_set_pkgreason(PyObject* rawself, PyObject* args) {
     return NULL;
   }
 
-  PYALPM_ERR(self->c_data == NULL, "data is not initialized");
+  if (self->c_data == NULL) RET_ERR("data is not initialized", NULL);
   ret = alpm_db_set_pkgreason(self->c_data, pkgname, reason);
 
-  PYALPM_ERR(ret == -1, "failed setting install reason");
+  if (ret == -1) RET_ERR("failed setting install reason", NULL);
   Py_RETURN_NONE;
 }
 

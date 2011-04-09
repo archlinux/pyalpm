@@ -25,22 +25,41 @@
 #include <alpm.h>
 #include <alpm_list.h>
 
+/** Errors */
+
 PyObject* alpm_error = NULL;
 
 /** Formats an alpm.error exception using errno from libalpm. */
 static PyObject* pyalpm_error_str(PyObject* exception) {
   PyObject* args = PyObject_GetAttrString(exception, "args");
-  PyObject* errstring;
-  if (!PyArg_ParseTuple(args, "O!", &PyUnicode_Type, &errstring)) {
-    PyErr_SetString(PyExc_TypeError, "error object takes a string as argument");
-    Py_DECREF(args);
-    return NULL;
+  PyObject* result;
+  const char* errstring;
+  int errcode;
+  PyObject *data;
+
+  int handle_format;
+  {
+    /* check whether alpm.error was set with standard args */
+    PyObject *exctype, *excvalue, *exctraceback;
+    PyErr_Fetch(&exctype, &excvalue, &exctraceback);
+    handle_format = PyArg_ParseTuple(args, "siO",
+        &errstring, &errcode, &data);
+    if (!handle_format) {
+      PyErr_Clear();
+      result = PyObject_Str(args);
+    }
+    PyErr_Restore(exctype, excvalue, exctraceback);
   }
 
-  PyObject *result = PyUnicode_FromFormat
-    ("%S (code %d: %s)", errstring, pm_errno, alpm_strerrorlast());
+  if(handle_format) {
+    if (data == Py_None) {
+      result = PyUnicode_FromFormat("%s, pm_errno %d (%s)", errstring, errcode, alpm_strerror(errcode));
+    } else {
+      result = PyUnicode_FromFormat("%s, pm_errno %d (%s), %S", errstring, errcode, alpm_strerror(errcode), data);
+    }
+  }
+
   Py_DECREF(args);
-  Py_DECREF(errstring);
   return result;
 }
 
