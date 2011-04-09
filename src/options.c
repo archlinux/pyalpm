@@ -26,8 +26,7 @@
 #include "util.h"
 
 #define CHECK_ALPM_INIT(value) if (check_init() != 1) { \
-  PyErr_SetString(alpm_error, "pyalpm not initialized"); \
-  return (value);					 \
+  RET_ERR("pyalpm not initialized", value); \
   }
 
 /**
@@ -82,15 +81,12 @@ int option_set_dbpath_alpm(PyObject *self, PyObject* value, void *closure)
   }
 
   CHECK_ALPM_INIT(-1);
-  if(alpm_option_set_dbpath(path) == -1) {
-    PyErr_SetString(alpm_error, "failed setting dbpath");
-    ret = -1;
-  }
-  else
-    ret = 0;
-
+  int ok = alpm_option_set_dbpath(path);
   free(path);
-  return(ret);
+  if (ok == -1)
+    RET_ERR("failed setting dbpath", -1);
+
+  return 0;
 }
 
 PyObject* option_get_dbpath_alpm(PyObject *self, void *closure)
@@ -98,14 +94,8 @@ PyObject* option_get_dbpath_alpm(PyObject *self, void *closure)
   const char *str = alpm_option_get_dbpath();
 
   if(str == NULL)
-  {
-    PyErr_SetString(alpm_error, "failed getting dbpath.");
-    return NULL;
-  }
-  else
-  {
-    return Py_BuildValue("s", str);
-  }
+    RET_ERR("failed getting dbpath.", NULL);
+  return Py_BuildValue("s", str);
 }
 
 int option_set_logfile_alpm(PyObject *self, PyObject *value, void* closure)
@@ -125,15 +115,11 @@ int option_set_logfile_alpm(PyObject *self, PyObject *value, void* closure)
 
   CHECK_ALPM_INIT(-1);
 
-  if(alpm_option_set_logfile(path) == -1) {
-    PyErr_SetString(alpm_error, "failed setting logfile path");
-    ret = -1;
-  }
-  else
-    ret = 0;
-
+  int ok = alpm_option_set_logfile(path);
   free(path);
-  return(ret);
+  if (ok == -1) RET_ERR("failed setting logfile path", -1);
+
+  return 0;
 }
 
 PyObject * option_get_logfile_alpm(PyObject *self, void* closure)
@@ -142,8 +128,7 @@ PyObject * option_get_logfile_alpm(PyObject *self, void* closure)
 
   if(str == NULL)
   {
-    PyErr_SetString(alpm_error, "failed getting logfile.");
-    return NULL;
+    RET_ERR("failed getting logfile.", NULL);
   }
   else
   {
@@ -157,8 +142,7 @@ PyObject* option_get_lockfile_alpm(PyObject *self, void *closure)
 
   if(str == NULL)
   {
-    PyErr_SetString(alpm_error, "failed getting lockfile");
-    return NULL;
+    RET_ERR("failed getting lockfile", NULL);
   }
   else
     return PyUnicode_FromString(str);
@@ -193,8 +177,7 @@ PyObject* option_get_arch_alpm(PyObject *self, void* closure) {
   const char *str = alpm_option_get_arch();
 
   if(str == NULL) {
-    PyErr_SetString(alpm_error, "failed getting arch");
-    return NULL;
+    RET_ERR("failed getting arch", NULL);
   }
   return Py_BuildValue("s", str);
 }
@@ -212,8 +195,7 @@ PyObject * option_get_usesyslog_alpm(PyObject *self, void* closure)
 
   if(ret == -1)
   {
-    PyErr_SetString(alpm_error, "failed getting usesyslog");
-    return NULL;
+    RET_ERR("failed getting usesyslog", NULL);
   }
   else
     return PyLong_FromLong(ret);
@@ -235,8 +217,7 @@ int option_set_usesyslog_alpm(PyObject *self, PyObject *value, void* closure)
 PyObject* option_get_usedelta_alpm(PyObject *self, void* closure) {
   int ret = alpm_option_get_usedelta();
   if (ret == -1) {
-    PyErr_SetString(alpm_error, "failed getting usedelta");
-    return NULL;
+    RET_ERR("failed getting usedelta", NULL);
   } else
     return PyLong_FromLong(ret);
 }
@@ -257,8 +238,7 @@ int option_set_usedelta_alpm(PyObject *self, PyObject *value, void* closure)
 PyObject* option_get_checkspace_alpm(PyObject *self, void* closure) {
   int ret = alpm_option_get_checkspace();
   if (ret == -1) {
-    PyErr_SetString(alpm_error, "failed getting checkspace");
-    return NULL;
+    RET_ERR("failed getting checkspace", NULL);
   } else
     return PyLong_FromLong(ret);
 }

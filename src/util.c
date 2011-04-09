@@ -64,7 +64,11 @@ static PyObject* pyalpm_error_str(PyObject* exception) {
 }
 
 void init_pyalpm_error(PyObject* module) {
-  alpm_error = PyErr_NewException("alpm.error", NULL, NULL);
+  alpm_error = PyErr_NewExceptionWithDoc("alpm.error",
+      "Exception raised when an error arises from libalpm\n"
+      "The args attribute will usually contain a tuple "
+      "(error message, errno from libalpm, extra data)\n",
+      NULL, NULL);
   ((PyTypeObject*)alpm_error)->tp_str = pyalpm_error_str;
   PyModule_AddObject(module, "error", alpm_error);
   Py_INCREF(alpm_error);

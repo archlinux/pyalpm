@@ -49,17 +49,31 @@ void pyalpm_trans_progresscb(pmtransprog_t op,
     return ret; \
   } while(0)
 
-PyObject *pyalpm_trans_get_flags(PyObject *self, void *closure)
+static PyObject *pyalpm_trans_get_flags(PyObject *self, void *closure)
 {
-  NOT_IMPLEMENTED(NULL);
+  int flags = alpm_trans_get_flags();
+  if (flags == -1) RET_ERR("no transaction defined", NULL);
+  return PyLong_FromLong(flags);
 }
-PyObject *pyalpm_trans_get_add(PyObject *self, void *closure)
+
+static PyObject *pyalpm_trans_get_add(PyObject *self, void *closure)
 {
-  NOT_IMPLEMENTED(NULL);
+  /* sanity check */
+  int flags = alpm_trans_get_flags();
+  if (flags == -1) RET_ERR("no transaction defined", NULL);
+
+  alpm_list_t *to_add = alpm_trans_get_add();
+  return alpmlist_to_pylist(to_add, pyalpm_package_from_pmpkg);
 }
-PyObject *pyalpm_trans_get_remove(PyObject *self, void *closure)
+
+static PyObject *pyalpm_trans_get_remove(PyObject *self, void *closure)
 {
-  NOT_IMPLEMENTED(NULL);
+  /* sanity check */
+  int flags = alpm_trans_get_flags();
+  if (flags == -1) RET_ERR("no transaction defined", NULL);
+
+  alpm_list_t *to_add = alpm_trans_get_add();
+  return alpmlist_to_pylist(to_add, pyalpm_package_from_pmpkg);
 }
 
 /** Transaction flow */
@@ -72,22 +86,54 @@ PyObject* pyalpm_trans_prepare(PyObject *self, PyObject *args) {
 PyObject* pyalpm_trans_commit(PyObject *self, PyObject *args) {
   NOT_IMPLEMENTED(NULL);
 }
+
 PyObject* pyalpm_trans_interrupt(PyObject *self, PyObject *args) {
-  NOT_IMPLEMENTED(NULL);
+  int ret = alpm_trans_interrupt();
+  if (ret == -1) RET_ERR("unable to interrupt transaction", NULL);
+  Py_RETURN_NONE;
 }
+
 PyObject* pyalpm_trans_release(PyObject *self, PyObject *args) {
-  NOT_IMPLEMENTED(NULL);
+  int ret = alpm_trans_release();
+  if (ret == -1) RET_ERR("unable to release transaction", NULL);
+  Py_RETURN_NONE;
 }
 
 /** Transaction contents */
 PyObject* pyalpm_trans_add_pkg(PyObject *self, PyObject *args) {
-  NOT_IMPLEMENTED(NULL);
+  PyObject *pkg;
+  if (!PyArg_ParseTuple(args, "O!", &AlpmPackageType, &pkg)) {
+    return NULL;
+  }
+
+  pmpkg_t *pmpkg = pmpkg_from_pyalpm_pkg(pkg);
+  int ret = alpm_add_pkg(pmpkg);
+  if (ret == -1) RET_ERR("unable to update transaction", NULL);
+  Py_RETURN_NONE;
 }
+
 PyObject* pyalpm_trans_remove_pkg(PyObject *self, PyObject *args) {
-  NOT_IMPLEMENTED(NULL);
+  PyObject *pkg;
+  if (!PyArg_ParseTuple(args, "O!", &AlpmPackageType, &pkg)) {
+    return NULL;
+  }
+
+  pmpkg_t *pmpkg = pmpkg_from_pyalpm_pkg(pkg);
+  int ret = alpm_remove_pkg(pmpkg);
+  if (ret == -1) RET_ERR("unable to update transaction", NULL);
+  Py_RETURN_NONE;
 }
-PyObject* pyalpm_trans_sysupgrade(PyObject *self, PyObject *args) {
-  NOT_IMPLEMENTED(NULL);
+
+PyObject* pyalpm_trans_sysupgrade(PyObject *self, PyObject *args, PyObject *kwargs) {
+  const char* keyword[] = {"downgrade", NULL};
+  PyObject *downgrade;
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!", keyword, &PyBool_Type, &downgrade))
+    return NULL;
+
+  int do_downgrade = (downgrade == Py_True) ? 1 : 0;
+  int ret = alpm_sync_sysupgrade(do_downgrade);
+  if (ret == -1) RET_ERR("unable to update transaction", NULL);
+  Py_RETURN_NONE;
 }
 
 /** Properties and methods */
@@ -105,8 +151,8 @@ static struct PyMethodDef pyalpm_trans_methods[] = {
   {"init",    pyalpm_trans_init,       METH_VARARGS, "init" },
   {"prepare", pyalpm_trans_prepare,    METH_VARARGS, "prepare" },
   {"commit",  pyalpm_trans_commit,     METH_VARARGS, "commit" },
-  {"interrupt", pyalpm_trans_interrupt,METH_NOARGS,  "interrupt" },
-  {"release", pyalpm_trans_release,    METH_NOARGS,  "release" },
+  {"interrupt", pyalpm_trans_interrupt,METH_NOARGS,  "Interrupt the transaction." },
+  {"release", pyalpm_trans_release,    METH_NOARGS,  "Release the transaction." },
 
   /* Transaction contents */
   {"add_pkg",    pyalpm_trans_add_pkg,    METH_VARARGS,
@@ -115,6 +161,7 @@ static struct PyMethodDef pyalpm_trans_methods[] = {
     "append a package removal to transaction"},
   {"sysupgrade", pyalpm_trans_sysupgrade, METH_VARARGS,
     "set the transaction to perform a system upgrade"},
+  { NULL }
 };
 
 PyTypeObject AlpmTransactionType = {
@@ -153,7 +200,6 @@ PyTypeObject AlpmTransactionType = {
 
 /* Initialization */
 int init_pyalpm_transaction(PyObject *module) {
-  AlpmTransactionType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&AlpmTransactionType) < 0)
     return -1;
   Py_INCREF(&AlpmTransactionType);
