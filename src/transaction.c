@@ -42,13 +42,35 @@ void pyalpm_trans_progresscb(pmtransprog_t op,
         const char* target_name, int percentage, size_t n_targets, size_t cur_target) {
 }
 
-/* Standard methods */
-#define NOT_IMPLEMENTED(ret) \
-  do { \
-    PyErr_SetString(PyExc_NotImplementedError, "TODO !"); \
-    return ret; \
-  } while(0)
+/** Transaction info translation */
+static PyObject* pyobject_from_pmdepmissing(void *item) {
+  pmdepmissing_t* miss = (pmdepmissing_t*)item;
+  char* needed = alpm_dep_compute_string(alpm_miss_get_dep(miss));
+  PyObject *result = Py_BuildValue("(sss)",
+      alpm_miss_get_target(miss),
+      needed,
+      alpm_miss_get_causingpkg(miss));
+  free(needed);
+  return result;
+}
 
+static PyObject* pyobject_from_pmconflict(void *item) {
+  pmconflict_t* conflict = (pmconflict_t*)item;
+  return Py_BuildValue("(sss)",
+      alpm_conflict_get_package1(conflict),
+      alpm_conflict_get_package2(conflict),
+      alpm_conflict_get_reason(conflict));
+}
+
+static PyObject* pyobject_from_pmfileconflict(void *item) {
+  pmfileconflict_t* conflict = (pmfileconflict_t*)item;
+  return Py_BuildValue("(sss)",
+      alpm_fileconflict_get_target(conflict),
+      alpm_fileconflict_get_file(conflict),
+      alpm_fileconflict_get_ctarget(conflict));
+}
+
+/* Standard methods */
 static PyObject *pyalpm_trans_get_flags(PyObject *self, void *closure)
 {
   int flags = alpm_trans_get_flags();
@@ -72,19 +94,46 @@ static PyObject *pyalpm_trans_get_remove(PyObject *self, void *closure)
   int flags = alpm_trans_get_flags();
   if (flags == -1) RET_ERR("no transaction defined", NULL);
 
-  alpm_list_t *to_add = alpm_trans_get_add();
-  return alpmlist_to_pylist(to_add, pyalpm_package_from_pmpkg);
+  alpm_list_t *to_remove = alpm_trans_get_remove();
+  return alpmlist_to_pylist(to_remove, pyalpm_package_from_pmpkg);
 }
 
 /** Transaction flow */
 PyObject* pyalpm_trans_init(PyObject *self, PyObject *args) {
-  NOT_IMPLEMENTED(NULL);
+  /* TODO: pass arguments to alpm_trans_init() */
+  int ret = alpm_trans_init(0, NULL, NULL, NULL);
+  if (ret == -1) {
+    RET_ERR("transaction could not be initialized", NULL);
+  }
+  Py_RETURN_NONE;
 }
+
 PyObject* pyalpm_trans_prepare(PyObject *self, PyObject *args) {
-  NOT_IMPLEMENTED(NULL);
+  alpm_list_t *data;
+
+  int ret = alpm_trans_prepare(&data);
+  if (ret == -1) {
+    /* return the list of package conflicts in the exception */
+    PyObject *info = alpmlist_to_pylist(data, pyobject_from_pmdepmissing);
+    if (!info) return NULL;
+    RET_ERR_DATA("transaction preparation failed", info, NULL);
+  }
+
+  Py_RETURN_NONE;
 }
+
 PyObject* pyalpm_trans_commit(PyObject *self, PyObject *args) {
-  NOT_IMPLEMENTED(NULL);
+  alpm_list_t *data;
+
+  int ret = alpm_trans_commit(&data);
+  if (ret == -1) {
+    /* return the list of file conflicts in the exception */
+    PyObject *info = alpmlist_to_pylist(data, pyobject_from_pmfileconflict);
+    if (!info) return NULL;
+    RET_ERR_DATA("transaction failed", info, NULL);
+  }
+
+  Py_RETURN_NONE;
 }
 
 PyObject* pyalpm_trans_interrupt(PyObject *self, PyObject *args) {
@@ -125,7 +174,7 @@ PyObject* pyalpm_trans_remove_pkg(PyObject *self, PyObject *args) {
 }
 
 PyObject* pyalpm_trans_sysupgrade(PyObject *self, PyObject *args, PyObject *kwargs) {
-  const char* keyword[] = {"downgrade", NULL};
+  char* keyword[] = {"downgrade", NULL};
   PyObject *downgrade;
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!", keyword, &PyBool_Type, &downgrade))
     return NULL;
@@ -149,8 +198,8 @@ static struct PyGetSetDef pyalpm_trans_getset[] = {
 static struct PyMethodDef pyalpm_trans_methods[] = {
   /* Execution flow */
   {"init",    pyalpm_trans_init,       METH_VARARGS, "init" },
-  {"prepare", pyalpm_trans_prepare,    METH_VARARGS, "prepare" },
-  {"commit",  pyalpm_trans_commit,     METH_VARARGS, "commit" },
+  {"prepare", pyalpm_trans_prepare,    METH_NOARGS, "prepare" },
+  {"commit",  pyalpm_trans_commit,     METH_NOARGS, "commit" },
   {"interrupt", pyalpm_trans_interrupt,METH_NOARGS,  "Interrupt the transaction." },
   {"release", pyalpm_trans_release,    METH_NOARGS,  "Release the transaction." },
 
@@ -159,7 +208,7 @@ static struct PyMethodDef pyalpm_trans_methods[] = {
     "append a package addition to transaction"},
   {"remove_pkg", pyalpm_trans_remove_pkg, METH_VARARGS,
     "append a package removal to transaction"},
-  {"sysupgrade", pyalpm_trans_sysupgrade, METH_VARARGS,
+  {"sysupgrade", (PyCFunction)pyalpm_trans_sysupgrade, METH_VARARGS | METH_KEYWORDS,
     "set the transaction to perform a system upgrade"},
   { NULL }
 };

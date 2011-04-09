@@ -20,11 +20,14 @@ Deltas
 
 Transactions
 
-* everything
+* alpm_trans_init()
+* callbacks
 
 Dependencies/Missing/Conflicts
 
-* everything
+* alpm_checkconflicts()
+* alpm_checkdeps()
+* more readable output of conversion functions.
 
 Options
 
