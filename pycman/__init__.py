@@ -23,6 +23,7 @@ from . import action_deptest
 from . import action_query
 from . import action_remove
 from . import action_sync
+from . import action_upgrade
 from . import action_version
 
 ACTIONS = {
@@ -31,6 +32,7 @@ ACTIONS = {
 	'query': action_query.main,
 	'remove': action_remove.main,
 	'sync': action_sync.main,
+	'upgrade': action_upgrade.main,
 	'version': action_version.main
 }
 

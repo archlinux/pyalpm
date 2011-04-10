@@ -31,6 +31,7 @@ SHORT_ACTIONS = {
 	'R': 'remove',
 	'S': 'sync',
 	'T': 'deptest',
+	'U': 'upgrade',
 	'V': 'version'
 }
 
@@ -41,6 +42,7 @@ Available actions:
     -R, remove  : remove intalled packages
     -S, sync    : list/install/update remote packages
     -T, deptest : test dependencies
+    -U, upgrade : install packages from local files
     -V, version : print version information
 
 Use the '-h' or '--help' for more information.
