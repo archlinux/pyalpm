@@ -28,6 +28,7 @@ import pycman
 SHORT_ACTIONS = {
 	'D': 'db',
 	'Q': 'query',
+	'R': 'remove',
 	'S': 'sync',
 	'T': 'deptest',
 	'V': 'version'
@@ -37,7 +38,8 @@ HELP = """
 Available actions:
     -D, db      : modify local database
     -Q, query   : list installed packages
-    -S, sync    : list/install/update/remove remote packages
+    -R, remove  : remove intalled packages
+    -S, sync    : list/install/update remote packages
     -T, deptest : test dependencies
     -V, version : print version information
 
