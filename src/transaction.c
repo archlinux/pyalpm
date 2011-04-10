@@ -32,6 +32,80 @@ static PyObject *conv_cb = NULL;
 static PyObject *progress_cb = NULL;
 
 static void pyalpm_trans_eventcb(pmtransevt_t event, void* data1, void *data2) {
+  const char *eventstr;
+  PyObject *obj1 = Py_None;
+  PyObject *obj2 = Py_None;
+  switch(event) {
+    case PM_TRANS_EVT_CHECKDEPS_START:
+      eventstr = "Checking dependencies";
+      break;
+    case PM_TRANS_EVT_CHECKDEPS_DONE:
+      eventstr = "Done checking dependencies";
+      break;
+    case PM_TRANS_EVT_FILECONFLICTS_START:
+      eventstr = "Checking file conflicts";
+      break;
+    case PM_TRANS_EVT_FILECONFLICTS_DONE:
+      eventstr = "Done checking file conflicts";
+      break;
+    case PM_TRANS_EVT_RESOLVEDEPS_START:
+      eventstr = "Resolving dependencies";
+      break;
+    case PM_TRANS_EVT_RESOLVEDEPS_DONE:
+      eventstr = "Done resolving dependencies";
+      break;
+    case PM_TRANS_EVT_INTERCONFLICTS_START:
+      eventstr = "Checking inter conflicts";
+      break;
+    case PM_TRANS_EVT_INTERCONFLICTS_DONE:
+      eventstr = "Done checking inter conflicts";
+      break;
+    case PM_TRANS_EVT_ADD_START:
+      eventstr = "Adding a package";
+      obj1 = pyalpm_package_from_pmpkg(data1);
+      break;
+    case PM_TRANS_EVT_ADD_DONE:
+      eventstr = "Done adding a package";
+      obj1 = pyalpm_package_from_pmpkg(data1);
+      obj2 = pyalpm_package_from_pmpkg(data2);
+      break;
+    case PM_TRANS_EVT_REMOVE_START:
+      eventstr = "Remove package";
+      obj1 = pyalpm_package_from_pmpkg(data1);
+      break;
+    case PM_TRANS_EVT_REMOVE_DONE:
+      eventstr = "Done removing package";
+      obj1 = pyalpm_package_from_pmpkg(data1);
+      break;
+    case PM_TRANS_EVT_UPGRADE_START:
+    case PM_TRANS_EVT_UPGRADE_DONE:
+      /* some info here */
+    case PM_TRANS_EVT_INTEGRITY_START:
+    case PM_TRANS_EVT_INTEGRITY_DONE:
+    case PM_TRANS_EVT_DELTA_INTEGRITY_START:
+    case PM_TRANS_EVT_DELTA_INTEGRITY_DONE:
+    case PM_TRANS_EVT_DELTA_PATCHES_START:
+    case PM_TRANS_EVT_DELTA_PATCHES_DONE:
+    case PM_TRANS_EVT_DELTA_PATCH_START:
+      /* info here */
+    case PM_TRANS_EVT_DELTA_PATCH_DONE:
+    case PM_TRANS_EVT_DELTA_PATCH_FAILED:
+    case PM_TRANS_EVT_SCRIPTLET_INFO:
+      /* info here */
+    case PM_TRANS_EVT_RETRIEVE_START:
+      /* info here */
+    case PM_TRANS_EVT_DISKSPACE_START:
+    case PM_TRANS_EVT_DISKSPACE_DONE:
+      eventstr = "event not implemented";
+      break;
+    default:
+      eventstr = "unknown event";
+  }
+  PyObject *result = NULL;
+  result = PyObject_CallFunction(event_cb, "is(NN)",
+      event, eventstr, obj1, obj2);
+  if (PyErr_Occurred()) PyErr_Print();
+  Py_CLEAR(result);
 }
 
 static void pyalpm_trans_convcb(pmtransconv_t question,
@@ -306,8 +380,10 @@ static struct PyMethodDef pyalpm_trans_methods[] = {
     "  needed, allexplicit, inneeded, recurseall, nolock\n"
     "    -- the transaction options (booleans)\n"
     "  event_callback -- a function called when an event occurs\n"
+    "    -- args: (event ID, event string, (object 1, object 2))\n"
     "  conv_callback -- a function called to get user input\n"
     "  progress_callback -- a function called to indicate progress\n"
+    "    -- args: (target name, percentage, number of targets, target number)\n"
   },
   {"prepare", pyalpm_trans_prepare,    METH_NOARGS, "prepare" },
   {"commit",  pyalpm_trans_commit,     METH_NOARGS, "commit" },
