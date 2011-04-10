@@ -30,6 +30,13 @@ import traceback
 import pyalpm
 from . import config
 
+def cb_event(*args):
+	print("event", args)
+def cb_conv(*args):
+	print("conversation", args)
+def cb_progress(*args):
+	print("progress", args)
+
 def remove(pkgs, options):
 	# prepare target list
 	db = pyalpm.get_localdb()
@@ -37,7 +44,7 @@ def remove(pkgs, options):
 	for name in pkgs:
 		pkg = db.get_pkg(name)
 		if pkg is None:
-			print("error: '%s': target not found", name)
+			print("error: '%s': target not found" % name)
 			return 1
 		targets.append(pkg)
 
@@ -49,7 +56,10 @@ def remove(pkgs, options):
 			nosave = options.nosave,
 			recurse = (options.recursive > 0),
 			recurseall = (options.recursive > 1),
-			unneeded = options.unneeded)
+			unneeded = options.unneeded,
+			event_callback = cb_event,
+			conv_callback = cb_conv,
+			progress_callback = cb_progress)
 
 	for pkg in targets:
 		t.remove_pkg(pkg)
