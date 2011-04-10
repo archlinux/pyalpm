@@ -26,10 +26,41 @@ the effect on dependencies of/on given targets.
 """
 
 import sys
+import traceback
 import pyalpm
 from . import config
 
 def remove(pkgs, options):
+	# prepare target list
+	db = pyalpm.get_localdb()
+	targets = []
+	for name in pkgs:
+		pkg = db.get_pkg(name)
+		if pkg is None:
+			print("error: '%s': target not found", name)
+			return 1
+		targets.append(pkg)
+
+	t = pyalpm.transaction
+	t.init(
+			cascade = options.cascade,
+			nodeps = options.nodeps,
+			dbonly = options.dbonly,
+			nosave = options.nosave,
+			recurse = (options.recursive > 0),
+			recurseall = (options.recursive > 1),
+			unneeded = options.unneeded)
+
+	for pkg in targets:
+		t.remove_pkg(pkg)
+
+	try:
+		t.prepare()
+		t.commit()
+	except pyalpm.error:
+		traceback.print_exc()
+
+	t.release()
 	return 0
 
 def main(rawargs):
