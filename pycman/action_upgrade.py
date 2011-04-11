@@ -49,6 +49,8 @@ def upgrade(pkgs, options):
 	t.init(
 			nodeps = options.nodeps,
 			dbonly = options.dbonly,
+			alldeps = (options.mode == pyalpm.PKG_REASON_DEPEND),
+			allexplicit = (options.mode == pyalpm.PKG_REASON_EXPLICIT),
 			event_callback = cb_event,
 			conv_callback = cb_conv,
 			progress_callback = cb_progress)
@@ -74,6 +76,12 @@ def main(rawargs):
 	group.add_argument('-k', '--dbonly',
 			action = 'store_true', default = False,
 			help = 'only modify database entries, not package files')
+	group.add_argument('--asdeps', dest = 'mode',
+			action = "store_const",
+			const = pyalpm.PKG_REASON_DEPEND)
+	group.add_argument('--asexplicit', dest = 'mode',
+			action = "store_const",
+			const = pyalpm.PKG_REASON_EXPLICIT)
 	group.add_argument('pkgs', metavar = 'pkg', nargs='*',
 			help = "a list of package URLs, e.g. package-1.0-1-i686.tar.xz")
 
