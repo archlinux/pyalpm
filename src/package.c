@@ -55,6 +55,11 @@ static PyObject* pyalpm_pkg_str(PyObject *rawself) {
 			      alpm_pkg_get_arch(self->c_data));
 }
 
+void pyalpm_pkg_unref(PyObject *object) {
+  if (PyAlpmPkg_Check(object))
+    ((AlpmPackage*)(object))->needs_free = 0;
+}
+
 static void pyalpm_package_dealloc(AlpmPackage *self) {
   if (self->needs_free)
     alpm_pkg_free(self->c_data);

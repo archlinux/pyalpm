@@ -333,6 +333,8 @@ static PyObject* pyalpm_trans_add_pkg(PyObject *self, PyObject *args) {
   pmpkg_t *pmpkg = pmpkg_from_pyalpm_pkg(pkg);
   int ret = alpm_add_pkg(pmpkg);
   if (ret == -1) RET_ERR("unable to update transaction", NULL);
+  /* alpm_add_pkg eats the reference to pkg */
+  pyalpm_pkg_unref(pkg);
   Py_RETURN_NONE;
 }
 

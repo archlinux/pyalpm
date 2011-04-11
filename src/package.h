@@ -28,6 +28,8 @@
 extern PyTypeObject AlpmPackageType;
 int PyAlpmPkg_Check(PyObject *object);
 
+void pyalpm_pkg_unref(PyObject *object);
+
 PyObject *pyalpm_package_from_pmpkg(void* data);
 pmpkg_t *pmpkg_from_pyalpm_pkg(PyObject *object);
 
