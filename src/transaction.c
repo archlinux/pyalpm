@@ -67,7 +67,7 @@ static void pyalpm_trans_eventcb(pmtransevt_t event, void* data1, void *data2) {
     case PM_TRANS_EVT_ADD_DONE:
       eventstr = "Done adding a package";
       obj1 = pyalpm_package_from_pmpkg(data1);
-      obj2 = pyalpm_package_from_pmpkg(data2);
+      if (data2) obj2 = pyalpm_package_from_pmpkg(data2);
       break;
     case PM_TRANS_EVT_REMOVE_START:
       eventstr = "Remove package";
@@ -78,10 +78,21 @@ static void pyalpm_trans_eventcb(pmtransevt_t event, void* data1, void *data2) {
       obj1 = pyalpm_package_from_pmpkg(data1);
       break;
     case PM_TRANS_EVT_UPGRADE_START:
+      eventstr = "Upgrading a package";
+      obj1 = pyalpm_package_from_pmpkg(data1);
+      obj2 = pyalpm_package_from_pmpkg(data2);
+      break;
     case PM_TRANS_EVT_UPGRADE_DONE:
-      /* some info here */
+      eventstr = "Done upgrading a package";
+      obj1 = pyalpm_package_from_pmpkg(data1);
+      obj2 = pyalpm_package_from_pmpkg(data2);
+      break;
     case PM_TRANS_EVT_INTEGRITY_START:
+      eventstr = "Checking integrity";
+      break;
     case PM_TRANS_EVT_INTEGRITY_DONE:
+      eventstr = "Done checking integrity";
+      break;
     case PM_TRANS_EVT_DELTA_INTEGRITY_START:
     case PM_TRANS_EVT_DELTA_INTEGRITY_DONE:
     case PM_TRANS_EVT_DELTA_PATCHES_START:
@@ -94,9 +105,13 @@ static void pyalpm_trans_eventcb(pmtransevt_t event, void* data1, void *data2) {
       /* info here */
     case PM_TRANS_EVT_RETRIEVE_START:
       /* info here */
-    case PM_TRANS_EVT_DISKSPACE_START:
-    case PM_TRANS_EVT_DISKSPACE_DONE:
       eventstr = "event not implemented";
+      break;
+    case PM_TRANS_EVT_DISKSPACE_START:
+      eventstr = "Checking disk space";
+      break;
+    case PM_TRANS_EVT_DISKSPACE_DONE:
+      eventstr = "Done checking disk space";
       break;
     default:
       eventstr = "unknown event";
