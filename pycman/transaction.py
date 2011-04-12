@@ -25,6 +25,7 @@ This module defines convenient wrappers around pyalpm functions
 to initialize transactions according to options
 """
 
+import traceback
 import pyalpm
 
 # Callbacks
@@ -37,14 +38,15 @@ def cb_conv(*args):
 def cb_progress(*args):
 	print("progress", args)
 
-# Transaction initialization
 def init_from_options(options):
+	"Transaction initialization"
 	t = pyalpm.transaction
 	t.init(
 			cascade = getattr(options, "cascade", False),
 			nodeps = getattr(options, "nodeps", False),
 			force = getattr(options, 'force', False),
 			dbonly = getattr(options, 'dbonly', False),
+			downloadonly = getattr(options, 'downloadonly', False),
 			nosave = getattr(options, 'nosave', False),
 			recurse = (getattr(options, 'recursive', 0) > 0),
 			recurseall = (getattr(options, 'recursive', 0) > 1),
@@ -55,5 +57,17 @@ def init_from_options(options):
 			conv_callback = cb_conv,
 			progress_callback = cb_progress)
 	return t
+
+def finalize(t):
+	"Commit a transaction"
+	try:
+		t.prepare()
+		t.commit()
+	except pyalpm.error:
+		traceback.print_exc()
+		t.release()
+		return False
+	t.release()
+	return True
 
 # vim: set ts=4 sw=4 tw=0 noet:

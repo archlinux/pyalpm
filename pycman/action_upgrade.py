@@ -44,14 +44,8 @@ def upgrade(pkgs, options):
 	for pkg in targets:
 		t.add_pkg(pkg)
 
-	try:
-		t.prepare()
-		t.commit()
-	except pyalpm.error:
-		traceback.print_exc()
-
-	t.release()
-	return 0
+	ok = transaction.finalize(t)
+	return (0 if ok else 1)
 
 def main(rawargs):
 	parser = config.make_parser()
