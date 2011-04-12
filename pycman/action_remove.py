@@ -29,13 +29,7 @@ import sys
 import traceback
 import pyalpm
 from . import config
-
-def cb_event(*args):
-	print("event", args)
-def cb_conv(*args):
-	print("conversation", args)
-def cb_progress(*args):
-	print("progress", args)
+from . import transaction
 
 def remove(pkgs, options):
 	# prepare target list
@@ -48,18 +42,7 @@ def remove(pkgs, options):
 			return 1
 		targets.append(pkg)
 
-	t = pyalpm.transaction
-	t.init(
-			cascade = options.cascade,
-			nodeps = options.nodeps,
-			dbonly = options.dbonly,
-			nosave = options.nosave,
-			recurse = (options.recursive > 0),
-			recurseall = (options.recursive > 1),
-			unneeded = options.unneeded,
-			event_callback = cb_event,
-			conv_callback = cb_conv,
-			progress_callback = cb_progress)
+	t = transaction.init_from_options(options)
 
 	for pkg in targets:
 		t.remove_pkg(pkg)
@@ -102,6 +85,10 @@ def main(rawargs):
 
 	if args.verbose:
 		print("remove " + " ".join(rawargs), file = sys.stderr)
+
+	if len(args.pkgs) == 0:
+		print('error: no targets specified')
+		return 1
 
 	return remove(args.pkgs, args)
 
