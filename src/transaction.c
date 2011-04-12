@@ -413,7 +413,9 @@ static struct PyMethodDef pyalpm_trans_methods[] = {
   {"remove_pkg", pyalpm_trans_remove_pkg, METH_VARARGS,
     "append a package removal to transaction"},
   {"sysupgrade", (PyCFunction)pyalpm_trans_sysupgrade, METH_VARARGS | METH_KEYWORDS,
-    "set the transaction to perform a system upgrade"},
+    "set the transaction to perform a system upgrade\n"
+    "args:\n"
+    "  transaction (boolean) : whether to enable downgrades\n" },
   { NULL }
 };
 
