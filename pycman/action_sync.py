@@ -30,6 +30,18 @@ import sys
 import pyalpm
 from pycman import config
 from pycman import pkginfo
+from pycman import transaction
+
+def do_clean(options):
+	pass
+def do_refresh(options):
+	pass
+
+def do_sysupgrade(options):
+	pass
+
+def do_install(pkgs, options):
+	pass
 
 def show_groups(args):
 	"Show groups like pacman -Sg"
@@ -102,18 +114,50 @@ def show_packages(args):
 
 def main(rawargs):
 	parser = config.make_parser(prog = 'pycman-sync')
-	group = parser.add_argument_group("sync options")
-	group.add_argument('-i', '--info',
+	# Misc actions
+	group0 = parser.add_argument_group("Actions (default is installing specified packages)")
+	group0.add_argument("-c", "--clean",
+			action = 'count', default = 0,
+			help = 'remove old packages from cache directory (-cc for all)')
+	group0.add_argument("-u", "--sysupgrade",
+			action = 'count', default = 0,
+			help = 'upgrade installed packages (-uu allows downgrade)')
+	group0.add_argument("-y", "--refresh",
+			action = 'count', default = 0,
+			help = 'download fresh package databases from the server')
+	# Installation options
+	grp_install = parser.add_argument_group("Install options")
+	grp_install.add_argument('-d', '--nodeps',
+			action = 'store_true', default = False,
+			help = 'skip dependency checks')
+	grp_install.add_argument('-f', '--force',
+			action = 'store_true', default = False,
+			help = 'force install, overwrite conflicting files')
+	grp_install.add_argument('-k', '--dbonly',
+			action = 'store_true', default = False,
+			help = 'only modify database entries, not package files')
+	grp_install.add_argument('-w', '--downloadonly',
+			action = 'store_true', default = False,
+			help = 'download packages but do not install/upgrade anything')
+	grp_install.add_argument('--asdeps', dest = 'mode',
+			action = "store_const",
+			const = pyalpm.PKG_REASON_DEPEND)
+	grp_install.add_argument('--asexplicit', dest = 'mode',
+			action = "store_const",
+			const = pyalpm.PKG_REASON_EXPLICIT)
+	# Options to query sync databases
+	group1 = parser.add_argument_group("Query actions")
+	group1.add_argument('-i', '--info',
 			action = 'count', dest = 'info', default = 0,
 			help = 'view package information')
-	group.add_argument('-g', '--groups', action = 'store_true', default = False,
+	group1.add_argument('-g', '--groups', action = 'store_true', default = False,
 			help = 'view list of groups, or all members of a package group')
-	group.add_argument('-l', '--list', action = 'store_true', default = False,
+	group1.add_argument('-l', '--list', action = 'store_true', default = False,
 			help = 'list the contents of repositories')
-	group.add_argument('-q', '--quiet',
+	group1.add_argument('-q', '--quiet',
 			action = 'store_true', dest = 'quiet', default = False,
 			help = 'show less information for query and search')
-	group.add_argument('args', metavar = 'arg', nargs = '*',
+	group1.add_argument('args', metavar = 'arg', nargs = '*',
 			help = 'arguments (group names for -g, repo names for -l, '
 			'package names for -i)')
 
@@ -123,14 +167,28 @@ def main(rawargs):
 	if args.verbose:
 		print("sync " + " ".join(rawargs), file = sys.stderr)
 
+	# Refresh databases if necessary
+	if args.refresh > 0:
+		ret = do_refresh(args)
+		if ret != 0:
+			return ret
+
+	# If a query action is set
 	if args.groups:
 		return show_groups(args)
 	elif args.info:
 		return show_packages(args)
 	elif args.list:
 		return show_repo(args)
-
-	return 0
+	# If a cleanup is required
+	elif args.clean > 0:
+		return do_clean(args)
+	# If a sysupgrade is required
+	elif args.sysupgrade > 0:
+		return do_sysupgrade(args)
+	# Otherwise it's a normal install
+	else:
+		return do_install(args.args, args)
 
 if __name__ == "__main__":
 	ret = main(sys.argv[1:])
