@@ -21,7 +21,8 @@ Deltas
 
 Transactions
 ------------
-* callbacks
+* finish event callback
+* conversation callback
 
 Dependencies/Missing/Conflicts
 ------------------------------
@@ -36,8 +37,8 @@ Options
 Pycman
 ------
 Implement missing options:
-* -R[cdknsu]
-* -U[fk], asdeps, asexplicit
+* -v
 * -Q[kops]
 * -S[cdfksuvwy], asdeps, asexplicit
 
+Polish -R, -U user interface
