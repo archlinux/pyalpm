@@ -29,13 +29,7 @@ import sys
 import traceback
 import pyalpm
 from . import config
-
-def cb_event(*args):
-	print("event", args)
-def cb_conv(*args):
-	print("conversation", args)
-def cb_progress(*args):
-	print("progress", args)
+from . import transaction
 
 def upgrade(pkgs, options):
 	# prepare target list
@@ -45,15 +39,7 @@ def upgrade(pkgs, options):
 		pkg = pyalpm.load_pkg(name)
 		targets.append(pkg)
 
-	t = pyalpm.transaction
-	t.init(
-			nodeps = options.nodeps,
-			dbonly = options.dbonly,
-			alldeps = (options.mode == pyalpm.PKG_REASON_DEPEND),
-			allexplicit = (options.mode == pyalpm.PKG_REASON_EXPLICIT),
-			event_callback = cb_event,
-			conv_callback = cb_conv,
-			progress_callback = cb_progress)
+	t = transaction.init_from_options(options)
 
 	for pkg in targets:
 		t.add_pkg(pkg)
@@ -73,6 +59,9 @@ def main(rawargs):
 	group.add_argument('-d', '--nodeps',
 			action = 'store_true', default = False,
 			help = 'skip dependency checks')
+	group.add_argument('-f', '--force',
+			action = 'store_true', default = False,
+			help = 'force install, overwrite conflicting files')
 	group.add_argument('-k', '--dbonly',
 			action = 'store_true', default = False,
 			help = 'only modify database entries, not package files')

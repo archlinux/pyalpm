@@ -43,11 +43,14 @@ def init_from_options(options):
 	t.init(
 			cascade = getattr(options, "cascade", False),
 			nodeps = getattr(options, "nodeps", False),
+			force = getattr(options, 'force', False),
 			dbonly = getattr(options, 'dbonly', False),
 			nosave = getattr(options, 'nosave', False),
 			recurse = (getattr(options, 'recursive', 0) > 0),
 			recurseall = (getattr(options, 'recursive', 0) > 1),
 			unneeded = getattr(options, 'unneeded', False),
+			alldeps = (getattr(options, 'mode', None) == pyalpm.PKG_REASON_DEPEND),
+			allexplicit = (getattr(options, 'mode', None) == pyalpm.PKG_REASON_EXPLICIT),
 			event_callback = cb_event,
 			conv_callback = cb_conv,
 			progress_callback = cb_progress)
