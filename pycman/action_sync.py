@@ -42,6 +42,7 @@ def do_refresh(options):
 		t = transaction.init_from_options(options)
 		db.update(force)
 		t.release()
+	return 0
 
 def do_sysupgrade(options):
 	"Upgrade a system like pacman -Su"
