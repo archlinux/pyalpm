@@ -1,13 +1,10 @@
 pacman.conf
 -----------
-* handle Include statements
-* handle $repo and $arch substitutions
 
 Databases
 ---------
 alpm_db_unregister
 alpm_db_unregister_all
-alpm_db_update
 alpm_db_search
 
 Packages
@@ -39,6 +36,6 @@ Pycman
 Implement missing options:
 * -v
 * -Q[kops]
-* -S[cdfksuvwy], asdeps, asexplicit
+* -S, -Sc, -Ss
 
-Polish -R, -U user interface
+Polish -S/R/U user interface

@@ -1,6 +1,8 @@
 pyalpm 0.4 :
+  * wraps alpm_db_update()
   * fix: extra free() after calling transaction.add_pkg()
-  * support pycman -R, -U
+  * pycman: correctly read configuration
+  * support pycman -R, -U, -Sy, -Su
 
 pyalpm 0.3 :
   * wraps alpm_db_set_pkgreason()
