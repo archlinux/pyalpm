@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
-import setuptools
+from distutils.core import Extension, setup
 
 os.putenv('LC_CTYPE', 'en_US.UTF-8')
 
-alpm = setuptools.Extension('pyalpm',
+alpm = Extension('pyalpm',
     libraries = ['alpm'],
     extra_compile_args = ['-std=c99', '-D_POSIX_C_SOURCE=200809L'],
     sources = [
@@ -17,7 +17,7 @@ alpm = setuptools.Extension('pyalpm',
         'src/transaction.c'
         ])
 
-setuptools.setup(name = 'pyalpm',
+setup(name = 'pyalpm',
       version = '0.3',
       description = 'libalpm bindings for Python 3',
       author = "Rémy Oudompheng",
