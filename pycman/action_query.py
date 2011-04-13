@@ -117,6 +117,9 @@ def find_file(filenames, options):
 
 	return ret
 
+def find_search(patterns, options):
+	raise NotImplementedError
+
 def main(rawargs):
 	parser = config.make_parser(prog = 'pycman-query')
 	group = parser.add_argument_group("Query options")
@@ -141,6 +144,8 @@ def main(rawargs):
 	group.add_argument('-q', '--quiet',
 			action = 'store_true', dest = 'quiet', default = False,
 			help = 'show less information for query and search')
+	group.add_argument('-s', '--search', action = 'store_true', default = False,
+			help = 'search locally-installed packages for matching strings')
 	group.add_argument('-t', '--unrequired',
 			action = 'store_true', default = False,
 			help = "list packages not required by any package [filter]")
@@ -164,6 +169,8 @@ def main(rawargs):
 	# actions other than listing packages
 	if args.owns:
 		return find_file(args.pkgnames, args)
+	if args.search:
+		return find_search(args.pkgnames, args)
 
 	pkglist = []
 	if len(args.pkgnames) > 0:

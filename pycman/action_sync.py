@@ -132,6 +132,9 @@ def show_packages(args):
 				print("error:", value)
 	return retcode
 
+def show_search(args, options):
+	raise NotImplementedError
+
 def main(rawargs):
 	parser = config.make_parser(prog = 'pycman-sync')
 	# Misc actions
@@ -174,6 +177,8 @@ def main(rawargs):
 			help = 'view list of groups, or all members of a package group')
 	group1.add_argument('-l', '--list', action = 'store_true', default = False,
 			help = 'list the contents of repositories')
+	group1.add_argument('-s', '--search', action = 'store_true', default = False,
+			help = 'search remote repositories for matching strings')
 	group1.add_argument('-q', '--quiet',
 			action = 'store_true', dest = 'quiet', default = False,
 			help = 'show less information for query and search')
@@ -194,7 +199,9 @@ def main(rawargs):
 			return ret
 
 	# If a query action is set
-	if args.groups:
+	if args.search:
+		return show_search(args.args, args)
+	elif args.groups:
 		return show_groups(args)
 	elif args.info:
 		return show_packages(args)
