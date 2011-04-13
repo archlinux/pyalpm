@@ -8,8 +8,7 @@ pyalpm_version = '0.4'
 
 alpm = Extension('pyalpm',
     libraries = ['alpm'],
-    extra_compile_args = ['-std=c99', '-D_POSIX_C_SOURCE=200809L',
-        '-DVERSION="%s"' % pyalpm_version],
+    extra_compile_args = ['-std=c99', '-DVERSION="%s"' % pyalpm_version],
     language = 'C',
     sources = [
         'src/pyalpm.c',
