@@ -152,8 +152,19 @@ def show_packages(args):
 				print("error:", value)
 	return retcode
 
-def show_search(args, options):
-	raise NotImplementedError
+def show_search(patterns, options):
+	results = []
+	for db in pyalpm.get_syncdbs():
+		results += db.search(*patterns)
+	if len(results) == 0:
+		return 1
+	for pkg in results:
+		if options.quiet:
+			print(pkg.name)
+		else:
+			print("%s/%s %s" % (pkg.db.name, pkg.name, pkg.version))
+			print("    " + pkg.desc)
+	return 0
 
 def main(rawargs):
 	parser = config.make_parser(prog = 'pycman-sync')

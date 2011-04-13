@@ -118,7 +118,17 @@ def find_file(filenames, options):
 	return ret
 
 def find_search(patterns, options):
-	raise NotImplementedError
+	db = pyalpm.get_localdb()
+	results = db.search(*patterns)
+	if len(results) == 0:
+		return 1
+	for pkg in results:
+		if options.quiet:
+			print(pkg.name)
+		else:
+			print("%s/%s %s" % (pkg.db.name, pkg.name, pkg.version))
+			print("    " + pkg.desc)
+	return 0
 
 def main(rawargs):
 	parser = config.make_parser(prog = 'pycman-query')
