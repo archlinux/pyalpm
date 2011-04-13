@@ -38,8 +38,12 @@ def cb_conv(*args):
 def cb_progress(*args):
 	print("progress", args)
 
+def cb_dl(filename, tx, total):
+	print("download %s: %d/%d" % (filename, tx, total))
+
 def init_from_options(options):
 	"Transaction initialization"
+	pyalpm.options.dlcb = cb_dl
 	t = pyalpm.transaction
 	t.init(
 			cascade = getattr(options, "cascade", False),
