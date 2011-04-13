@@ -85,6 +85,7 @@ def make_parser(*args, **kwargs):
 def init_with_config(configpath):
 	"Reads configuration from given path and apply it to libalpm"
 	config = read_config(configpath)
+	arch = os.uname()[-1]
 	try:
 		config_options = config["options"]
 	except KeyError:
@@ -92,7 +93,7 @@ def init_with_config(configpath):
 
 	pyalpm.options.root = config_options.get("rootdir", "/")
 	pyalpm.options.dbpath = config_options.get("dbpath", "/var/lib/pacman")
-	pyalpm.options.arch = config_options.get("architecture", "auto")
+	pyalpm.options.arch = config_options.get("architecture", arch)
 	pyalpm.options.logfile = config_options.get("logfile", "/var/log/pacman.log")
 	# set sync databases
 	for repo in config.sections():
@@ -130,7 +131,8 @@ def init_with_config_and_options(options):
 	if options.arch is not None:
 		pyalpm.options.arch = options.arch
 	else:
-		pyalpm.options.arch = config_options.get("architecture", "auto")
+		arch = os.uname()[-1]
+		pyalpm.options.arch = config_options.get("architecture", arch)
 
 	if options.logfile is not None:
 		pyalpm.options.logfile = options.logfile
