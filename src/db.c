@@ -197,6 +197,28 @@ static PyObject* pyalpm_db_readgrp(PyObject* rawself, PyObject* args) {
   return _pyobject_from_pmgrp(grp);
 }
 
+static PyObject *pyalpm_db_update(PyObject *rawself, PyObject *args, PyObject *kwargs) {
+  AlpmDB* self = (AlpmDB*)rawself;
+  char* keyword[] = {"force", NULL};
+  int ret;
+  PyObject *force;
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!", keyword, &PyBool_Type, &force))
+    return NULL;
+
+  ret = alpm_db_update((force == Py_True), self->c_data);
+
+  switch(ret) {
+  case -1:
+    RET_ERR("unable to update database", NULL);
+  case 0:
+    Py_RETURN_TRUE;
+  case 1:
+    Py_RETURN_FALSE;
+  default:
+    RET_ERR("invalid return code from alpm_db_update()", NULL);
+  }
+}
+
 static struct PyMethodDef db_methods[] = {
   { "get_pkg", pyalpm_db_get_pkg, METH_VARARGS,
     "get a package by name\n"
@@ -210,6 +232,10 @@ static struct PyMethodDef db_methods[] = {
     "set install reason for a package\n"
     "args: a package name (string), a reason (PKG_REASON_DEPEND, PKG_REASON_EXPLICIT)\n"
     "returns: None" },
+  { "update", (PyCFunction)pyalpm_db_update, METH_VARARGS | METH_KEYWORDS,
+    "update a database from its url attribute\n"
+    "args: force (update even if DB is up to date, boolean)\n"
+    "returns: True if an update has been done" },
   { NULL },
 };
 
