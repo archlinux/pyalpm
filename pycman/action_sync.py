@@ -33,9 +33,10 @@ from pycman import pkginfo
 from pycman import transaction
 
 def do_clean(options):
-	pass
+	raise NotImplementedError
 
 def do_refresh(options):
+	"Sync databases like pacman -Sy"
 	force = (options.refresh > 1)
 	for db in pyalpm.get_syncdbs():
 		t = transaction.init_from_options(options)
@@ -43,6 +44,7 @@ def do_refresh(options):
 		t.release()
 
 def do_sysupgrade(options):
+	"Upgrade a system like pacman -Su"
 	downgrade = (options.sysupgrade > 1)
 	t = transaction.init_from_options(options)
 	t.sysupgrade(downgrade)
@@ -187,11 +189,11 @@ def main(rawargs):
 			const = pyalpm.PKG_REASON_EXPLICIT)
 	# Options to query sync databases
 	group1 = parser.add_argument_group("Query actions")
+	group1.add_argument('-g', '--groups', action = 'store_true', default = False,
+			help = 'view list of groups, or all members of a package group')
 	group1.add_argument('-i', '--info',
 			action = 'count', dest = 'info', default = 0,
 			help = 'view package information')
-	group1.add_argument('-g', '--groups', action = 'store_true', default = False,
-			help = 'view list of groups, or all members of a package group')
 	group1.add_argument('-l', '--list', action = 'store_true', default = False,
 			help = 'list the contents of repositories')
 	group1.add_argument('-s', '--search', action = 'store_true', default = False,
