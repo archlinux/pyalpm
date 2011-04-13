@@ -66,7 +66,7 @@ def display_pkginfo(pkg, level = 1, style = 'local'):
 	  style -- 'local' or 'sync'
 	"""
 
-	if style not in ['local', 'sync']:
+	if style not in ['local', 'sync', 'file']:
 		raise ValueError('Invalid style for package info formatting')
 
 	if style == 'sync':
@@ -85,6 +85,8 @@ def display_pkginfo(pkg, level = 1, style = 'local'):
 	print(format_attr('Replaces', pkg.replaces))
 	if style == 'sync':
 		print(format_attr('Download size', '%.2f K' % (pkg.size / 1024)))
+	if style == 'file':
+		print(format_attr('Compressed size', '%.2f K' % (pkg.size / 1024)))
 	print(format_attr('Installed size', '%.2f K' % (pkg.isize / 1024)))
 	print(format_attr('Packager', pkg.packager))
 	print(format_attr('Architecture', pkg.arch))
@@ -100,8 +102,9 @@ def display_pkginfo(pkg, level = 1, style = 'local'):
 		else:
 			reason = 'N/A'
 		print(format_attr('Install Reason', reason))
+	if style != 'sync':
 		print(format_attr('Install Script', 'Yes' if pkg.has_scriptlet else 'No'))
-	else:
+	if style == 'sync':
 		print(format_attr('MD5 Sum', pkg.md5sum))
 
 	print(format_attr('Description', pkg.desc))

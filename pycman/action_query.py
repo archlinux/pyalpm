@@ -52,8 +52,9 @@ def filter_pkglist(pkglist, options):
 	return result
 
 def display_pkg(pkg, options):
+	displaystyle = 'file' if options.package else 'local'
 	if options.info > 0:
-		pkginfo.display_pkginfo(pkg, level = options.info, style = 'local')
+		pkginfo.display_pkginfo(pkg, level = options.info, style = displaystyle)
 	elif not options.listfiles:
 		if options.quiet:
 			print(pkg.name)
@@ -151,6 +152,9 @@ def main(rawargs):
 	group.add_argument('-o', '--owns',
 			action = 'store_true', default = False,
 			help = 'query the package that owns <file>')
+	group.add_argument('-p', '--package',
+			action = 'store_true', default = False,
+			help = 'query a package file instead of the database')
 	group.add_argument('-q', '--quiet',
 			action = 'store_true', dest = 'quiet', default = False,
 			help = 'show less information for query and search')
@@ -186,7 +190,10 @@ def main(rawargs):
 	if len(args.pkgnames) > 0:
 		# a list of package names was specified
 		for pkgname in args.pkgnames:
-			pkg = db.get_pkg(pkgname)
+			if args.package:
+				pkg = pyalpm.load_pkg(pkgname)
+			else:
+				pkg = db.get_pkg(pkgname)
 			if pkg is None:
 				print('error: package "%s" not found' % pkgname)
 				retcode = 1
