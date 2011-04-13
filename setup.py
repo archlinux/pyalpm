@@ -4,9 +4,12 @@ from distutils.core import Extension, setup
 
 os.putenv('LC_CTYPE', 'en_US.UTF-8')
 
+pyalpm_version = '0.4'
+
 alpm = Extension('pyalpm',
     libraries = ['alpm'],
-    extra_compile_args = ['-std=c99', '-D_POSIX_C_SOURCE=200809L'],
+    extra_compile_args = ['-std=c99', '-D_POSIX_C_SOURCE=200809L',
+        '-DVERSION="%s"' % pyalpm_version],
     language = 'C',
     sources = [
         'src/pyalpm.c',
@@ -26,7 +29,7 @@ alpm = Extension('pyalpm',
         ])
 
 setup(name = 'pyalpm',
-      version = '0.3',
+      version = '0.4',
       description = 'libalpm bindings for Python 3',
       author = "Rémy Oudompheng",
       author_email = "remy@archlinux.org",
@@ -34,3 +37,5 @@ setup(name = 'pyalpm',
       packages = ["pycman"],
       scripts = ["scripts/pycman"],
       ext_modules = [alpm])
+
+# vim: set ts=4 sw=4 et tw=0:
