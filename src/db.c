@@ -219,11 +219,26 @@ static PyObject *pyalpm_db_update(PyObject *rawself, PyObject *args, PyObject *k
   }
 }
 
+static PyObject* pyalpm_db_search(PyObject *rawself, PyObject *args) {
+  AlpmDB* self = (AlpmDB *)rawself;
+  alpm_list_t* rawargs;
+  alpm_list_t* result;
+  int ok = pylist_string_to_alpmlist(args, &rawargs);
+  if (ok == -1) return NULL;
+
+  result = alpm_db_search(self->c_data, rawargs);
+  return alpmlist_to_pylist(result, pyalpm_package_from_pmpkg);
+}
+
 static struct PyMethodDef db_methods[] = {
   { "get_pkg", pyalpm_db_get_pkg, METH_VARARGS,
     "get a package by name\n"
     "args: a package name (string)\n"
     "returns: a Package object or None if not found" },
+  { "search", pyalpm_db_search, METH_VARARGS,
+    "search for packages matching a list of regexps\n"
+    "args: a variable number of regexps (strings)\n"
+    "returns: packages matching all these regexps" },
   { "read_grp", pyalpm_db_readgrp, METH_VARARGS,
     "get contents of a group\n"
     "args: a group name (string)\n"
