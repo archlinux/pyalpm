@@ -50,6 +50,7 @@ def do_sysupgrade(options):
 	t.sysupgrade(downgrade)
 	if len(t.to_add) + len(t.to_remove) == 0:
 		print("nothing to do")
+		t.release()
 		return 0
 	else:
 		ok = transaction.finalize(t)
