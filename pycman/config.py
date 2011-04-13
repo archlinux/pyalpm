@@ -99,7 +99,13 @@ def init_with_config(configpath):
 	for repo in config.sections():
 		if repo == "options":
 			continue
-		pyalpm.register_syncdb(repo)
+		db = pyalpm.register_syncdb(repo)
+		# set server URL
+		rawurl = config[repo].get("Server", None)
+		if rawurl is not None:
+			url = rawurl.replace("$repo", repo)
+			url = url.replace("$arch", pyalpm.options.arch)
+		db.url = url
 
 def init_with_config_and_options(options):
 	"Reads configuration from file and commandline options, and apply it to libalpm"
@@ -143,6 +149,13 @@ def init_with_config_and_options(options):
 	for repo in config.sections():
 		if repo == "options":
 			continue
-		pyalpm.register_syncdb(repo)
+		db = pyalpm.register_syncdb(repo)
+		# set server URL
+		rawurl = config[repo].get("Server", None)
+		if rawurl is not None:
+			url = rawurl.replace("$repo", repo)
+			url = url.replace("$arch", pyalpm.options.arch)
+		db.url = url
+		# print("found DB", repo, url)
 
 # vim: set ts=4 sw=4 tw=0 noet:
