@@ -54,7 +54,24 @@ def do_sysupgrade(options):
 		return (0 if ok else 1)
 
 def do_install(pkgs, options):
-	pass
+	"Install a list of packages like pacman -S"
+	repos = dict((db.name,db) for db in pyalpm.get_syncdbs())
+	if len(pkgs) == 0:
+		print("error: no targets specified")
+		return 1
+
+	targets = []
+	for name in pkgs:
+		ok, pkg = find_sync_package(name, repos)
+		if not ok:
+			print('error:', pkg)
+			return 1
+		else:
+			targets.append(pkg)
+	t = transaction.init_from_options(options)
+	[t.add_pkg(pkg) for pkg in targets]
+	ok = transaction.finalize(t)
+	return (0 if ok else 1)
 
 def find_sync_package(pkgname, syncdbs):
 	"Finds a package name of the form 'repo/pkgname' or 'pkgname' in a list of DBs"
