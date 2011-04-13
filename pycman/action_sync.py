@@ -56,6 +56,26 @@ def do_sysupgrade(options):
 def do_install(pkgs, options):
 	pass
 
+def find_sync_package(pkgname, syncdbs):
+	"Finds a package name of the form 'repo/pkgname' or 'pkgname' in a list of DBs"
+	if '/' in pkgname:
+		repo, pkgname = pkgname.split('/', 1)
+		db = syncdbs.get(repo)
+		if db is None:
+			return False, "repository '%s' does not exist" % repo
+		pkg = db.get_pkg(pkgname)
+		if pkg is None:
+			return False, "package '%s' was not found in repository '%s'" % (pkgname, repo)
+		return True, pkg
+	else:
+		for db in syncdbs.values():
+			pkg = db.get_pkg(pkgname)
+			if pkg is not None:
+				return True, pkg
+		return False, "package '%s' was not found" % pkgname
+
+# Query actions
+
 def show_groups(args):
 	"Show groups like pacman -Sg"
 	for repo in pyalpm.get_syncdbs():
@@ -97,32 +117,19 @@ def show_repo(args):
 def show_packages(args):
 	"Show information about packages like pacman -Si"
 	retcode = 0
-	repos = pyalpm.get_syncdbs()
+	repos = dict((db.name,db) for db in pyalpm.get_syncdbs())
 	if len(args.args) == 0:
 		for repo in repos:
 			for pkg in repo.pkgcache:
 				pkginfo.display_pkginfo(pkg, level = args.info, style = 'sync')
 	else:
 		for pkgname in args.args:
-			if '/' in pkgname:
-				repo, pkgname = pkgname.split('/', 1)
-				pkg = repo.get_pkg(pkgname)
-				if pkg is None:
-					retcode = 1
-					print("error: package '%s' was not found in repository '%s'" % (pkgname, repo.name))
-				else:
-					pkginfo.display_pkginfo(pkg, level = args.info, style = 'sync')
+			ok, value = find_sync_package(pkgname, repos)
+			if ok:
+				pkginfo.display_pkginfo(value, level = args.info, style = 'sync')
 			else:
-				found = False
-				for repo in repos:
-					pkg = repo.get_pkg(pkgname)
-					if pkg is None:
-						continue
-					found = True
-					pkginfo.display_pkginfo(pkg, level = args.info, style = 'sync')
-				if not found:
-					retcode = 1
-					print("error: package '%s' was not found" % pkgname)
+				retcode = 1
+				print("error:", value)
 	return retcode
 
 def main(rawargs):
