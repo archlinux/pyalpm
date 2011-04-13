@@ -25,18 +25,38 @@ This module handles pacman.conf files as well as pycman options that
 are common to all action modes.
 """
 
+import io
+import os
+import sys
 import argparse
 import configparser
 
 import pyalpm
 
 def read_config(path):
+	f = open(path)
+	preprocessed = io.StringIO()
+	for line in f:
+		if '=' in line:
+			# Process Include statements
+			key, value = line.split('=', 1)
+			key = key.strip()
+			value = value.strip()
+			if key == 'Include':
+				with open(value) as g:
+					preprocessed.write(g.read())
+				continue
+		preprocessed.write(line)
+
+	f.close()
+
 	parser = configparser.ConfigParser(
 			allow_no_value = True,
 			delimiters = ['='],
 			comment_prefixes = ['#'],
 			empty_lines_in_values = False)
-	parser.read(path)
+	parser.read_string(preprocessed.getvalue(), source=path)
+	# parser.write(sys.stderr)
 	return parser
 
 def make_parser(*args, **kwargs):
