@@ -5,7 +5,6 @@ Databases
 ---------
 alpm_db_unregister
 alpm_db_unregister_all
-alpm_db_search
 
 Packages
 --------
@@ -35,7 +34,7 @@ Pycman
 ------
 Implement missing options:
 * -v
-* -Q[kops]
-* -S, -Sc, -Ss
+* -Qk
+* -Sc
 
 Polish -S/R/U user interface

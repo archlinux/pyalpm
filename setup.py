@@ -7,6 +7,7 @@ os.putenv('LC_CTYPE', 'en_US.UTF-8')
 alpm = Extension('pyalpm',
     libraries = ['alpm'],
     extra_compile_args = ['-std=c99', '-D_POSIX_C_SOURCE=200809L'],
+    language = 'C',
     sources = [
         'src/pyalpm.c',
         'src/util.c',
@@ -15,6 +16,13 @@ alpm = Extension('pyalpm',
         'src/options.c',
         'src/optionsobject.c',
         'src/transaction.c'
+        ],
+    depends = [
+        'src/db.h',
+        'src/options.h',
+        'src/package.h',
+        'src/pyalpm.h',
+        'src/util.h',
         ])
 
 setup(name = 'pyalpm',
