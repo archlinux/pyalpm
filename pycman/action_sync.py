@@ -34,11 +34,24 @@ from pycman import transaction
 
 def do_clean(options):
 	pass
+
 def do_refresh(options):
-	pass
+	force = (options.refresh > 1)
+	for db in pyalpm.get_syncdbs():
+		t = transaction.init_from_options(options)
+		db.update(force)
+		t.release()
 
 def do_sysupgrade(options):
-	pass
+	downgrade = (options.sysupgrade > 1)
+	t = transaction.init_from_options(options)
+	t.sysupgrade(downgrade)
+	if len(t.to_add) + len(t.to_remove) == 0:
+		print("nothing to do")
+		return 0
+	else:
+		ok = transaction.finalize(t)
+		return (0 if ok else 1)
 
 def do_install(pkgs, options):
 	pass
