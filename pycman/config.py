@@ -27,16 +27,21 @@ are common to all action modes.
 
 import io
 import os
+import glob
 import sys
 import argparse
-import configparser
 
 import pyalpm
+
+class InvalidSyntax(Exception):
+	pass
 
 # Options that may occur several times in a section. Their values should be
 # accumulated in a list.
 LIST_OPTIONS = (
+	'CacheDir',
 	'HoldPkg',
+	'SyncFirst',
 	'IgnoreGroup',
 	'IgnorePkg',
 	'NoExtract',
@@ -44,31 +49,125 @@ LIST_OPTIONS = (
 	'Server'
 )
 
-def read_config(path):
-	f = open(path)
-	preprocessed = io.StringIO()
-	for line in f:
-		if '=' in line:
-			# Process Include statements
-			key, value = line.split('=', 1)
-			key = key.strip()
-			value = value.strip()
-			if key == 'Include':
-				with open(value) as g:
-					preprocessed.write(g.read())
-				continue
-		preprocessed.write(line)
+SINGLE_OPTIONS = (
+	'RootDir',
+	'DBPath',
+	'LogFile',
+	'Architecture',
+	'XferCommand',
+	'CleanMethod'
+)
 
-	f.close()
+BOOLEAN_OPTIONS = (
+	'UseSyslog',
+	'ShowSize',
+	'UseDelta',
+	'TotalDownload',
+	'CheckSpace'
+)
 
-	parser = configparser.ConfigParser(
-			allow_no_value = True,
-			delimiters = ['='],
-			comment_prefixes = ['#'],
-			empty_lines_in_values = False)
-	parser.read_string(preprocessed.getvalue(), source=path)
-	# parser.write(sys.stderr)
-	return parser
+def pacman_conf_enumerator(path):
+	filestack = []
+	current_section = None
+	filestack.append(open(path))
+	while len(filestack) > 0:
+		f = filestack[-1]
+		line = f.readline()
+		if len(line) == 0:
+			# end of file
+			filestack.pop()
+			continue
+
+		line = line.strip()
+		if len(line) == 0: continue
+		if line[0] == '#':
+			continue
+		if line[0] == '[' and line[-1] == ']':
+			current_section = line[1:-1]
+			continue
+		if current_section is None:
+			raise InvalidSyntax(f.name, 'statement outside of a section', line)
+		# read key, value
+		key, equal, value = [x.strip() for x in line.partition('=')]
+
+		# include files
+		if equal == '=' and key == 'Include':
+			filestack.extend(open(f) for f in glob.glob(value))
+			continue
+		if current_section != 'options':
+			# repos only have the Server option
+			if key == 'Server' and equal == '=':
+				yield (current_section, 'Server', value)
+			else:
+				raise InvalidSyntax(f.name, 'invalid key for repository configuration', line)
+			continue
+		if equal == '=':
+			if key in LIST_OPTIONS:
+				for val in value.split():
+					yield (current_section, key, val)
+			elif key in SINGLE_OPTIONS:
+				yield (current_section, key, value)
+			else:
+				print(InvalidSyntax(f.name, 'unrecognized option', key))
+		else:
+			if key in BOOLEAN_OPTIONS:
+				yield (current_section, key, True)
+			else:
+				print(InvalidSyntax(f.name, 'unrecognized option', key))
+
+class PacmanConfig(object):
+	def __init__(self, conf = None, options = None):
+		self.options = {}
+		self.repos = {}
+		self.options["RootDir"] = "/"
+		self.options["DBPath"] = "/var/lib/pacman"
+		self.options["LogFile"] = "/var/lib/pacman"
+		self.options["Architecture"] = os.uname()[-1]
+		if conf is not None:
+			self.load_from_file(conf)
+		if options is not None:
+			self.load_from_options(options)
+
+	def load_from_file(self, filename):
+		for section, key, value in pacman_conf_enumerator(filename):
+			if section == 'options':
+				if key == 'Architecture' and value == 'auto':
+					continue
+				if key in LIST_OPTIONS:
+					self.options.setdefault(key, []).append(value)
+				else:
+					self.options[key] = value
+			else:
+				servers = self.repos.setdefault(section, [])
+				assert(key == 'Server')
+				servers.append(value)
+
+	def load_from_options(self, options):
+		if options.root is not None:
+			self.options["RootDir"] = options.root
+		if options.dbpath is not None:
+			self.options["DBPath"] = options.dbpath
+		if options.arch is not None:
+			self.options["Architecture"] = options.arch
+		if options.logfile is not None:
+			self.options["LogFile"] = options.logfile
+
+	def apply(self):
+		pyalpm.options.root = self.options["RootDir"]
+		pyalpm.options.dbpath = self.options["DBPath"]
+		pyalpm.options.arch = self.options["Architecture"]
+		pyalpm.options.logfile = self.options["LogFile"]
+
+		# set sync databases
+		for repo, servers in self.repos.items():
+			db = pyalpm.register_syncdb(repo)
+			for rawurl in servers:
+				url = rawurl.replace("$repo", repo)
+				url = url.replace("$arch", self.options["Architecture"])
+				db.url = url
+
+	def __str__(self):
+		return("PacmanConfig(options=%s, repos=%s)" % (str(self.options), str(self.repos)))
 
 def make_parser(*args, **kwargs):
 	parser = argparse.ArgumentParser(*args, **kwargs)
@@ -95,78 +194,20 @@ def make_parser(*args, **kwargs):
 
 def init_with_config(configpath):
 	"Reads configuration from given path and apply it to libalpm"
-	config = read_config(configpath)
-	arch = os.uname()[-1]
-	try:
-		config_options = config["options"]
-	except KeyError:
-		config_options = {}
-
-	pyalpm.options.root = config_options.get("rootdir", "/")
-	pyalpm.options.dbpath = config_options.get("dbpath", "/var/lib/pacman")
-	pyalpm.options.arch = config_options.get("architecture", arch)
-	pyalpm.options.logfile = config_options.get("logfile", "/var/log/pacman.log")
-	# set sync databases
-	for repo in config.sections():
-		if repo == "options":
-			continue
-		db = pyalpm.register_syncdb(repo)
-		# set server URL
-		rawurl = config[repo].get("Server", None)
-		if rawurl is not None:
-			url = rawurl.replace("$repo", repo)
-			url = url.replace("$arch", pyalpm.options.arch)
-		db.url = url
+	pyalpm.initialize()
+	config = PacmanConfig(conffile = configpath)
+	config.apply()
 
 def init_with_config_and_options(options):
 	"Reads configuration from file and commandline options, and apply it to libalpm"
 	pyalpm.initialize()
-
 	# read config file
 	if options.config is not None:
 		config_file = options.config
 	else:
 		config_file = "/etc/pacman.conf"
-	config = read_config(config_file)
 
-	try:
-		config_options = config["options"]
-	except KeyError:
-		config_options = {}
-
-	# set libalpm options
-	if options.root is not None:
-		pyalpm.options.root = options.root
-	else:
-		pyalpm.options.root = config_options.get("rootdir", "/")
-
-	if options.dbpath is not None:
-		pyalpm.options.dbpath = options.dbpath
-	else:
-		pyalpm.options.dbpath = config_options.get("dbpath", "/var/lib/pacman")
-
-	if options.arch is not None:
-		pyalpm.options.arch = options.arch
-	else:
-		arch = os.uname()[-1]
-		pyalpm.options.arch = config_options.get("architecture", arch)
-
-	if options.logfile is not None:
-		pyalpm.options.logfile = options.logfile
-	else:
-		pyalpm.options.logfile = config_options.get("logfile", "/var/log/pacman.log")
-
-	# set sync databases
-	for repo in config.sections():
-		if repo == "options":
-			continue
-		db = pyalpm.register_syncdb(repo)
-		# set server URL
-		rawurl = config[repo].get("Server", None)
-		if rawurl is not None:
-			url = rawurl.replace("$repo", repo)
-			url = url.replace("$arch", pyalpm.options.arch)
-		db.url = url
-		# print("found DB", repo, url)
+	conf = PacmanConfig(conf = config_file, options = options)
+	conf.apply()
 
 # vim: set ts=4 sw=4 tw=0 noet:
