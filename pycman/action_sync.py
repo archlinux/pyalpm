@@ -245,6 +245,9 @@ def main(rawargs):
 	# If a sysupgrade is required
 	elif args.sysupgrade > 0:
 		return do_sysupgrade(args)
+	# If only a refresh was requested
+	elif len(args.args) == 0 and args.refresh > 0:
+		return 0
 	# Otherwise it's a normal install
 	else:
 		return do_install(args.args, args)
