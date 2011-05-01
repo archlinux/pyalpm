@@ -33,6 +33,17 @@ import configparser
 
 import pyalpm
 
+# Options that may occur several times in a section. Their values should be
+# accumulated in a list.
+LIST_OPTIONS = (
+	'HoldPkg',
+	'IgnoreGroup',
+	'IgnorePkg',
+	'NoExtract',
+	'NoUpgrade',
+	'Server'
+)
+
 def read_config(path):
 	f = open(path)
 	preprocessed = io.StringIO()
