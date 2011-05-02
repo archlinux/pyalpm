@@ -1,3 +1,7 @@
+pyalpm 0.4.1 :
+  * better parser for pacman.conf files
+  * interface tweaks for pycman
+
 pyalpm 0.4 :
   * wraps alpm_db_update(), alpm_db_search()
   * fix: extra free() after calling transaction.add_pkg()

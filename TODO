@@ -3,6 +3,7 @@ pacman.conf
 
 Databases
 ---------
+correct alpm_db_setserver interface
 alpm_db_unregister
 alpm_db_unregister_all
 
@@ -32,6 +33,8 @@ Options
 
 Pycman
 ------
+Take all pacman.conf entries into account
+
 Implement missing options:
 * -v
 * -Qk

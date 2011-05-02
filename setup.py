@@ -4,7 +4,7 @@ from distutils.core import Extension, setup
 
 os.putenv('LC_CTYPE', 'en_US.UTF-8')
 
-pyalpm_version = '0.4'
+pyalpm_version = '0.4.1'
 
 alpm = Extension('pyalpm',
     libraries = ['alpm'],
@@ -28,7 +28,7 @@ alpm = Extension('pyalpm',
         ])
 
 setup(name = 'pyalpm',
-      version = '0.4',
+      version = pyalpm_version,
       description = 'libalpm bindings for Python 3',
       author = "Rémy Oudompheng",
       author_email = "remy@archlinux.org",
