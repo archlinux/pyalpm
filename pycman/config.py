@@ -195,7 +195,7 @@ def make_parser(*args, **kwargs):
 def init_with_config(configpath):
 	"Reads configuration from given path and apply it to libalpm"
 	pyalpm.initialize()
-	config = PacmanConfig(conffile = configpath)
+	config = PacmanConfig(conf = configpath)
 	config.apply()
 
 def init_with_config_and_options(options):
