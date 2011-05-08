@@ -132,9 +132,11 @@ int pylist_pkg_to_alpmlist(PyObject *list, alpm_list_t **result) {
 
 /* Python bindings */
 
-PyObject *pyalpm_package_load(PyObject *self, PyObject *args) {
+PyObject *pyalpm_package_load(PyObject *self, PyObject *args, PyObject *kwargs) {
   char *filename;
-  if (!PyArg_ParseTuple(args, "s", &filename)) {
+  int check_sig;
+  char *kws[] = { "check_sig", NULL };
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|i", kws, &filename, &check_sig)) {
     PyErr_SetString(PyExc_TypeError, "expected a string argument");
     return NULL;
   }
@@ -499,8 +501,10 @@ void init_pyalpm_package(PyObject *module) {
   type = (PyObject*)&AlpmPackageType;
   Py_INCREF(type);
   PyModule_AddObject(module, "Package", type);
-  PyModule_AddIntConstant(module, "PKG_REASON_EXPLICIT", 0);
-  PyModule_AddIntConstant(module, "PKG_REASON_DEPEND", 1);
+
+  /* package reasons */
+  PyModule_AddIntConstant(module, "PKG_REASON_EXPLICIT", PM_PKG_REASON_EXPLICIT);
+  PyModule_AddIntConstant(module, "PKG_REASON_DEPEND", PM_PKG_REASON_DEPEND);
 }
 
 /* vim: set ts=2 sw=2 et: */

@@ -169,7 +169,7 @@ static PyMethodDef methods[] = {
     "returns: an upgrade candidate or None" },
 
   /* from package.c */
-  {"load_pkg", pyalpm_package_load, METH_VARARGS, "loads package information from a tarball"},
+  {"load_pkg", (PyCFunction)pyalpm_package_load, METH_VARARGS, "loads package information from a tarball"},
 
   /* from db.c */
   {"find_grp_pkgs", pyalpm_find_grp_pkgs, METH_VARARGS,
