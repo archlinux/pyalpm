@@ -1,3 +1,7 @@
+pyalpm 0.4.2 :
+  * fix a typo in init_with_config()
+  * add an example script to list optdepends (cf pacman FS#16108)
+
 pyalpm 0.4.1 :
   * better parser for pacman.conf files
   * interface tweaks for pycman

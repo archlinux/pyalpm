@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+# 
+# pyalpm - Python 3 Bindings for libalpm
+# Copyright (C) 2011 Rémy Oudompheng <remy@archlinux.org>
+# 
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+"""
+Lists optional dependencies of installed packages.
+
+Options:
+	-u : only list uninstalled optdepends
+	-q : only print package names
+"""
+
+import argparse
+
+from pycman import config
+import pyalpm
+
+def enum_optdepends():
+	for p in pyalpm.get_localdb().pkgcache:
+		for o in p.optdepends:
+			oname, colon, odesc = o.partition(':')
+			yield (p.name, oname.strip(), odesc.strip())
+
+def main(opts):
+	config.init_with_config("/etc/pacman.conf")
+	optdeps = {}
+	installed = set(p.name for p in pyalpm.get_localdb().pkgcache)
+
+	for suggester, optdep, reason in enum_optdepends():
+		optdeps.setdefault(optdep, {})[suggester] = reason
+
+	for optdep in sorted(optdeps):
+		if optdep in installed and opts.u:
+			continue
+		suggesters = optdeps[optdep]
+		if opts.q:
+			print(optdep)
+		else:
+			print(optdep, 'is suggested by')
+			for name, reason in sorted(suggesters.items()):
+				print('    ', name, ':', reason)
+
+def parse_options():
+	p = argparse.ArgumentParser()
+	p.add_argument('-u', action = 'store_true', default = False,
+			help='only list uninstalled optdepends')
+	p.add_argument('-q', action = 'store_true', default = False,
+			help='only print package names')
+	return p.parse_args()
+
+if __name__ == "__main__":
+	main(parse_options())
+
+# vim: set ts=4 sw=4 tw=0 noet:

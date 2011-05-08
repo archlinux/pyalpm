@@ -34,7 +34,7 @@ setup(name = 'pyalpm',
       author_email = "remy@archlinux.org",
       url = "http://projects.archlinux.org/users/remy/pyalpm.git",
       packages = ["pycman"],
-      scripts = ["scripts/pycman"],
+      scripts = ["scripts/pycman", "scripts/lsoptdepends"],
       ext_modules = [alpm])
 
 # vim: set ts=4 sw=4 et tw=0:
