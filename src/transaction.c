@@ -136,7 +136,10 @@ static void pyalpm_trans_progresscb(pmtransprog_t op,
   } else {
     PyErr_SetString(PyExc_RuntimeError, "progress callback was called but it's not set!");
   }
-  if (PyErr_Occurred()) PyErr_Print();
+  if (PyErr_Occurred()) {
+    PyErr_Print();
+    alpm_trans_interrupt();
+  }
   Py_CLEAR(result);
 }
 

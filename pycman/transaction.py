@@ -25,6 +25,7 @@ This module defines convenient wrappers around pyalpm functions
 to initialize transactions according to options
 """
 
+import math
 import sys
 import traceback
 import pyalpm
@@ -67,8 +68,28 @@ def cb_progress(target, percent, n, i):
 		sys.stdout.flush()
 	last_percent = percent
 
+_last_dl_filename = None
+_last_dl_progress = None
+_last_dl_total = None
 def cb_dl(filename, tx, total):
-	print("download %s: %d/%d" % (filename, tx, total))
+	global _last_dl_filename, _last_dl_progress, _last_dl_total
+	# check if a new file is coming
+	if filename != _last_dl_filename or _last_dl_total != total:
+		_last_dl_filename = filename
+		_last_dl_total = total
+		_last_dl_progress = 0
+		sys.stdout.write("\ndownload %s: %d/%d" % (filename, tx, total))
+		sys.stdout.flush()
+	# compute a progress indicator
+	if _last_dl_total > 0:
+		progress = (tx * 25) // _last_dl_total
+	else:
+		# if total is unknown, use log(kBytes)²/2
+		progress = int(math.log(1 + tx / 1024) ** 2 / 2)
+	if progress > _last_dl_progress:
+		_last_dl_progress = progress
+		sys.stdout.write("\rdownload %s: %s %d/%d" % (filename, '.' * progress, tx, total))
+		sys.stdout.flush()
 
 def init_from_options(options):
 	"Transaction initialization"
