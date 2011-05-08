@@ -134,7 +134,7 @@ int pylist_pkg_to_alpmlist(PyObject *list, alpm_list_t **result) {
 
 PyObject *pyalpm_package_load(PyObject *self, PyObject *args, PyObject *kwargs) {
   char *filename;
-  int check_sig;
+  int check_sig = PM_PGP_VERIFY_OPTIONAL;
   char *kws[] = { "check_sig", NULL };
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|i", kws, &filename, &check_sig)) {
     PyErr_SetString(PyExc_TypeError, "expected a string argument");
@@ -148,7 +148,7 @@ PyObject *pyalpm_package_load(PyObject *self, PyObject *args, PyObject *kwargs) 
     return NULL;
   }
 
-  if (alpm_pkg_load(filename, 1, &result->c_data) == -1) {
+  if (alpm_pkg_load(filename, 1, check_sig, &result->c_data) == -1) {
     PyErr_SetString(alpm_error, alpm_strerrorlast());
     return NULL;
   }
@@ -505,6 +505,12 @@ void init_pyalpm_package(PyObject *module) {
   /* package reasons */
   PyModule_AddIntConstant(module, "PKG_REASON_EXPLICIT", PM_PKG_REASON_EXPLICIT);
   PyModule_AddIntConstant(module, "PKG_REASON_DEPEND", PM_PKG_REASON_DEPEND);
+
+  /* signature check levels */
+  PyModule_AddIntConstant(module, "PGP_VERIFY_UNKNOWN", PM_PGP_VERIFY_UNKNOWN);
+  PyModule_AddIntConstant(module, "PGP_VERIFY_NEVER", PM_PGP_VERIFY_NEVER);
+  PyModule_AddIntConstant(module, "PGP_VERIFY_OPTIONAL", PM_PGP_VERIFY_OPTIONAL);
+  PyModule_AddIntConstant(module, "PGP_VERIFY_ALWAYS", PM_PGP_VERIFY_ALWAYS);
 }
 
 /* vim: set ts=2 sw=2 et: */
