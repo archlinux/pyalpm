@@ -38,6 +38,13 @@ void init_pyalpm_error(PyObject* module);
       return ret;                          \
     } while(0)
 
+#define RET_ERRNO_ERR(msg, errno, ret) do { \
+      Py_INCREF(Py_None); \
+      PyObject *error_obj = Py_BuildValue("(siO)", msg, errno, Py_None); \
+      PyErr_SetObject(alpm_error, error_obj); \
+      return ret;                          \
+    } while(0)
+
 #define RET_ERR_DATA(msg, arg, ret) do { \
       PyObject *error_obj = Py_BuildValue("(siN)", msg, pm_errno, arg); \
       PyErr_SetObject(alpm_error, error_obj); \

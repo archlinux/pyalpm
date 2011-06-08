@@ -22,9 +22,62 @@
 
 #include <alpm.h>
 #include <Python.h>
+#include "handle.h"
 #include "options.h"
+#include "util.h"
 
-struct PyGetSetDef pyalpm_options_getset[] = {
+typedef struct _AlpmHandle {
+  PyObject_HEAD
+  pmhandle_t *c_data;
+} AlpmHandle;
+
+PyTypeObject AlpmHandleType;
+
+static PyObject *pyalpm_handle_from_pmhandle(void* data) {
+  pmhandle_t *handle = (pmhandle_t*)data;
+  AlpmHandle *self;
+  self = (AlpmHandle*)AlpmHandleType.tp_alloc(&AlpmHandleType, 0);
+  if (self == NULL) {
+    PyErr_SetString(PyExc_RuntimeError, "unable to create pyalpm.Handle object");
+    return NULL;
+  }
+
+  self->c_data = handle;
+  return (PyObject *)self;
+}
+
+/*pyalpm functions*/
+PyObject* pyalpm_initialize(PyObject *self, PyObject *args)
+{
+  const char *root;
+  const char *dbpath;
+  pmhandle_t *h;
+  enum _pmerrno_t errcode = 0;
+  if(!PyArg_ParseTuple(args, "ss", &root, &dbpath)) {
+    return NULL;
+  }
+
+  h = alpm_initialize(root, dbpath, &errcode);
+  if (h) {
+    set_init(1);
+    return pyalpm_handle_from_pmhandle((void*)h);
+  } else {
+    RET_ERRNO_ERR("could not create a libalpm handle", errcode, NULL);
+  }
+}
+
+PyObject* pyalpm_release(PyObject *self, PyObject *args)
+{
+  AlpmHandle *pyhandle;
+  if(!PyArg_ParseTuple(args, "O!", &AlpmHandleType, &pyhandle))
+    return NULL;
+
+  alpm_release(pyhandle->c_data);
+  pyhandle->c_data = NULL;
+  Py_RETURN_NONE;
+}
+
+struct PyGetSetDef pyalpm_handle_getset[] = {
   /** filepaths */
   { "root",
     (getter)option_get_root_alpm,
@@ -114,7 +167,7 @@ struct PyGetSetDef pyalpm_options_getset[] = {
   { NULL }
 };
 
-static PyMethodDef pyalpm_options_methods[] = {
+static PyMethodDef pyalpm_handle_methods[] = {
   {"add_noupgrade", option_add_noupgrade_alpm, METH_VARARGS, "add a noupgrade package."},
   {"remove_noupgrade", option_remove_noupgrade_alpm, METH_VARARGS, "removes a noupgrade package."},
 
@@ -132,10 +185,10 @@ static PyMethodDef pyalpm_options_methods[] = {
   {NULL, NULL, 0, NULL},
 };
 
-PyTypeObject AlpmOptionSetType = {
+PyTypeObject AlpmHandleType = {
   PyVarObject_HEAD_INIT(NULL, 0)
-  "alpm.Options",    /*tp_name*/
-  0,                   /*tp_basicsize*/
+  "alpm.Handle",       /*tp_name*/
+  sizeof(AlpmHandle),  /*tp_basicsize*/
   0,                   /*tp_itemsize*/
   0,                   /*tp_dealloc*/
   0,                   /*tp_print*/
@@ -153,7 +206,7 @@ PyTypeObject AlpmOptionSetType = {
   0,                   /*tp_setattro*/
   0,                   /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT, /*tp_flags*/
-  "This class is the main interface to get/set libalpm options",
+  "An object wrapping a libalpm handle",
                       /* tp_doc */
   0,                  /* tp_traverse */
   0,                  /* tp_clear */
@@ -161,24 +214,20 @@ PyTypeObject AlpmOptionSetType = {
   0,                  /* tp_weaklistoffset */
   0,                  /* tp_iter */
   0,                  /* tp_iternext */
-  pyalpm_options_methods, /* tp_methods */
+  pyalpm_handle_methods, /* tp_methods */
   0,                      /* tp_members */
-  pyalpm_options_getset,  /* tp_getset */
+  pyalpm_handle_getset,  /* tp_getset */
 };
 
-/** Initializes Options class in module */
-void init_pyalpm_options(PyObject *module) {
-  // the OptionSet type
+/** Initializes Handle class in module */
+int init_pyalpm_handle(PyObject *module) {
   PyObject *type;
-  if (PyType_Ready(&AlpmOptionSetType) < 0)
-    return;
-  type = (PyObject*)&AlpmOptionSetType;
+  if (PyType_Ready(&AlpmHandleType) < 0)
+    return -1;
+  type = (PyObject*)&AlpmHandleType;
   Py_INCREF(type);
-  PyModule_AddObject(module, "Options", type);
-
-  // the static instance
-  PyObject* options = (PyObject*)AlpmOptionSetType.tp_alloc(&AlpmOptionSetType, 0);
-  PyModule_AddObject(module, "options", options);
+  PyModule_AddObject(module, "Handle", type);
+  return 0;
 }
 
-/* vim: set ts=2 et: */
+/* vim: set ts=2 sw=2 et: */

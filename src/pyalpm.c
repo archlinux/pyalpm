@@ -20,35 +20,9 @@
 
 #include "pyalpm.h"
 #include "util.h"
+#include "handle.h"
 #include "package.h"
 #include "db.h"
-
-/*pyalpm functions*/
-static PyObject * initialize_alpm(PyObject *self, PyObject *dummy)
-{
-  if(alpm_initialize() == -1) {
-    PyErr_SetString(alpm_error, "could not initialize libalpm");
-    return NULL;
-  }
-
-  set_init(1);
-  Py_RETURN_NONE;
-}
-
-static PyObject * release_alpm(PyObject *self, PyObject *dummy)
-{
-  /*clean_memory(addresses);*/
-  if(alpm_release() == -1)
-  {
-    PyErr_SetString(alpm_error, "failed to release alpm");
-    return NULL;
-  }
-  else
-  {
-    set_init(0);
-    Py_RETURN_NONE;
-  }
-}
 
 static PyObject * alpmversion_alpm(PyObject *self, PyObject *dummy)
 {
@@ -145,8 +119,8 @@ static PyObject* pyalpm_find_satisfier(PyObject *self, PyObject* args) {
 }
 
 static PyMethodDef methods[] = {
-  {"initialize", initialize_alpm, METH_NOARGS, "initialize alpm."},
-  {"release", release_alpm, METH_NOARGS, "release alpm."},
+  {"initialize", pyalpm_initialize, METH_VARARGS, "initialize alpm."},
+  {"release", pyalpm_release, METH_VARARGS, "release alpm."},
   {"version", version_alpm, METH_NOARGS, "returns pyalpm version."},
   {"alpmversion", alpmversion_alpm, METH_NOARGS, "returns alpm version."},
   {"checkinit", check_init_alpm, METH_VARARGS, "checks if the library was initialized."},
@@ -192,7 +166,7 @@ PyMODINIT_FUNC PyInit_pyalpm()
   PyObject* m = PyModule_Create(&pyalpm_def);
 
   init_pyalpm_error(m);
-  init_pyalpm_options(m);
+  init_pyalpm_handle(m);
   init_pyalpm_package(m);
   init_pyalpm_db(m);
   init_pyalpm_transaction(m);
