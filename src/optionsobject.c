@@ -1,5 +1,5 @@
 /**
- * package.c : wrapper class around pmpkg_t
+ * optionsobject.c : a dummy class holding option get/setters
  *
  *  Copyright (c) 2011 Rémy Oudompheng <remy@archlinux.org>
  *
