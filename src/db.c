@@ -119,7 +119,7 @@ static int pyalpm_db_set_server(AlpmDB* self, PyObject* value, void* closure) {
     return -1;
   }
 
-  ret = alpm_db_setserver(self->c_data, path);
+  ret = alpm_db_add_server(self->c_data, path);
   if (utf8) Py_DECREF(utf8);
   if (ret == -1)
     PyErr_SetString(alpm_error, alpm_strerrorlast());
