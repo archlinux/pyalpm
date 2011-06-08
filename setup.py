@@ -16,7 +16,7 @@ alpm = Extension('pyalpm',
         'src/package.c',
         'src/db.c',
         'src/options.c',
-        'src/optionsobject.c',
+        'src/handle.c',
         'src/transaction.c'
         ],
     depends = [

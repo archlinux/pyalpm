@@ -1,5 +1,5 @@
 /**
- * package.c : wrapper class around pmpkg_t
+ * handle.c : wrapper class around pmhandle_t
  *
  *  Copyright (c) 2011 Rémy Oudompheng <remy@archlinux.org>
  *
