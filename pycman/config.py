@@ -55,7 +55,8 @@ SINGLE_OPTIONS = (
 	'LogFile',
 	'Architecture',
 	'XferCommand',
-	'CleanMethod'
+	'CleanMethod',
+	'VerifySig'
 )
 
 BOOLEAN_OPTIONS = (
@@ -98,6 +99,8 @@ def pacman_conf_enumerator(path):
 			# repos only have the Server option
 			if key == 'Server' and equal == '=':
 				yield (current_section, 'Server', value)
+			elif key == 'VerifySig' and equal == '=':
+				yield (current_section, 'VerifySig', value)
 			else:
 				raise InvalidSyntax(f.name, 'invalid key for repository configuration', line)
 			continue
@@ -139,8 +142,8 @@ class PacmanConfig(object):
 					self.options[key] = value
 			else:
 				servers = self.repos.setdefault(section, [])
-				assert(key == 'Server')
-				servers.append(value)
+				if key == 'Server':
+					servers.append(value)
 
 	def load_from_options(self, options):
 		if options.root is not None:
@@ -152,11 +155,9 @@ class PacmanConfig(object):
 		if options.logfile is not None:
 			self.options["LogFile"] = options.logfile
 
-	def apply(self):
-		pyalpm.options.root = self.options["RootDir"]
-		pyalpm.options.dbpath = self.options["DBPath"]
-		pyalpm.options.arch = self.options["Architecture"]
-		pyalpm.options.logfile = self.options["LogFile"]
+	def apply(self, h):
+		h.arch = self.options["Architecture"]
+		h.logfile = self.options["LogFile"]
 
 		# set sync databases
 		for repo, servers in self.repos.items():
@@ -165,6 +166,11 @@ class PacmanConfig(object):
 				url = rawurl.replace("$repo", repo)
 				url = url.replace("$arch", self.options["Architecture"])
 				db.url = url
+
+	def initialize_alpm(self):
+		h = pyalpm.initialize(self.options["RootDir"], self.options["DBPath"])
+		self.apply(h)
+		return h
 
 	def __str__(self):
 		return("PacmanConfig(options=%s, repos=%s)" % (str(self.options), str(self.repos)))
@@ -194,13 +200,11 @@ def make_parser(*args, **kwargs):
 
 def init_with_config(configpath):
 	"Reads configuration from given path and apply it to libalpm"
-	pyalpm.initialize()
 	config = PacmanConfig(conf = configpath)
-	config.apply()
+	return config.initialize_alpm()
 
 def init_with_config_and_options(options):
 	"Reads configuration from file and commandline options, and apply it to libalpm"
-	pyalpm.initialize()
 	# read config file
 	if options.config is not None:
 		config_file = options.config
@@ -208,6 +212,6 @@ def init_with_config_and_options(options):
 		config_file = "/etc/pacman.conf"
 
 	conf = PacmanConfig(conf = config_file, options = options)
-	conf.apply()
+	return conf.initialize_alpm()
 
 # vim: set ts=4 sw=4 tw=0 noet:
