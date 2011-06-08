@@ -39,56 +39,6 @@ PyObject * option_get_root_alpm(PyObject *self, void *closure)
   return Py_BuildValue("s", str);
 }
 
-/** Sets root for libalpm
- * @return 0 on success, -1 on failure
- */
-int option_set_root_alpm(PyObject *self, PyObject *value, void* closure)
-{
-  char *path = NULL;
-  int ret;
-  if (PyBytes_Check(value)) {
-    path = strdup(PyBytes_AS_STRING(value));
-  } else if (PyUnicode_Check(value)) {
-    PyObject* utf8 = PyUnicode_AsUTF8String(value);
-    path = strdup(PyBytes_AS_STRING(utf8));
-    Py_DECREF(utf8);
-  } else {
-    PyErr_SetString(PyExc_TypeError, "root path must be a string");
-    return -1;
-  }
-
-  CHECK_ALPM_INIT(-1);
-  int ok = alpm_option_set_root(path);
-  free(path);
-
-  if (ok == -1) RET_ERR("failed setting root", -1);
-  return(0);
-}
-
-int option_set_dbpath_alpm(PyObject *self, PyObject* value, void *closure)
-{
-  char *path = NULL;
-  int ret;
-  if (PyBytes_Check(value)) {
-    path = strdup(PyBytes_AS_STRING(value));
-  } else if (PyUnicode_Check(value)) {
-    PyObject* utf8 = PyUnicode_AsUTF8String(value);
-    path = strdup(PyBytes_AS_STRING(utf8));
-    Py_DECREF(utf8);
-  } else {
-    PyErr_SetString(PyExc_TypeError, "dbpath must be a string");
-    return -1;
-  }
-
-  CHECK_ALPM_INIT(-1);
-  int ok = alpm_option_set_dbpath(path);
-  free(path);
-  if (ok == -1)
-    RET_ERR("failed setting dbpath", -1);
-
-  return 0;
-}
-
 PyObject* option_get_dbpath_alpm(PyObject *self, void *closure)
 {
   const char *str = alpm_option_get_dbpath();

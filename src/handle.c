@@ -28,11 +28,11 @@ struct PyGetSetDef pyalpm_options_getset[] = {
   /** filepaths */
   { "root",
     (getter)option_get_root_alpm,
-    (setter)option_set_root_alpm,
+    NULL,
     "system root directory", NULL } ,
   { "dbpath",
     (getter)option_get_dbpath_alpm,
-    (setter)option_set_dbpath_alpm,
+    NULL,
     "alpm database directory", NULL } ,
   { "logfile",
     (getter)option_get_logfile_alpm,
