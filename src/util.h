@@ -61,6 +61,6 @@ int pylist_string_to_alpmlist(PyObject *list, alpm_list_t* *result);
 unsigned short check_init(void);
 void set_init(unsigned short i);
 
-#endif // _PY_ALPM_UTIL_H
+#endif
 
 /* vim: set ts=2 sw=2 et: */

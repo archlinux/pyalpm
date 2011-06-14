@@ -31,4 +31,4 @@ int pylist_db_to_alpmlist(PyObject *list, alpm_list_t **result);
 PyObject* pyalpm_find_grp_pkgs(PyObject* self, PyObject* args);
 PyObject* pyalpm_sync_newversion(PyObject *self, PyObject* args);
 
-#endif // _PYALPM_DB_H
+#endif

@@ -37,4 +37,4 @@ int pylist_pkg_to_alpmlist(PyObject *list, alpm_list_t **result);
 
 PyObject *pyalpm_package_load(PyObject *self, PyObject *args);
 
-#endif // _PYALPM_PACKAGE_H
+#endif
