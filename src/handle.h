@@ -35,4 +35,8 @@ typedef struct _AlpmHandle {
 PyObject *pyalpm_initialize(PyObject* self, PyObject* args);
 PyObject *pyalpm_release(PyObject* self, PyObject* args);
 
+/* from transaction.c */
+PyObject *pyalpm_transaction_from_pmhandle(void* data);
+PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs);
+
 #endif

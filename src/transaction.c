@@ -24,6 +24,7 @@
 #include <alpm.h>
 #include <Python.h>
 #include "package.h"
+#include "handle.h"
 #include "util.h"
 
 /** Transaction callbacks */
@@ -138,7 +139,7 @@ static void pyalpm_trans_progresscb(pmtransprog_t op,
   }
   if (PyErr_Occurred()) {
     PyErr_Print();
-    alpm_trans_interrupt();
+    /* alpm_trans_interrupt(handle); */
   }
   Py_CLEAR(result);
 }
@@ -204,8 +205,9 @@ const char* flagnames[19] = {
 
 static PyObject *pyalpm_trans_get_flags(PyObject *self, void *closure)
 {
-  int flags = alpm_trans_get_flags();
-  if (flags == -1) RET_ERR("no transaction defined", NULL);
+  pmhandle_t *handle = ALPM_HANDLE(self);
+  int flags = alpm_trans_get_flags(handle);
+  if (flags == -1) RET_ERR("no transaction defined", alpm_errno(handle), NULL);
   PyObject *result = PyDict_New();
   for (int i = 0; i < 18; i++) {
     if(flagnames[i])
@@ -216,21 +218,23 @@ static PyObject *pyalpm_trans_get_flags(PyObject *self, void *closure)
 
 static PyObject *pyalpm_trans_get_add(PyObject *self, void *closure)
 {
+  pmhandle_t *handle = ALPM_HANDLE(self);
   /* sanity check */
-  int flags = alpm_trans_get_flags();
-  if (flags == -1) RET_ERR("no transaction defined", NULL);
+  int flags = alpm_trans_get_flags(handle);
+  if (flags == -1) RET_ERR("no transaction defined", alpm_errno(handle), NULL);
 
-  alpm_list_t *to_add = alpm_trans_get_add();
+  alpm_list_t *to_add = alpm_trans_get_add(handle);
   return alpmlist_to_pylist(to_add, pyalpm_package_from_pmpkg);
 }
 
 static PyObject *pyalpm_trans_get_remove(PyObject *self, void *closure)
 {
+  pmhandle_t *handle = ALPM_HANDLE(self);
   /* sanity check */
-  int flags = alpm_trans_get_flags();
-  if (flags == -1) RET_ERR("no transaction defined", NULL);
+  int flags = alpm_trans_get_flags(handle);
+  if (flags == -1) RET_ERR("no transaction defined", alpm_errno(handle), NULL);
 
-  alpm_list_t *to_remove = alpm_trans_get_remove();
+  alpm_list_t *to_remove = alpm_trans_get_remove(handle);
   return alpmlist_to_pylist(to_remove, pyalpm_package_from_pmpkg);
 }
 
@@ -243,7 +247,14 @@ static PyObject *pyalpm_trans_get_remove(PyObject *self, void *closure)
   array[14], array[15], array[16], \
   array[17]
 
-static PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs) {
+/** Initializes a transaction
+ * @param self a Handle object
+ * ...
+ * @return a Transaction object with the same underlying object
+ */
+PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs) {
+  pmhandle_t *handle = ALPM_HANDLE(self);
+  PyObject *result;
   const char* keywords[] = {
     INDEX_FLAGS(flagnames),
     "event_callback",
@@ -291,92 +302,100 @@ static PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwa
   }
 
   /* run alpm_trans_init() */
-  int ret = alpm_trans_init(flag_int
+  int ret = alpm_trans_init(handle, flag_int
       , event_cb ? pyalpm_trans_eventcb : NULL
       , conv_cb ? pyalpm_trans_convcb : NULL
       , progress_cb ? pyalpm_trans_progresscb : NULL);
   if (ret == -1) {
-    RET_ERR("transaction could not be initialized", NULL);
+    RET_ERR("transaction could not be initialized", alpm_errno(handle), NULL);
   }
-  Py_RETURN_NONE;
+  result = pyalpm_transaction_from_pmhandle(handle);
+  return result;
 }
 
 static PyObject* pyalpm_trans_prepare(PyObject *self, PyObject *args) {
+  pmhandle_t *handle = ALPM_HANDLE(self);
   alpm_list_t *data;
 
-  int ret = alpm_trans_prepare(&data);
+  int ret = alpm_trans_prepare(handle, &data);
   if (ret == -1) {
     /* return the list of package conflicts in the exception */
     PyObject *info = alpmlist_to_pylist(data, pyobject_from_pmdepmissing);
     if (!info) return NULL;
-    RET_ERR_DATA("transaction preparation failed", info, NULL);
+    RET_ERR_DATA("transaction preparation failed", alpm_errno(handle), info, NULL);
   }
 
   Py_RETURN_NONE;
 }
 
 static PyObject* pyalpm_trans_commit(PyObject *self, PyObject *args) {
+  pmhandle_t *handle = ALPM_HANDLE(self);
   alpm_list_t *data = NULL;
 
-  int ret = alpm_trans_commit(&data);
+  int ret = alpm_trans_commit(handle, &data);
   if (ret == -1) {
     /* return the list of file conflicts in the exception */
     PyObject *info = alpmlist_to_pylist(data, pyobject_from_pmfileconflict);
     if (!info) return NULL;
-    RET_ERR_DATA("transaction failed", info, NULL);
+    RET_ERR_DATA("transaction failed", alpm_errno(handle), info, NULL);
   }
 
   Py_RETURN_NONE;
 }
 
 static PyObject* pyalpm_trans_interrupt(PyObject *self, PyObject *args) {
-  int ret = alpm_trans_interrupt();
-  if (ret == -1) RET_ERR("unable to interrupt transaction", NULL);
+  pmhandle_t *handle = ALPM_HANDLE(self);
+  int ret = alpm_trans_interrupt(handle);
+  if (ret == -1) RET_ERR("unable to interrupt transaction", alpm_errno(handle), NULL);
   Py_RETURN_NONE;
 }
 
 PyObject* pyalpm_trans_release(PyObject *self, PyObject *args) {
-  int ret = alpm_trans_release();
-  if (ret == -1) RET_ERR("unable to release transaction", NULL);
+  pmhandle_t *handle = ALPM_HANDLE(self);
+  int ret = alpm_trans_release(handle);
+  if (ret == -1) RET_ERR("unable to release transaction", alpm_errno(handle), NULL);
   Py_RETURN_NONE;
 }
 
 /** Transaction contents */
 static PyObject* pyalpm_trans_add_pkg(PyObject *self, PyObject *args) {
+  pmhandle_t *handle = ALPM_HANDLE(self);
   PyObject *pkg;
   if (!PyArg_ParseTuple(args, "O!", &AlpmPackageType, &pkg)) {
     return NULL;
   }
 
   pmpkg_t *pmpkg = pmpkg_from_pyalpm_pkg(pkg);
-  int ret = alpm_add_pkg(pmpkg);
-  if (ret == -1) RET_ERR("unable to update transaction", NULL);
+  int ret = alpm_add_pkg(handle, pmpkg);
+  if (ret == -1) RET_ERR("unable to update transaction", alpm_errno(handle), NULL);
   /* alpm_add_pkg eats the reference to pkg */
   pyalpm_pkg_unref(pkg);
   Py_RETURN_NONE;
 }
 
 static PyObject* pyalpm_trans_remove_pkg(PyObject *self, PyObject *args) {
+  pmhandle_t *handle = ALPM_HANDLE(self);
   PyObject *pkg;
   if (!PyArg_ParseTuple(args, "O!", &AlpmPackageType, &pkg)) {
     return NULL;
   }
 
   pmpkg_t *pmpkg = pmpkg_from_pyalpm_pkg(pkg);
-  int ret = alpm_remove_pkg(pmpkg);
-  if (ret == -1) RET_ERR("unable to update transaction", NULL);
+  int ret = alpm_remove_pkg(handle, pmpkg);
+  if (ret == -1) RET_ERR("unable to update transaction", alpm_errno(handle), NULL);
   Py_RETURN_NONE;
 }
 
 static PyObject* pyalpm_trans_sysupgrade(PyObject *self, PyObject *args, PyObject *kwargs) {
+  pmhandle_t *handle = ALPM_HANDLE(self);
   char* keyword[] = {"downgrade", NULL};
   PyObject *downgrade;
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!", keyword, &PyBool_Type, &downgrade))
     return NULL;
 
   int do_downgrade = (downgrade == Py_True) ? 1 : 0;
-  int ret = alpm_sync_sysupgrade(do_downgrade);
-  if (ret == -1) RET_ERR("unable to update transaction", NULL);
+  int ret = alpm_sync_sysupgrade(handle, do_downgrade);
+  if (ret == -1) RET_ERR("unable to update transaction", alpm_errno(handle), NULL);
   Py_RETURN_NONE;
 }
 
@@ -392,19 +411,6 @@ static struct PyGetSetDef pyalpm_trans_getset[] = {
 
 static struct PyMethodDef pyalpm_trans_methods[] = {
   /* Execution flow */
-  {"init",    (PyCFunction)pyalpm_trans_init, METH_VARARGS | METH_KEYWORDS,
-    "Initializes a transaction.\n"
-    "Arguments:\n"
-    "  nodeps, force, nosave, nodepversion, cascade, recurse,\n"
-    "  dbonly, alldeps, downloadonly, noscriptlet, noconflicts,\n"
-    "  needed, allexplicit, inneeded, recurseall, nolock\n"
-    "    -- the transaction options (booleans)\n"
-    "  event_callback -- a function called when an event occurs\n"
-    "    -- args: (event ID, event string, (object 1, object 2))\n"
-    "  conv_callback -- a function called to get user input\n"
-    "  progress_callback -- a function called to indicate progress\n"
-    "    -- args: (target name, percentage, number of targets, target number)\n"
-  },
   {"prepare", pyalpm_trans_prepare,    METH_NOARGS, "prepare" },
   {"commit",  pyalpm_trans_commit,     METH_NOARGS, "commit" },
   {"interrupt", pyalpm_trans_interrupt,METH_NOARGS,  "Interrupt the transaction." },
@@ -422,10 +428,13 @@ static struct PyMethodDef pyalpm_trans_methods[] = {
   { NULL }
 };
 
+/* The Transaction object have the same underlying C structure
+ * as the Handle objects. Only the method table changes.
+ */
 static PyTypeObject AlpmTransactionType = {
   PyVarObject_HEAD_INIT(NULL, 0)
-  "alpm.TransactionClass",    /*tp_name*/
-  0,                   /*tp_basicsize*/
+  "alpm.Transaction",    /*tp_name*/
+  sizeof(AlpmHandle),  /*tp_basicsize*/
   0,                   /*tp_itemsize*/
   0,                   /*tp_dealloc*/
   0,                   /*tp_print*/
@@ -456,17 +465,25 @@ static PyTypeObject AlpmTransactionType = {
   pyalpm_trans_getset,  /* tp_getset */
 };
 
+PyObject *pyalpm_transaction_from_pmhandle(void* data) {
+  pmhandle_t *handle = (pmhandle_t*)data;
+  AlpmHandle *self;
+  self = (AlpmHandle*)AlpmTransactionType.tp_alloc(&AlpmTransactionType, 0);
+  if (self == NULL) {
+    PyErr_SetString(PyExc_RuntimeError, "unable to create pyalpm.Transaction object");
+    return NULL;
+  }
+
+  self->c_data = handle;
+  return (PyObject *)self;
+}
+
 /* Initialization */
 int init_pyalpm_transaction(PyObject *module) {
   if (PyType_Ready(&AlpmTransactionType) < 0)
     return -1;
   Py_INCREF(&AlpmTransactionType);
-  PyModule_AddObject(module, "TransactionClass", (PyObject*)(&AlpmTransactionType));
-
-  // the static instance
-  PyObject *the_transaction = (PyObject*)AlpmTransactionType.tp_alloc(&AlpmTransactionType, 0);
-  PyModule_AddObject(module, "transaction", the_transaction);
-  Py_INCREF(the_transaction);
+  PyModule_AddObject(module, "Transaction", (PyObject*)(&AlpmTransactionType));
   return 0;
 }
 

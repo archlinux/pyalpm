@@ -197,12 +197,29 @@ struct PyGetSetDef pyalpm_handle_getset[] = {
 };
 
 static PyMethodDef pyalpm_handle_methods[] = {
+  /* Transaction initialization */
+  {"init_transaction",    (PyCFunction)pyalpm_trans_init, METH_VARARGS | METH_KEYWORDS,
+    "Initializes a transaction.\n"
+    "Arguments:\n"
+    "  nodeps, force, nosave, nodepversion, cascade, recurse,\n"
+    "  dbonly, alldeps, downloadonly, noscriptlet, noconflicts,\n"
+    "  needed, allexplicit, inneeded, recurseall, nolock\n"
+    "    -- the transaction options (booleans)\n"
+    "  event_callback -- a function called when an event occurs\n"
+    "    -- args: (event ID, event string, (object 1, object 2))\n"
+    "  conv_callback -- a function called to get user input\n"
+    "  progress_callback -- a function called to indicate progress\n"
+    "    -- args: (target name, percentage, number of targets, target number)\n"
+  },
+
+  /* Database members */
   {"register_syncdb", pyalpm_register_syncdb, METH_VARARGS,
    "registers the database with the given name\n"
    "returns the new database on success"},
   {"get_localdb", pyalpm_get_localdb, METH_NOARGS, "returns an object representing the local DB"},
   {"get_syncdbs", pyalpm_get_syncdbs, METH_NOARGS, "returns a list of sync DBs"},
 
+  /* Option modifiers */
   {"add_noupgrade", option_add_noupgrade_alpm, METH_VARARGS, "add a noupgrade package."},
   {"remove_noupgrade", option_remove_noupgrade_alpm, METH_VARARGS, "removes a noupgrade package."},
 
