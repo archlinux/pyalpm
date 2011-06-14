@@ -31,6 +31,8 @@ typedef struct _AlpmDB {
   pmdb_t *c_data;
 } AlpmDB;
 
+#define ALPM_DB(self) (((AlpmDB*)self)->c_data)
+
 static PyTypeObject AlpmDBType;
 
 static void pyalpm_db_dealloc(AlpmDB *self) {
@@ -97,34 +99,19 @@ static PyObject* pyalpm_db_get_name(AlpmDB* self, void* closure) {
   return PyUnicode_FromString(name);
 }
 
-static PyObject* pyalpm_db_get_url(AlpmDB* self, void* closure) {
-  CHECK_IF_INITIALIZED();
-  const char* url = alpm_db_get_url(self->c_data);
-  if (!url)
-    Py_RETURN_NONE;
-  return PyUnicode_FromString(url);
+static PyObject* pyalpm_db_get_servers(PyObject *self, void* closure) {
+  pmdb_t *db = ALPM_DB(self);
+  return alpmlist_to_pylist(alpm_db_get_servers(db), pyobject_from_string);
 }
 
-static int pyalpm_db_set_server(AlpmDB* self, PyObject* value, void* closure) {
-  char *path = NULL;
-  PyObject *utf8 = NULL;
-  int ret;
-  if (PyBytes_Check(value)) {
-    path = PyBytes_AS_STRING(value);
-  } else if (PyUnicode_Check(value)) {
-    utf8 = PyUnicode_AsUTF8String(value);
-    path = PyBytes_AS_STRING(utf8);
-  } else {
-    PyErr_SetString(PyExc_TypeError, "expected a string value");
+static int pyalpm_db_set_servers(PyObject* self, PyObject* value, void* closure) {
+  pmdb_t *db = ALPM_DB(self);
+  alpm_list_t *target;
+  if (pylist_string_to_alpmlist(value, &target) == -1)
     return -1;
-  }
-
-  ret = alpm_db_add_server(self->c_data, path);
-  if (utf8) Py_DECREF(utf8);
-  if (ret == -1)
-    PyErr_SetString(alpm_error, alpm_strerrorlast());
-
-  return ret;
+  if (alpm_db_set_servers(db, target) == -1)
+    RET_ERR("unable to set servers", 0, -1);
+  return 0;
 }
 
 static PyObject* pyalpm_db_get_pkgcache(AlpmDB* self, void* closure) {
@@ -258,7 +245,8 @@ struct PyGetSetDef db_getset[] = {
   /* description properties */
   { "name", (getter)pyalpm_db_get_name, 0,
     "database name (e.g. \"core\", \"extra\")", NULL } ,
-  { "url", (getter)pyalpm_db_get_url, (setter)pyalpm_db_set_server, "URL (for sync DBs)", NULL } ,
+  { "servers", (getter)pyalpm_db_get_servers, (setter)pyalpm_db_set_servers,
+    "a list of URLs (for sync DBs)", NULL } ,
   { "pkgcache", (getter)pyalpm_db_get_pkgcache, 0, "(read only) list of packages", NULL } ,
   { "grpcache", (getter)pyalpm_db_get_grpcache, 0, "(read only) list of package groups", NULL } ,
   { NULL }
