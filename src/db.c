@@ -164,10 +164,10 @@ static PyObject* pyalpm_db_set_pkgreason(PyObject* rawself, PyObject* args) {
     return NULL;
   }
 
-  if (self->c_data == NULL) RET_ERR("data is not initialized", NULL);
+  if (self->c_data == NULL) RET_ERR("data is not initialized", 0, NULL);
   ret = alpm_db_set_pkgreason(self->c_data, pkgname, reason);
 
-  if (ret == -1) RET_ERR("failed setting install reason", NULL);
+  if (ret == -1) RET_ERR("failed setting install reason", 0, NULL);
   Py_RETURN_NONE;
 }
 
@@ -196,13 +196,13 @@ static PyObject *pyalpm_db_update(PyObject *rawself, PyObject *args, PyObject *k
 
   switch(ret) {
   case -1:
-    RET_ERR("unable to update database", NULL);
+    RET_ERR("unable to update database", 0, NULL);
   case 0:
     Py_RETURN_TRUE;
   case 1:
     Py_RETURN_FALSE;
   default:
-    RET_ERR("invalid return code from alpm_db_update()", NULL);
+    RET_ERR("invalid return code from alpm_db_update()", 0, NULL);
   }
 }
 
