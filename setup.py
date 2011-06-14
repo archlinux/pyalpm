@@ -6,9 +6,11 @@ os.putenv('LC_CTYPE', 'en_US.UTF-8')
 
 pyalpm_version = '0.5'
 
+cflags = ['-Wall', '-ansi', '-Wdeclaration-after-statement']
+
 alpm = Extension('pyalpm',
     libraries = ['alpm'],
-    extra_compile_args = ['-std=c99', '-D_XOPEN_SOURCE=600', '-DVERSION="%s"' % pyalpm_version],
+    extra_compile_args = cflags + ['-D_XOPEN_SOURCE=600', '-DVERSION="%s"' % pyalpm_version],
     language = 'C',
     sources = [
         'src/pyalpm.c',

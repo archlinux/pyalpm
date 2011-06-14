@@ -32,8 +32,8 @@ extern PyObject* alpm_error;
 void init_pyalpm_error(PyObject* module);
 
 #define RET_ERR(msg, errno, ret) do { \
-      Py_INCREF(Py_None); \
       PyObject *error_obj = Py_BuildValue("(siO)", msg, errno, Py_None); \
+      Py_INCREF(Py_None); \
       PyErr_SetObject(alpm_error, error_obj); \
       return ret;                          \
     } while(0)
