@@ -91,6 +91,6 @@ PyObject* pyalpm_option_get_dlcb(PyObject *self, void *closure);
 PyObject* pyalpm_option_get_totaldlcb(PyObject *self, void *closure);
 PyObject* pyalpm_option_get_fetchcb(PyObject *self, void *closure);
 
-#endif // _PY_ALPM_OPTIONS_H
+#endif
 
 /* vim: set ts=2 sw=2 et: */

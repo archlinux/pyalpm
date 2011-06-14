@@ -23,13 +23,9 @@
 #include <alpm.h>
 #include <Python.h>
 #include "handle.h"
+#include "db.h"
 #include "options.h"
 #include "util.h"
-
-typedef struct _AlpmHandle {
-  PyObject_HEAD
-  pmhandle_t *c_data;
-} AlpmHandle;
 
 PyTypeObject AlpmHandleType;
 
@@ -62,7 +58,7 @@ PyObject* pyalpm_initialize(PyObject *self, PyObject *args)
     set_init(1);
     return pyalpm_handle_from_pmhandle((void*)h);
   } else {
-    RET_ERRNO_ERR("could not create a libalpm handle", errcode, NULL);
+    RET_ERR("could not create a libalpm handle", errcode, NULL);
   }
 }
 
