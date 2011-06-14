@@ -25,6 +25,7 @@
 #include <Python.h>
 #include "db.h"
 #include "util.h"
+#include "handle.h"
 
 typedef struct _AlpmPackage {
   PyObject_HEAD
@@ -33,6 +34,7 @@ typedef struct _AlpmPackage {
 } AlpmPackage;
 
 PyTypeObject AlpmPackageType;
+extern PyTypeObject AlpmHandleType;
 
 int PyAlpmPkg_Check(PyObject *object) {
   return PyObject_TypeCheck(object, &AlpmPackageType);
@@ -136,25 +138,26 @@ PyObject *pyalpm_package_load(PyObject *self, PyObject *args, PyObject *kwargs) 
   char *filename;
   int check_sig = PM_PGP_VERIFY_OPTIONAL;
   char *kws[] = { "check_sig", NULL };
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|i", kws, &filename, &check_sig)) {
+  PyObject *pyhandle = NULL;
+  pmhandle_t *handle;
+  pmpkg_t *result;
+  AlpmPackage *pyresult;
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!s|i", kws,
+       &AlpmPackageType, &pyhandle, &filename, &check_sig)) {
     PyErr_SetString(PyExc_TypeError, "expected a string argument");
     return NULL;
   }
 
-  AlpmPackage *result;
-  result = (AlpmPackage*)AlpmPackageType.tp_alloc(&AlpmPackageType, 0);
-  if (result == NULL) {
-    PyErr_SetString(PyExc_RuntimeError, "unable to create package object");
-    return NULL;
+  handle = ALPM_HANDLE(pyhandle);
+
+  if ((alpm_pkg_load(handle, filename, 1, check_sig, &result) == -1) || !result) {
+    RET_ERR("loading package failed", alpm_errno(handle), NULL);
   }
 
-  if (alpm_pkg_load(filename, 1, check_sig, &result->c_data) == -1) {
-    PyErr_SetString(alpm_error, alpm_strerrorlast());
-    return NULL;
-  }
-
-  result->needs_free = 1;
-  return (PyObject *)result;
+  pyresult = (AlpmPackage*)pyalpm_package_from_pmpkg(result);
+  if (!pyresult) return NULL;
+  pyresult->needs_free = 1;
+  return (PyObject*)pyresult;
 }
 
 static PyObject *pyalpm_package_get_filename(AlpmPackage *self, void *closure) {
