@@ -25,6 +25,13 @@
 
 #include <Python.h>
 
+typedef struct _AlpmHandle {
+  PyObject_HEAD
+  pmhandle_t *c_data;
+} AlpmHandle;
+
+#define ALPM_HANDLE(self) (((AlpmHandle*)(self))->c_data)
+
 PyObject *pyalpm_initialize(PyObject* self, PyObject* args);
 PyObject *pyalpm_release(PyObject* self, PyObject* args);
 

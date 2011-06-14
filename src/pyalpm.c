@@ -37,55 +37,6 @@ static PyObject * version_alpm(PyObject *self, PyObject *dummy)
   return Py_BuildValue("s", VERSION);
 }
 
-static PyObject * check_init_alpm(PyObject *self, PyObject *dummy)
-{
-  if(check_init() == 0)
-  {
-    Py_RETURN_FALSE;
-  }
-  if(check_init() == 1)
-  {
-    Py_RETURN_TRUE;
-  }
-  else
-  {
-    PyErr_SetString(alpm_error, "internal error");
-    return NULL;
-  }
-}
-
-static PyObject *pyalpm_strerrorlast(PyObject *self, PyObject *dummy)
-{
-  return Py_BuildValue("s", alpm_strerrorlast());
-}
-
-static PyObject* pyalpm_get_localdb(PyObject *self, PyObject *dummy) {
-  return pyalpm_db_from_pmdb(alpm_option_get_localdb());
-}
-
-static PyObject* pyalpm_get_syncdbs(PyObject *self, PyObject *dummy) {
-  return alpmlist_to_pylist(alpm_option_get_syncdbs(),
-			    pyalpm_db_from_pmdb);
-}
-
-static PyObject* pyalpm_register_syncdb(PyObject *self, PyObject *args) {
-  const char *dbname;
-  pmdb_t *result;
-
-  if (!PyArg_ParseTuple(args, "s", &dbname)) {
-    PyErr_SetString(PyExc_TypeError, "expected a string argument");
-    return NULL;
-  }
-
-  result = alpm_db_register_sync(dbname);
-  if (! result) {
-    PyErr_Format(alpm_error, "unable to register sync database %s", dbname);
-    return NULL;
-  }
-
-  return pyalpm_db_from_pmdb(result);
-}
-
 /** Finds a package satisfying a dependency constraint in a package list */
 static PyObject* pyalpm_find_satisfier(PyObject *self, PyObject* args) {
   PyObject *pkglist;
@@ -119,18 +70,8 @@ static PyObject* pyalpm_find_satisfier(PyObject *self, PyObject* args) {
 }
 
 static PyMethodDef methods[] = {
-  {"initialize", pyalpm_initialize, METH_VARARGS, "initialize alpm."},
-  {"release", pyalpm_release, METH_VARARGS, "release alpm."},
   {"version", version_alpm, METH_NOARGS, "returns pyalpm version."},
   {"alpmversion", alpmversion_alpm, METH_NOARGS, "returns alpm version."},
-  {"checkinit", check_init_alpm, METH_VARARGS, "checks if the library was initialized."},
-  {"strerrorlast", pyalpm_strerrorlast, METH_NOARGS, "a string representation of the last error"},
-
-  {"register_syncdb", pyalpm_register_syncdb, METH_VARARGS,
-   "registers the database with the given name\n"
-   "returns the new database on success"},
-  {"get_localdb", pyalpm_get_localdb, METH_NOARGS, "returns an object representing the local DB"},
-  {"get_syncdbs", pyalpm_get_syncdbs, METH_NOARGS, "returns a list of sync DBs"},
 
   { "find_satisfier", pyalpm_find_satisfier, METH_VARARGS,
     "finds a package satisfying the given dependency among a list\n"

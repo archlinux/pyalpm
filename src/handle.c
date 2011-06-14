@@ -77,6 +77,39 @@ PyObject* pyalpm_release(PyObject *self, PyObject *args)
   Py_RETURN_NONE;
 }
 
+/* Database getters/setters */
+
+static PyObject* pyalpm_get_localdb(PyObject *self, PyObject *dummy) {
+  pmhandle_t *handle = ALPM_HANDLE(self);
+  return pyalpm_db_from_pmdb(alpm_option_get_localdb(handle));
+}
+
+static PyObject* pyalpm_get_syncdbs(PyObject *self, PyObject *dummy) {
+  pmhandle_t *handle = ALPM_HANDLE(self);
+  return alpmlist_to_pylist(alpm_option_get_syncdbs(handle),
+			    pyalpm_db_from_pmdb);
+}
+
+static PyObject* pyalpm_register_syncdb(PyObject *self, PyObject *args) {
+  pmhandle_t *handle = ALPM_HANDLE(self);
+  const char *dbname;
+  pmdb_t *result;
+
+  if (!PyArg_ParseTuple(args, "s", &dbname)) {
+    PyErr_SetString(PyExc_TypeError, "expected a string argument");
+    return NULL;
+  }
+
+  result = alpm_db_register_sync(handle, dbname);
+  if (! result) {
+    PyErr_Format(alpm_error, "unable to register sync database %s", dbname);
+    return NULL;
+  }
+
+  return pyalpm_db_from_pmdb(result);
+}
+
+
 struct PyGetSetDef pyalpm_handle_getset[] = {
   /** filepaths */
   { "root",
@@ -168,6 +201,12 @@ struct PyGetSetDef pyalpm_handle_getset[] = {
 };
 
 static PyMethodDef pyalpm_handle_methods[] = {
+  {"register_syncdb", pyalpm_register_syncdb, METH_VARARGS,
+   "registers the database with the given name\n"
+   "returns the new database on success"},
+  {"get_localdb", pyalpm_get_localdb, METH_NOARGS, "returns an object representing the local DB"},
+  {"get_syncdbs", pyalpm_get_syncdbs, METH_NOARGS, "returns a list of sync DBs"},
+
   {"add_noupgrade", option_add_noupgrade_alpm, METH_VARARGS, "add a noupgrade package."},
   {"remove_noupgrade", option_remove_noupgrade_alpm, METH_VARARGS, "removes a noupgrade package."},
 
