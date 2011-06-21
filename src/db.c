@@ -40,16 +40,18 @@ static void pyalpm_db_dealloc(AlpmDB *self) {
 }
 
 static PyObject* _pyobject_from_pmgrp(void *group) {
-  pmgrp_t* grp = (pmgrp_t*)group;
+  const pmgrp_t* grp = (pmgrp_t*)group;
   if (!grp)
     Py_RETURN_NONE;
-  PyObject *fst = PyUnicode_FromString(alpm_grp_get_name(grp));
-  PyObject *snd = alpmlist_to_pylist(alpm_grp_get_pkgs(grp),
-				     pyalpm_package_from_pmpkg);
-  PyObject *tuple = PyTuple_Pack(2, fst, snd);
-  Py_DECREF(fst);
-  Py_DECREF(snd);
-  return tuple;
+  else {
+    PyObject *fst = PyUnicode_FromString(grp->name);
+    PyObject *snd = alpmlist_to_pylist(grp->packages,
+              pyalpm_package_from_pmpkg);
+    PyObject *tuple = PyTuple_Pack(2, fst, snd);
+    Py_DECREF(fst);
+    Py_DECREF(snd);
+    return tuple;
+  }
 }
 
 /** Converts a Python list of databases to an alpm_list_t linked list.

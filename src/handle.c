@@ -105,7 +105,6 @@ static PyObject* pyalpm_register_syncdb(PyObject *self, PyObject *args) {
   return pyalpm_db_from_pmdb(result);
 }
 
-
 struct PyGetSetDef pyalpm_handle_getset[] = {
   /** filepaths */
   { "root",

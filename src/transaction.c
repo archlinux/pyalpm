@@ -147,11 +147,11 @@ static void pyalpm_trans_progresscb(pmtransprog_t op,
 /** Transaction info translation */
 static PyObject* pyobject_from_pmdepmissing(void *item) {
   pmdepmissing_t* miss = (pmdepmissing_t*)item;
-  char* needed = alpm_dep_compute_string(alpm_miss_get_dep(miss));
+  char* needed = alpm_dep_compute_string(miss->depend);
   PyObject *result = Py_BuildValue("(sss)",
-      alpm_miss_get_target(miss),
+      miss->target,
       needed,
-      alpm_miss_get_causingpkg(miss));
+      miss->causingpkg);
   free(needed);
   return result;
 }
@@ -159,19 +159,18 @@ static PyObject* pyobject_from_pmdepmissing(void *item) {
 static PyObject* pyobject_from_pmconflict(void *item) {
   pmconflict_t* conflict = (pmconflict_t*)item;
   return Py_BuildValue("(sss)",
-      alpm_conflict_get_package1(conflict),
-      alpm_conflict_get_package2(conflict),
-      alpm_conflict_get_reason(conflict));
+      conflict->package1,
+      conflict->package2,
+      conflict->reason);
 }
 
 static PyObject* pyobject_from_pmfileconflict(void *item) {
   pmfileconflict_t* conflict = (pmfileconflict_t*)item;
-  const char *target = alpm_fileconflict_get_target(conflict);
-  const char *filename = alpm_fileconflict_get_file(conflict);
-  switch(alpm_fileconflict_get_type(conflict)) {
+  const char *target = conflict->target;
+  const char *filename = conflict->file;
+  switch(conflict->type) {
   case PM_FILECONFLICT_TARGET:
-    return Py_BuildValue("(sss)", target, filename,
-      alpm_fileconflict_get_ctarget(conflict));
+    return Py_BuildValue("(sss)", target, filename, conflict->ctarget);
   case PM_FILECONFLICT_FILESYSTEM:
     return Py_BuildValue("(ssO)", target, filename, Py_None);
   default:
