@@ -1,3 +1,7 @@
+pyalpm 0.4.3 :
+  * wraps alpm_pkg_vercmp()
+  * add --orphan option to lsoptdepends
+
 pyalpm 0.4.2 :
   * fix a typo in init_with_config()
   * add an example script to list optdepends (cf pacman FS#16108)
