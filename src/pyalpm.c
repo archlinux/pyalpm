@@ -69,9 +69,19 @@ static PyObject* pyalpm_find_satisfier(PyObject *self, PyObject* args) {
   }
 }
 
+static PyObject *pyalpm_vercmp(PyObject *self, PyObject *args) {
+  const char *x, *y;
+  int result;
+  if (!PyArg_ParseTuple(args, "ss", &x, &y))
+    return NULL;
+  result = alpm_pkg_vercmp(x, y);
+  return PyLong_FromLong(result);
+}
+
 static PyMethodDef methods[] = {
   {"version", version_alpm, METH_NOARGS, "returns pyalpm version."},
   {"alpmversion", alpmversion_alpm, METH_NOARGS, "returns alpm version."},
+  {"vercmp", pyalpm_vercmp, METH_VARARGS, "compares version strings"},
 
   { "find_satisfier", pyalpm_find_satisfier, METH_VARARGS,
     "finds a package satisfying the given dependency among a list\n"
