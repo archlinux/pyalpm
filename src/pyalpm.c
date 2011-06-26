@@ -144,6 +144,15 @@ static PyObject* pyalpm_find_satisfier(PyObject *self, PyObject* args) {
   }
 }
 
+static PyObject *pyalpm_vercmp(PyObject *self, PyObject *args) {
+  const char *x, *y;
+  int result;
+  if (!PyArg_ParseTuple(args, "ss", &x, &y))
+    return NULL;
+  result = alpm_pkg_vercmp(x, y);
+  return PyLong_FromLong(result);
+}
+
 static PyMethodDef methods[] = {
   {"initialize", initialize_alpm, METH_NOARGS, "initialize alpm."},
   {"release", release_alpm, METH_NOARGS, "release alpm."},
@@ -151,6 +160,7 @@ static PyMethodDef methods[] = {
   {"alpmversion", alpmversion_alpm, METH_NOARGS, "returns alpm version."},
   {"checkinit", check_init_alpm, METH_VARARGS, "checks if the library was initialized."},
   {"strerrorlast", pyalpm_strerrorlast, METH_NOARGS, "a string representation of the last error"},
+  {"vercmp", pyalpm_vercmp, METH_VARARGS, "compares version strings"},
 
   {"register_syncdb", pyalpm_register_syncdb, METH_VARARGS,
    "registers the database with the given name\n"
