@@ -26,10 +26,13 @@ Options:
 	-q : only print package names
 """
 
+import re
 import argparse
 
 from pycman import config
 import pyalpm
+
+re_depstring = re.compile("([^<=>]*)([<>]?=.*)?")
 
 def enum_optdepends():
 	for p in pyalpm.get_localdb().pkgcache:
@@ -37,16 +40,25 @@ def enum_optdepends():
 			oname, colon, odesc = o.partition(':')
 			yield (p.name, oname.strip(), odesc.strip())
 
+def enum_depends():
+	for p in pyalpm.get_localdb().pkgcache:
+		for d in p.depends:
+			m = re_depstring.match(d)
+			yield (p.name, m.group(1))
+
 def main(opts):
 	config.init_with_config("/etc/pacman.conf")
 	optdeps = {}
 	installed = set(p.name for p in pyalpm.get_localdb().pkgcache)
+	needed = set(q for (p, q) in enum_depends())
 
 	for suggester, optdep, reason in enum_optdepends():
 		optdeps.setdefault(optdep, {})[suggester] = reason
 
 	for optdep in sorted(optdeps):
 		if optdep in installed and opts.u:
+			continue
+		if opts.orphan and not (optdep in installed and optdep not in needed):
 			continue
 		suggesters = optdeps[optdep]
 		if opts.q:
@@ -60,6 +72,8 @@ def parse_options():
 	p = argparse.ArgumentParser()
 	p.add_argument('-u', action = 'store_true', default = False,
 			help='only list uninstalled optdepends')
+	p.add_argument('--orphan', action = 'store_true', default = False,
+			help='list installed optdepends that are not hard deps of any package')
 	p.add_argument('-q', action = 'store_true', default = False,
 			help='only print package names')
 	return p.parse_args()
