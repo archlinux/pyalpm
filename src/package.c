@@ -467,32 +467,13 @@ PyTypeObject AlpmPackageType = {
   "alpm.Package",             /*tp_name*/
   sizeof(AlpmPackage),        /*tp_basicsize*/
   0,                          /*tp_itemsize*/
-  (destructor)pyalpm_package_dealloc,     /*tp_dealloc*/
-  0,                          /*tp_print*/
-  0,                          /*tp_getattr*/
-  0,                          /*tp_setattr*/
-  NULL,                       /*tp_reserved*/
-  pyalpm_pkg_repr,            /*tp_repr*/
-  0,                          /*tp_as_number*/
-  0,                          /*tp_as_sequence*/
-  0,                          /*tp_as_mapping*/
-  0,                          /*tp_hash */
-  0,                          /*tp_call*/
-  pyalpm_pkg_str,             /*tp_str*/
-  0,                          /*tp_getattro*/
-  0,                          /*tp_setattro*/
-  0,                          /*tp_as_buffer*/
-  Py_TPFLAGS_DEFAULT,         /*tp_flags*/
-  "Package object",            /* tp_doc */
-  0,                          /* tp_traverse */
-  0,                          /* tp_clear */
-  0,                          /* tp_richcompare */
-  0,                          /* tp_weaklistoffset */
-  0,                          /* tp_iter */
-  0,                          /* tp_iternext */
-  pyalpm_pkg_methods,         /* tp_methods */
-  0,                          /* tp_members */
-  AlpmPackageGetSet,          /* tp_getset */
+  .tp_dealloc = (destructor)pyalpm_package_dealloc,
+  .tp_repr = pyalpm_pkg_repr,
+  .tp_str = pyalpm_pkg_str,
+  .tp_flags = Py_TPFLAGS_DEFAULT,
+  .tp_doc = "Package object",
+  .tp_methods = pyalpm_pkg_methods,
+  .tp_getset = AlpmPackageGetSet,
 };
 
 /** Initializes Package class in module */
