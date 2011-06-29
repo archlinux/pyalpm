@@ -90,13 +90,14 @@ static PyObject* pyalpm_register_syncdb(PyObject *self, PyObject *args) {
   pmhandle_t *handle = ALPM_HANDLE(self);
   const char *dbname;
   pmdb_t *result;
+  int pgp_level;
 
-  if (!PyArg_ParseTuple(args, "s", &dbname)) {
-    PyErr_SetString(PyExc_TypeError, "expected a string argument");
+  if (!PyArg_ParseTuple(args, "si", &dbname, &pgp_level)) {
+    PyErr_Format(PyExc_TypeError, "%s() takes a string and an integer", __func__);
     return NULL;
   }
 
-  result = alpm_db_register_sync(handle, dbname);
+  result = alpm_db_register_sync(handle, dbname, pgp_level);
   if (! result) {
     PyErr_Format(alpm_error, "unable to register sync database %s", dbname);
     return NULL;

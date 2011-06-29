@@ -204,11 +204,13 @@ const char* flagnames[19] = {
 
 static PyObject *pyalpm_trans_get_flags(PyObject *self, void *closure)
 {
+  PyObject *result;
   pmhandle_t *handle = ALPM_HANDLE(self);
   int flags = alpm_trans_get_flags(handle);
+  int i;
   if (flags == -1) RET_ERR("no transaction defined", alpm_errno(handle), NULL);
-  PyObject *result = PyDict_New();
-  for (int i = 0; i < 18; i++) {
+  result = PyDict_New();
+  for (i = 0; i < 18; i++) {
     if(flagnames[i])
       PyDict_SetItemString(result, flagnames[i], flags & (1 << i) ? Py_True : Py_False);
   }
@@ -266,13 +268,14 @@ PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs) {
 
   /* check all arguments */
   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-        "|iiiiiiiiiiiiiiiiOOO", keywords,
+        "|bbbbbbbbbbbbbbbbOOO", keywords,
         INDEX_FLAGS(&flags), &event_cb, &conv_cb, &progress_cb)) {
     return NULL;
   }
   /* build arguments */
   int flag_int = 0;
-  for (int i = 0; i < 18; i++) {
+  int i;
+  for (i = 0; i < 18; i++) {
     if (flags[i]) flag_int |= 1 << i;
   }
   if (event_cb) {
