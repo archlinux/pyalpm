@@ -161,14 +161,16 @@ class PacmanConfig(object):
 
 		# set sync databases
 		for repo, servers in self.repos.items():
-			db = pyalpm.register_syncdb(repo)
+			db = h.register_syncdb(repo, 0)
+			db_servers = []
 			for rawurl in servers:
 				url = rawurl.replace("$repo", repo)
 				url = url.replace("$arch", self.options["Architecture"])
-				db.url = url
+				db_servers.append(url)
+			db.servers = db_servers
 
 	def initialize_alpm(self):
-		h = pyalpm.initialize(self.options["RootDir"], self.options["DBPath"])
+		h = pyalpm.Handle(self.options["RootDir"], self.options["DBPath"])
 		self.apply(h)
 		return h
 

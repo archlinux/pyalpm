@@ -34,25 +34,25 @@ import pyalpm
 
 re_depstring = re.compile("([^<=>]*)([<>]?=.*)?")
 
-def enum_optdepends():
-	for p in pyalpm.get_localdb().pkgcache:
+def enum_optdepends(h):
+	for p in h.get_localdb().pkgcache:
 		for o in p.optdepends:
 			oname, colon, odesc = o.partition(':')
 			yield (p.name, oname.strip(), odesc.strip())
 
-def enum_depends():
-	for p in pyalpm.get_localdb().pkgcache:
+def enum_depends(h):
+	for p in h.get_localdb().pkgcache:
 		for d in p.depends:
 			m = re_depstring.match(d)
 			yield (p.name, m.group(1))
 
 def main(opts):
-	config.init_with_config("/etc/pacman.conf")
+	h = config.init_with_config("/etc/pacman.conf")
 	optdeps = {}
-	installed = set(p.name for p in pyalpm.get_localdb().pkgcache)
-	needed = set(q for (p, q) in enum_depends())
+	installed = set(p.name for p in h.get_localdb().pkgcache)
+	needed = set(q for (p, q) in enum_depends(h))
 
-	for suggester, optdep, reason in enum_optdepends():
+	for suggester, optdep, reason in enum_optdepends(h):
 		optdeps.setdefault(optdep, {})[suggester] = reason
 
 	for optdep in sorted(optdeps):
