@@ -32,7 +32,6 @@ typedef struct _AlpmHandle {
 
 #define ALPM_HANDLE(self) (((AlpmHandle*)(self))->c_data)
 
-PyObject *pyalpm_initialize(PyObject* self, PyObject* args);
 PyObject *pyalpm_release(PyObject* self, PyObject* args);
 
 /* from transaction.c */

@@ -43,7 +43,7 @@ static PyObject *pyalpm_handle_from_pmhandle(void* data) {
 }
 
 /*pyalpm functions*/
-PyObject* pyalpm_initialize(PyObject *self, PyObject *args)
+PyObject* pyalpm_initialize(PyObject *self, PyObject *args, PyObject *kwargs)
 {
   const char *root;
   const char *dbpath;
@@ -269,6 +269,7 @@ PyTypeObject AlpmHandleType = {
   pyalpm_handle_methods, /* tp_methods */
   0,                      /* tp_members */
   pyalpm_handle_getset,  /* tp_getset */
+  .tp_new = pyalpm_initialize,
 };
 
 /** Initializes Handle class in module */
