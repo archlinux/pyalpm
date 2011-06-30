@@ -31,11 +31,13 @@ import pyalpm
 from pycman import config
 from pycman import pkginfo
 
+handle = None
+
 def filter_pkglist(pkglist, options):
 	result = []
 	if options.foreign:
 		syncpkgs = set()
-		for db in pyalpm.get_syncdbs():
+		for db in handle.get_syncdbs():
 			syncpkgs |= set(p.name for p in db.pkgcache)
 	for pkg in pkglist:
 		if options.deps and pkg.reason == pyalpm.PKG_REASON_EXPLICIT:
@@ -46,7 +48,7 @@ def filter_pkglist(pkglist, options):
 			continue
 		if options.foreign and pkg.name in syncpkgs:
 			continue
-		if options.upgrades and pyalpm.sync_newversion(pkg, pyalpm.get_syncdbs()) is None:
+		if options.upgrades and pyalpm.sync_newversion(pkg, handle.get_syncdbs()) is None:
 			continue
 		result.append(pkg)
 	return result
@@ -74,7 +76,7 @@ def find_file(filenames, options):
 		print("error: no targets specified")
 		ret = 1
 
-	localpkgs = pyalpm.get_localdb().pkgcache
+	localpkgs = handle.get_localdb().pkgcache
 	n_pkg = len(localpkgs)
 	filelists = [None] * n_pkg
 
@@ -119,7 +121,7 @@ def find_file(filenames, options):
 	return ret
 
 def find_search(patterns, options):
-	db = pyalpm.get_localdb()
+	db = handle.get_localdb()
 	results = db.search(*patterns)
 	if len(results) == 0:
 		return 1
@@ -132,6 +134,7 @@ def find_search(patterns, options):
 	return 0
 
 def main(rawargs):
+	global handle
 	parser = config.make_parser(prog = 'pycman-query')
 	group = parser.add_argument_group("Query options")
 	group.add_argument('-d', '--deps',
@@ -172,12 +175,12 @@ def main(rawargs):
 			'when used with -p: the path to a package file)')
 
 	args = parser.parse_args(rawargs)
-	config.init_with_config_and_options(args)
+	handle = config.init_with_config_and_options(args)
 
 	if args.verbose:
 		print("query " + " ".join(rawargs), file = sys.stderr)
 
-	db = pyalpm.get_localdb()
+	db = handle.get_localdb()
 	retcode = 0
 
 	# actions other than listing packages
