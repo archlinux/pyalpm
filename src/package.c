@@ -137,14 +137,13 @@ int pylist_pkg_to_alpmlist(PyObject *list, alpm_list_t **result) {
 PyObject *pyalpm_package_load(PyObject *self, PyObject *args, PyObject *kwargs) {
   char *filename;
   int check_sig = PM_PGP_VERIFY_OPTIONAL;
-  char *kws[] = { "check_sig", NULL };
+  char *kws[] = { "handle", "path", "check_sig", NULL };
   PyObject *pyhandle = NULL;
   pmhandle_t *handle;
   pmpkg_t *result;
   AlpmPackage *pyresult;
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!s|i", kws,
-       &AlpmPackageType, &pyhandle, &filename, &check_sig)) {
-    PyErr_SetString(PyExc_TypeError, "expected a string argument");
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!s|i:load_pkg", kws,
+       &AlpmHandleType, &pyhandle, &filename, &check_sig)) {
     return NULL;
   }
 
