@@ -27,19 +27,22 @@ and prints out a list of those which are missing.
 
 import sys
 import pyalpm
-from . import config
+from pycman import config
+
+handle = None
 
 def deptest(deps):
-	db = pyalpm.get_localdb()
+	db = handle.get_localdb()
 	missing = [dep for dep in deps if pyalpm.find_satisfier(db.pkgcache, dep) is None]
 	return missing
 
 def main(rawargs):
+	global handle
 	parser = config.make_parser()
 	parser.add_argument('deps', metavar = 'dep', nargs='*',
 			help = "a dependency string, e.g. 'pacman>=3.4.0'")
 	args = parser.parse_args(rawargs)
-	config.init_with_config_and_options(args)
+	handle = config.init_with_config_and_options(args)
 
 	if args.verbose:
 		print("deptest " + " ".join(rawargs), file = sys.stderr)
