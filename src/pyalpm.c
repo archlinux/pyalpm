@@ -42,7 +42,7 @@ static PyObject* pyalpm_find_satisfier(PyObject *self, PyObject* args) {
   PyObject *pkglist;
   char *depspec;
   alpm_list_t *alpm_pkglist;
-  pmpkg_t *p;
+  alpm_pkg_t *p;
 
   if(!PyArg_ParseTuple(args, "Os", &pkglist, &depspec))
   {

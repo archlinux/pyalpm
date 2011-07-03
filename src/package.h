@@ -1,5 +1,5 @@
 /**
- * package.c : wrapper class around pmpkg_t
+ * package.c : wrapper class around alpm_pkg_t
  *
  *  Copyright (c) 2011 Rémy Oudompheng <remy@archlinux.org>
  *
@@ -31,7 +31,7 @@ int PyAlpmPkg_Check(PyObject *object);
 void pyalpm_pkg_unref(PyObject *object);
 
 PyObject *pyalpm_package_from_pmpkg(void* data);
-pmpkg_t *pmpkg_from_pyalpm_pkg(PyObject *object);
+alpm_pkg_t *pmpkg_from_pyalpm_pkg(PyObject *object);
 
 int pylist_pkg_to_alpmlist(PyObject *list, alpm_list_t **result);
 

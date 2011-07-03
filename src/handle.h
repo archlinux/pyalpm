@@ -1,5 +1,5 @@
 /**
- * handle.h : wrapper class around pmhandle_t
+ * handle.h : wrapper class around alpm_handle_t
  *
  *  Copyright (c) 2011 Rémy Oudompheng <remy@archlinux.org>
  *
@@ -27,7 +27,7 @@
 
 typedef struct _AlpmHandle {
   PyObject_HEAD
-  pmhandle_t *c_data;
+  alpm_handle_t *c_data;
 } AlpmHandle;
 
 #define ALPM_HANDLE(self) (((AlpmHandle*)(self))->c_data)

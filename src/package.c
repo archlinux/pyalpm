@@ -1,5 +1,5 @@
 /**
- * package.c : wrapper class around pmpkg_t
+ * package.c : wrapper class around alpm_pkg_t
  *
  *  Copyright (c) 2011 Rémy Oudompheng <remy@archlinux.org>
  *
@@ -29,7 +29,7 @@
 
 typedef struct _AlpmPackage {
   PyObject_HEAD
-  pmpkg_t *c_data;
+  alpm_pkg_t *c_data;
   int needs_free;
 } AlpmPackage;
 
@@ -71,7 +71,7 @@ static void pyalpm_package_dealloc(AlpmPackage *self) {
 /* Internal utility functions */
 
 static PyObject* _pyobject_from_pmdepend(void* dep) {
-  char *depstring = alpm_dep_compute_string((pmdepend_t*)dep);
+  char *depstring = alpm_dep_compute_string((alpm_depend_t*)dep);
   PyObject *item = Py_BuildValue("s", depstring);
   free(depstring);
   return item;
@@ -79,7 +79,7 @@ static PyObject* _pyobject_from_pmdepend(void* dep) {
 
 PyObject *pyalpm_package_from_pmpkg(void* data) {
   AlpmPackage *self;
-  pmpkg_t *p = (pmpkg_t*)data;
+  alpm_pkg_t *p = (alpm_pkg_t*)data;
   self = (AlpmPackage*)AlpmPackageType.tp_alloc(&AlpmPackageType, 0);
   if (self == NULL) {
     PyErr_SetString(PyExc_RuntimeError, "unable to create package object");
@@ -96,7 +96,7 @@ PyObject *pyalpm_package_from_pmpkg(void* data) {
   return NULL; \
   }
 
-pmpkg_t *pmpkg_from_pyalpm_pkg(PyObject *object) {
+alpm_pkg_t *pmpkg_from_pyalpm_pkg(PyObject *object) {
   AlpmPackage *self = (AlpmPackage*)object;
   CHECK_IF_INITIALIZED();
   return self->c_data;
@@ -139,8 +139,8 @@ PyObject *pyalpm_package_load(PyObject *self, PyObject *args, PyObject *kwargs) 
   int check_sig = PM_PGP_VERIFY_OPTIONAL;
   char *kws[] = { "handle", "path", "check_sig", NULL };
   PyObject *pyhandle = NULL;
-  pmhandle_t *handle;
-  pmpkg_t *result;
+  alpm_handle_t *handle;
+  alpm_pkg_t *result;
   AlpmPackage *pyresult;
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!s|i:load_pkg", kws,
        &AlpmHandleType, &pyhandle, &filename, &check_sig)) {
@@ -395,7 +395,7 @@ static PyObject* pyalpm_package_get_backup(AlpmPackage *self, void *closure) {
 
 static PyObject* pyalpm_package_get_db(AlpmPackage *self, void *closure) {
   CHECK_IF_INITIALIZED();
-  pmdb_t* db = alpm_pkg_get_db(self->c_data);
+  alpm_db_t* db = alpm_pkg_get_db(self->c_data);
   if (db)
     return pyalpm_db_from_pmdb(db);
   else

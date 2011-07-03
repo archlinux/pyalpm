@@ -32,7 +32,7 @@ static PyObject *event_cb = NULL;
 static PyObject *conv_cb = NULL;
 static PyObject *progress_cb = NULL;
 
-static void pyalpm_trans_eventcb(pmtransevt_t event, void* data1, void *data2) {
+static void pyalpm_trans_eventcb(alpm_transevt_t event, void* data1, void *data2) {
   const char *eventstr;
   PyObject *obj1 = Py_None;
   PyObject *obj2 = Py_None;
@@ -124,11 +124,11 @@ static void pyalpm_trans_eventcb(pmtransevt_t event, void* data1, void *data2) {
   Py_CLEAR(result);
 }
 
-static void pyalpm_trans_convcb(pmtransconv_t question,
+static void pyalpm_trans_convcb(alpm_transconv_t question,
         void* data1, void *data2, void* data3, int* retcode) {
 }
 
-static void pyalpm_trans_progresscb(pmtransprog_t op,
+static void pyalpm_trans_progresscb(alpm_transprog_t op,
         const char* target_name, int percentage, size_t n_targets, size_t cur_target) {
   PyObject *result = NULL;
   if (progress_cb) {
@@ -146,7 +146,7 @@ static void pyalpm_trans_progresscb(pmtransprog_t op,
 
 /** Transaction info translation */
 static PyObject* pyobject_from_pmdepmissing(void *item) {
-  pmdepmissing_t* miss = (pmdepmissing_t*)item;
+  alpm_depmissing_t* miss = (alpm_depmissing_t*)item;
   char* needed = alpm_dep_compute_string(miss->depend);
   PyObject *result = Py_BuildValue("(sss)",
       miss->target,
@@ -157,7 +157,7 @@ static PyObject* pyobject_from_pmdepmissing(void *item) {
 }
 
 static PyObject* pyobject_from_pmconflict(void *item) {
-  pmconflict_t* conflict = (pmconflict_t*)item;
+  alpm_conflict_t* conflict = (alpm_conflict_t*)item;
   return Py_BuildValue("(sss)",
       conflict->package1,
       conflict->package2,
@@ -165,7 +165,7 @@ static PyObject* pyobject_from_pmconflict(void *item) {
 }
 
 static PyObject* pyobject_from_pmfileconflict(void *item) {
-  pmfileconflict_t* conflict = (pmfileconflict_t*)item;
+  alpm_fileconflict_t* conflict = (alpm_fileconflict_t*)item;
   const char *target = conflict->target;
   const char *filename = conflict->file;
   switch(conflict->type) {
@@ -174,7 +174,7 @@ static PyObject* pyobject_from_pmfileconflict(void *item) {
   case PM_FILECONFLICT_FILESYSTEM:
     return Py_BuildValue("(ssO)", target, filename, Py_None);
   default:
-    PyErr_SetString(PyExc_RuntimeError, "invalid type for pmfileconflict_t object");
+    PyErr_SetString(PyExc_RuntimeError, "invalid type for alpm_fileconflict_t object");
     return NULL;
   }
 }
@@ -205,7 +205,7 @@ const char* flagnames[19] = {
 static PyObject *pyalpm_trans_get_flags(PyObject *self, void *closure)
 {
   PyObject *result;
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   int flags = alpm_trans_get_flags(handle);
   int i;
   if (flags == -1) RET_ERR("no transaction defined", alpm_errno(handle), NULL);
@@ -219,7 +219,7 @@ static PyObject *pyalpm_trans_get_flags(PyObject *self, void *closure)
 
 static PyObject *pyalpm_trans_get_add(PyObject *self, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   /* sanity check */
   int flags = alpm_trans_get_flags(handle);
   if (flags == -1) RET_ERR("no transaction defined", alpm_errno(handle), NULL);
@@ -230,7 +230,7 @@ static PyObject *pyalpm_trans_get_add(PyObject *self, void *closure)
 
 static PyObject *pyalpm_trans_get_remove(PyObject *self, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   /* sanity check */
   int flags = alpm_trans_get_flags(handle);
   if (flags == -1) RET_ERR("no transaction defined", alpm_errno(handle), NULL);
@@ -254,7 +254,7 @@ static PyObject *pyalpm_trans_get_remove(PyObject *self, void *closure)
  * @return a Transaction object with the same underlying object
  */
 PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   PyObject *result;
   const char* keywords[] = {
     INDEX_FLAGS(flagnames),
@@ -316,7 +316,7 @@ PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs) {
 }
 
 static PyObject* pyalpm_trans_prepare(PyObject *self, PyObject *args) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   alpm_list_t *data;
 
   int ret = alpm_trans_prepare(handle, &data);
@@ -331,7 +331,7 @@ static PyObject* pyalpm_trans_prepare(PyObject *self, PyObject *args) {
 }
 
 static PyObject* pyalpm_trans_commit(PyObject *self, PyObject *args) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   alpm_list_t *data = NULL;
 
   int ret = alpm_trans_commit(handle, &data);
@@ -346,14 +346,14 @@ static PyObject* pyalpm_trans_commit(PyObject *self, PyObject *args) {
 }
 
 static PyObject* pyalpm_trans_interrupt(PyObject *self, PyObject *args) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   int ret = alpm_trans_interrupt(handle);
   if (ret == -1) RET_ERR("unable to interrupt transaction", alpm_errno(handle), NULL);
   Py_RETURN_NONE;
 }
 
 PyObject* pyalpm_trans_release(PyObject *self, PyObject *args) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   int ret = alpm_trans_release(handle);
   if (ret == -1) RET_ERR("unable to release transaction", alpm_errno(handle), NULL);
   Py_RETURN_NONE;
@@ -361,13 +361,13 @@ PyObject* pyalpm_trans_release(PyObject *self, PyObject *args) {
 
 /** Transaction contents */
 static PyObject* pyalpm_trans_add_pkg(PyObject *self, PyObject *args) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   PyObject *pkg;
   if (!PyArg_ParseTuple(args, "O!", &AlpmPackageType, &pkg)) {
     return NULL;
   }
 
-  pmpkg_t *pmpkg = pmpkg_from_pyalpm_pkg(pkg);
+  alpm_pkg_t *pmpkg = pmpkg_from_pyalpm_pkg(pkg);
   int ret = alpm_add_pkg(handle, pmpkg);
   if (ret == -1) RET_ERR("unable to update transaction", alpm_errno(handle), NULL);
   /* alpm_add_pkg eats the reference to pkg */
@@ -376,20 +376,20 @@ static PyObject* pyalpm_trans_add_pkg(PyObject *self, PyObject *args) {
 }
 
 static PyObject* pyalpm_trans_remove_pkg(PyObject *self, PyObject *args) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   PyObject *pkg;
   if (!PyArg_ParseTuple(args, "O!", &AlpmPackageType, &pkg)) {
     return NULL;
   }
 
-  pmpkg_t *pmpkg = pmpkg_from_pyalpm_pkg(pkg);
+  alpm_pkg_t *pmpkg = pmpkg_from_pyalpm_pkg(pkg);
   int ret = alpm_remove_pkg(handle, pmpkg);
   if (ret == -1) RET_ERR("unable to update transaction", alpm_errno(handle), NULL);
   Py_RETURN_NONE;
 }
 
 static PyObject* pyalpm_trans_sysupgrade(PyObject *self, PyObject *args, PyObject *kwargs) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   char* keyword[] = {"downgrade", NULL};
   PyObject *downgrade;
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!", keyword, &PyBool_Type, &downgrade))
@@ -444,7 +444,7 @@ static PyTypeObject AlpmTransactionType = {
 };
 
 PyObject *pyalpm_transaction_from_pmhandle(void* data) {
-  pmhandle_t *handle = (pmhandle_t*)data;
+  alpm_handle_t *handle = (alpm_handle_t*)data;
   AlpmHandle *self;
   self = (AlpmHandle*)AlpmTransactionType.tp_alloc(&AlpmTransactionType, 0);
   if (self == NULL) {

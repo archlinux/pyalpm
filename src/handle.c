@@ -1,5 +1,5 @@
 /**
- * handle.c : wrapper class around pmhandle_t
+ * handle.c : wrapper class around alpm_handle_t
  *
  *  Copyright (c) 2011 Rémy Oudompheng <remy@archlinux.org>
  *
@@ -30,7 +30,7 @@
 PyTypeObject AlpmHandleType;
 
 static PyObject *pyalpm_handle_from_pmhandle(void* data) {
-  pmhandle_t *handle = (pmhandle_t*)data;
+  alpm_handle_t *handle = (alpm_handle_t*)data;
   AlpmHandle *self;
   self = (AlpmHandle*)AlpmHandleType.tp_alloc(&AlpmHandleType, 0);
   if (self == NULL) {
@@ -47,8 +47,8 @@ PyObject* pyalpm_initialize(PyObject *self, PyObject *args, PyObject *kwargs)
 {
   const char *root;
   const char *dbpath;
-  pmhandle_t *h;
-  enum _pmerrno_t errcode = 0;
+  alpm_handle_t *h;
+  enum _alpm_errno_t errcode = 0;
   if(!PyArg_ParseTuple(args, "ss", &root, &dbpath)) {
     return NULL;
   }
@@ -76,20 +76,20 @@ PyObject* pyalpm_release(PyObject *self, PyObject *args)
 /* Database getters/setters */
 
 static PyObject* pyalpm_get_localdb(PyObject *self, PyObject *dummy) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   return pyalpm_db_from_pmdb(alpm_option_get_localdb(handle));
 }
 
 static PyObject* pyalpm_get_syncdbs(PyObject *self, PyObject *dummy) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   return alpmlist_to_pylist(alpm_option_get_syncdbs(handle),
 			    pyalpm_db_from_pmdb);
 }
 
 static PyObject* pyalpm_register_syncdb(PyObject *self, PyObject *args) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *dbname;
-  pmdb_t *result;
+  alpm_db_t *result;
   int pgp_level;
 
   if (!PyArg_ParseTuple(args, "si", &dbname, &pgp_level)) {

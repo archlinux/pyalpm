@@ -32,7 +32,7 @@
 
 PyObject * option_get_root_alpm(PyObject *self, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str = alpm_option_get_root(handle);
   if (!str) RET_ERR("failed getting root path", alpm_errno(handle), NULL);
   return Py_BuildValue("s", str);
@@ -40,7 +40,7 @@ PyObject * option_get_root_alpm(PyObject *self, void *closure)
 
 PyObject* option_get_dbpath_alpm(PyObject *self, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str = alpm_option_get_dbpath(handle);
 
   if(str == NULL)
@@ -50,7 +50,7 @@ PyObject* option_get_dbpath_alpm(PyObject *self, void *closure)
 
 int option_set_logfile_alpm(PyObject *self, PyObject *value, void* closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   char *path = NULL;
   int ret;
   if (PyBytes_Check(value)) {
@@ -73,7 +73,7 @@ int option_set_logfile_alpm(PyObject *self, PyObject *value, void* closure)
 
 PyObject * option_get_logfile_alpm(PyObject *self, void* closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str = alpm_option_get_logfile(handle);
 
   if(str == NULL)
@@ -88,7 +88,7 @@ PyObject * option_get_logfile_alpm(PyObject *self, void* closure)
 
 PyObject* option_get_lockfile_alpm(PyObject *self, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str = alpm_option_get_lockfile(handle);
 
   if(str == NULL)
@@ -105,7 +105,7 @@ PyObject* option_get_lockfile_alpm(PyObject *self, void *closure)
 
 int option_set_arch_alpm(PyObject *self, PyObject *value, void* closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   char *string = NULL;
   if (PyBytes_Check(value)) {
     string = strdup(PyBytes_AS_STRING(value));
@@ -124,7 +124,7 @@ int option_set_arch_alpm(PyObject *self, PyObject *value, void* closure)
 }
 
 PyObject* option_get_arch_alpm(PyObject *self, void* closure) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str = alpm_option_get_arch(handle);
 
   if(str == NULL) {
@@ -142,7 +142,7 @@ receives and returns an int type
 */
 PyObject * option_get_usesyslog_alpm(PyObject *self, void* closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   int ret = alpm_option_get_usesyslog(handle);
 
   if(ret == -1)
@@ -155,7 +155,7 @@ PyObject * option_get_usesyslog_alpm(PyObject *self, void* closure)
 
 int option_set_usesyslog_alpm(PyObject *self, PyObject *value, void* closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   if(!PyLong_Check(value))
   {
     PyErr_SetString(PyExc_TypeError, "wrong arguments");
@@ -167,7 +167,7 @@ int option_set_usesyslog_alpm(PyObject *self, PyObject *value, void* closure)
 }
 
 PyObject* option_get_usedelta_alpm(PyObject *self, void* closure) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   int ret = alpm_option_get_usedelta(handle);
   if (ret == -1) {
     RET_ERR("failed getting usedelta", alpm_errno(handle), NULL);
@@ -177,7 +177,7 @@ PyObject* option_get_usedelta_alpm(PyObject *self, void* closure) {
 
 int option_set_usedelta_alpm(PyObject *self, PyObject *value, void* closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   if(!PyLong_Check(value))
   {
     PyErr_SetString(PyExc_TypeError, "wrong arguments");
@@ -189,7 +189,7 @@ int option_set_usedelta_alpm(PyObject *self, PyObject *value, void* closure)
 }
 
 PyObject* option_get_checkspace_alpm(PyObject *self, void* closure) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   int ret = alpm_option_get_checkspace(handle);
   if (ret == -1) {
     RET_ERR("failed getting checkspace", alpm_errno(handle), NULL);
@@ -199,7 +199,7 @@ PyObject* option_get_checkspace_alpm(PyObject *self, void* closure) {
 
 int option_set_checkspace_alpm(PyObject *self, PyObject *value, void* closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   if(!PyLong_Check(value))
   {
     PyErr_SetString(PyExc_TypeError, "wrong arguments");
@@ -215,13 +215,13 @@ int option_set_checkspace_alpm(PyObject *self, PyObject *value, void* closure)
  */
 
 PyObject* option_get_cachedirs_alpm(PyObject *self, void* closure) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   return alpmlist_to_pylist(alpm_option_get_cachedirs(handle), pyobject_from_string);
 }
 
 int option_set_cachedirs_alpm(PyObject *self, PyObject *value, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   alpm_list_t *target;
   if (pylist_string_to_alpmlist(value, &target) == -1)
     return -1;
@@ -231,13 +231,13 @@ int option_set_cachedirs_alpm(PyObject *self, PyObject *value, void *closure)
 }
 
 PyObject* option_get_noupgrades_alpm(PyObject *self, void* closure) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   return alpmlist_to_pylist(alpm_option_get_noupgrades(handle), pyobject_from_string);
 }
 
 int option_set_noupgrades_alpm(PyObject *self, PyObject *value, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   alpm_list_t *target;
   if (pylist_string_to_alpmlist(value, &target) == -1)
     return -1;
@@ -247,13 +247,13 @@ int option_set_noupgrades_alpm(PyObject *self, PyObject *value, void *closure)
 }
 
 PyObject* option_get_noextracts_alpm(PyObject *self, void* closure) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   return alpmlist_to_pylist(alpm_option_get_noextracts(handle), pyobject_from_string);
 }
 
 int option_set_noextracts_alpm(PyObject *self, PyObject *value, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   alpm_list_t *target;
   if (pylist_string_to_alpmlist(value, &target) == -1)
     return -1;
@@ -263,13 +263,13 @@ int option_set_noextracts_alpm(PyObject *self, PyObject *value, void *closure)
 }
 
 PyObject* option_get_ignorepkgs_alpm(PyObject *self, void* closure) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   return alpmlist_to_pylist(alpm_option_get_ignorepkgs(handle), pyobject_from_string);
 }
 
 int option_set_ignorepkgs_alpm(PyObject *self, PyObject *value, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   alpm_list_t *target;
   if (pylist_string_to_alpmlist(value, &target) == -1)
     return -1;
@@ -279,18 +279,18 @@ int option_set_ignorepkgs_alpm(PyObject *self, PyObject *value, void *closure)
 }
 
 PyObject* option_get_ignoregrps_alpm(PyObject *self, void* closure) {
-  pmhandle_t *handle = ALPM_HANDLE(self);
-  return alpmlist_to_pylist(alpm_option_get_ignoregrps(handle), pyobject_from_string);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
+  return alpmlist_to_pylist(alpm_option_get_ignoregroups(handle), pyobject_from_string);
 }
 
 int option_set_ignoregrps_alpm(PyObject *self, PyObject *value, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   alpm_list_t *target;
   if (pylist_string_to_alpmlist(value, &target) == -1)
     return -1;
 
-  alpm_option_set_ignoregrps(handle, target);
+  alpm_option_set_ignoregroups(handle, target);
   return 0;
 }
 
@@ -298,7 +298,7 @@ int option_set_ignoregrps_alpm(PyObject *self, PyObject *value, void *closure)
 
 PyObject* option_add_noupgrade_alpm(PyObject *self, PyObject *args)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
@@ -311,7 +311,7 @@ PyObject* option_add_noupgrade_alpm(PyObject *self, PyObject *args)
 
 PyObject* option_remove_noupgrade_alpm(PyObject *self, PyObject *args)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
@@ -324,7 +324,7 @@ PyObject* option_remove_noupgrade_alpm(PyObject *self, PyObject *args)
 
 PyObject* option_add_cachedir_alpm(PyObject *self, PyObject *args)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
@@ -337,7 +337,7 @@ PyObject* option_add_cachedir_alpm(PyObject *self, PyObject *args)
 
 PyObject* option_remove_cachedir_alpm(PyObject *self, PyObject *args)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
@@ -350,7 +350,7 @@ PyObject* option_remove_cachedir_alpm(PyObject *self, PyObject *args)
 
 PyObject* option_add_noextract_alpm(PyObject *self, PyObject *args)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
@@ -363,7 +363,7 @@ PyObject* option_add_noextract_alpm(PyObject *self, PyObject *args)
 
 PyObject* option_remove_noextract_alpm(PyObject *self, PyObject *args)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
@@ -376,7 +376,7 @@ PyObject* option_remove_noextract_alpm(PyObject *self, PyObject *args)
 
 PyObject* option_add_ignorepkg_alpm(PyObject *self, PyObject *args)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
@@ -389,7 +389,7 @@ PyObject* option_add_ignorepkg_alpm(PyObject *self, PyObject *args)
 
 PyObject* option_remove_ignorepkg_alpm(PyObject *self, PyObject *args)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
@@ -402,27 +402,27 @@ PyObject* option_remove_ignorepkg_alpm(PyObject *self, PyObject *args)
 
 PyObject* option_add_ignoregrp_alpm(PyObject *self, PyObject *args)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
     PyErr_SetString(PyExc_TypeError, "expecting a string argument");
     return NULL;
   }
-  alpm_option_add_ignoregrp(handle, str);
+  alpm_option_add_ignoregroup(handle, str);
   Py_RETURN_NONE;
 }
 
 PyObject* option_remove_ignoregrp_alpm(PyObject *self, PyObject *args)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   const char *str;
 
   if(!PyArg_ParseTuple(args, "s", &str)) {
     PyErr_SetString(PyExc_TypeError, "expecting a string argument");
     return NULL;
   }
-  alpm_option_remove_ignoregrp(handle, str);
+  alpm_option_remove_ignoregroup(handle, str);
   Py_RETURN_NONE;
 }
 
@@ -442,7 +442,7 @@ static PyObject *pyalpm_fetchcb = NULL;
 
 /** callback wrappers */
 
-static void pyalpm_logcb_wrapper(pmloglevel_t level, const char *fmt, va_list va_args) {
+static void pyalpm_logcb_wrapper(alpm_loglevel_t level, const char *fmt, va_list va_args) {
   char *log;
   vasprintf(&log, fmt, va_args);
   PyObject *result = PyObject_CallFunction(pyalpm_logcb, "s", log);
@@ -497,7 +497,7 @@ static int pyalpm_fetchcb_wrapper(const char *url, const char *localpath, int fo
 
 int pyalpm_option_set_logcb(PyObject *self, PyObject *value, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   if (value == Py_None) {
     Py_CLEAR(pyalpm_logcb);
     alpm_option_set_logcb(handle, NULL);
@@ -516,7 +516,7 @@ int pyalpm_option_set_logcb(PyObject *self, PyObject *value, void *closure)
 
 int pyalpm_option_set_dlcb(PyObject *self, PyObject *value, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   if (value == Py_None) {
     Py_CLEAR(pyalpm_dlcb);
     alpm_option_set_dlcb(handle, NULL);
@@ -535,7 +535,7 @@ int pyalpm_option_set_dlcb(PyObject *self, PyObject *value, void *closure)
 
 int pyalpm_option_set_totaldlcb(PyObject *self, PyObject *value, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   if (value == Py_None) {
     Py_CLEAR(pyalpm_totaldlcb);
     alpm_option_set_totaldlcb(handle, NULL);
@@ -554,7 +554,7 @@ int pyalpm_option_set_totaldlcb(PyObject *self, PyObject *value, void *closure)
 
 int pyalpm_option_set_fetchcb(PyObject *self, PyObject *value, void *closure)
 {
-  pmhandle_t *handle = ALPM_HANDLE(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   if (value == Py_None) {
     Py_CLEAR(pyalpm_fetchcb);
     alpm_option_set_fetchcb(handle, NULL);

@@ -1,5 +1,5 @@
 /**
- * db.c : wrapper class around pmdb_t
+ * db.c : wrapper class around alpm_db_t
  *
  *  Copyright (c) 2011 Rémy Oudompheng <remy@archlinux.org>
  *
@@ -28,7 +28,7 @@
 
 typedef struct _AlpmDB {
   PyObject_HEAD
-  pmdb_t *c_data;
+  alpm_db_t *c_data;
 } AlpmDB;
 
 #define ALPM_DB(self) (((AlpmDB*)self)->c_data)
@@ -40,7 +40,7 @@ static void pyalpm_db_dealloc(AlpmDB *self) {
 }
 
 static PyObject* _pyobject_from_pmgrp(void *group) {
-  const pmgrp_t* grp = (pmgrp_t*)group;
+  const alpm_group_t* grp = (alpm_group_t*)group;
   if (!grp)
     Py_RETURN_NONE;
   else {
@@ -102,12 +102,12 @@ static PyObject* pyalpm_db_get_name(AlpmDB* self, void* closure) {
 }
 
 static PyObject* pyalpm_db_get_servers(PyObject *self, void* closure) {
-  pmdb_t *db = ALPM_DB(self);
+  alpm_db_t *db = ALPM_DB(self);
   return alpmlist_to_pylist(alpm_db_get_servers(db), pyobject_from_string);
 }
 
 static int pyalpm_db_set_servers(PyObject* self, PyObject* value, void* closure) {
-  pmdb_t *db = ALPM_DB(self);
+  alpm_db_t *db = ALPM_DB(self);
   alpm_list_t *target;
   if (pylist_string_to_alpmlist(value, &target) == -1)
     return -1;
@@ -122,7 +122,7 @@ static PyObject* pyalpm_db_get_pkgcache(AlpmDB* self, void* closure) {
 }
 
 static PyObject* pyalpm_db_get_grpcache(AlpmDB* self, void* closure) {
-  alpm_list_t *grplist = alpm_db_get_grpcache(self->c_data);
+  alpm_list_t *grplist = alpm_db_get_groupcache(self->c_data);
   return alpmlist_to_pylist(grplist, _pyobject_from_pmgrp);
 }
 
@@ -130,7 +130,7 @@ static PyObject* pyalpm_db_get_grpcache(AlpmDB* self, void* closure) {
 
 static PyObject* pyalpm_db_get_pkg(PyObject *rawself, PyObject* args) {
   char *pkgname;
-  pmpkg_t *p;
+  alpm_pkg_t *p;
   AlpmDB *self = (AlpmDB*)rawself;
 
   if(!PyArg_ParseTuple(args, "s", &pkgname))
@@ -176,13 +176,13 @@ static PyObject* pyalpm_db_set_pkgreason(PyObject* rawself, PyObject* args) {
 static PyObject* pyalpm_db_readgrp(PyObject* rawself, PyObject* args) {
   AlpmDB* self = (AlpmDB*)rawself;
   char *grpname;
-  pmgrp_t *grp;
+  alpm_group_t *grp;
   if (!PyArg_ParseTuple(args, "s", &grpname)) {
     PyErr_SetString(PyExc_TypeError, "expected string argument");
     return NULL;
   }
 
-  grp = alpm_db_readgrp(self->c_data, grpname);
+  grp = alpm_db_readgroup(self->c_data, grpname);
   return _pyobject_from_pmgrp(grp);
 }
 
@@ -279,7 +279,7 @@ void init_pyalpm_db(PyObject *module) {
 
 
 PyObject *pyalpm_db_from_pmdb(void* data) {
-  pmdb_t *db = (pmdb_t*)data;
+  alpm_db_t *db = (alpm_db_t*)data;
   AlpmDB *self;
   self = (AlpmDB*)AlpmDBType.tp_alloc(&AlpmDBType, 0);
   if (self == NULL) {
@@ -308,7 +308,7 @@ PyObject* pyalpm_find_grp_pkgs(PyObject* self, PyObject *args) {
   if (ret == -1)
     return NULL;
 
-  pkg_list = alpm_find_grp_pkgs(db_list, grpname);
+  pkg_list = alpm_find_group_pkgs(db_list, grpname);
   result = alpmlist_to_pylist(pkg_list, pyalpm_package_from_pmpkg);
   alpm_list_free(db_list);
   alpm_list_free(pkg_list);
@@ -320,7 +320,7 @@ PyObject* pyalpm_sync_newversion(PyObject *self, PyObject* args) {
   PyObject *pkg;
   PyObject *dbs;
   alpm_list_t *db_list;
-  pmpkg_t *result;
+  alpm_pkg_t *result;
   if(!PyArg_ParseTuple(args, "OO", &pkg, &dbs)
       || !PyAlpmPkg_Check(pkg)
       || pylist_db_to_alpmlist(dbs, &db_list) == -1)
@@ -329,7 +329,7 @@ PyObject* pyalpm_sync_newversion(PyObject *self, PyObject* args) {
     return NULL;
   }
 
-  pmpkg_t *rawpkg = pmpkg_from_pyalpm_pkg(pkg);
+  alpm_pkg_t *rawpkg = pmpkg_from_pyalpm_pkg(pkg);
   if (!rawpkg)
     return NULL;
 

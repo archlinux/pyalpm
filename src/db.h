@@ -1,5 +1,5 @@
 /**
- * db.c : wrapper class around pmdb_t
+ * db.c : wrapper class around alpm_db_t
  *
  *  Copyright (c) 2011 Rémy Oudompheng <remy@archlinux.org>
  *
