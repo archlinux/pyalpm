@@ -160,18 +160,17 @@ const char format_regex[] = "^%"
  */
 ssize_t printf_to_pytype_format(char *dest, const char *format, size_t len) {
   regex_t regex;
-  int ret;
-  ret = regcomp(&regex, format_regex, REG_EXTENDED);
-  if (ret != 0) {
+  regmatch_t match;
+  int n_vars = 0;
+  const char *p;
+
+  if (regcomp(&regex, format_regex, REG_EXTENDED) != 0) {
     puts("Error in regex compilation !\n");
     return -1;
   }
 
-  regmatch_t match;
-  int n_vars = 0;
-
-  const char *p;
   for (p = format; *p; p++) {
+    const char* spec;
     if(*p != '%')
       continue;
     if(p[1] == '%') {
@@ -182,7 +181,7 @@ ssize_t printf_to_pytype_format(char *dest, const char *format, size_t len) {
       /* regex does not match */
       continue;
 
-    const char* spec = p + match.rm_eo;
+    spec = p + match.rm_eo;
     switch(spec[-1]) {
     case 'd':
     case 'i':

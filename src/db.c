@@ -94,8 +94,9 @@ int pylist_db_to_alpmlist(PyObject *list, alpm_list_t **result) {
 /** Database properties */
 
 static PyObject* pyalpm_db_get_name(AlpmDB* self, void* closure) {
+  const char* name;
   CHECK_IF_INITIALIZED();
-  const char* name = alpm_db_get_name(self->c_data);
+  name = alpm_db_get_name(self->c_data);
   if (!name)
     Py_RETURN_NONE;
   return PyUnicode_FromString(name);

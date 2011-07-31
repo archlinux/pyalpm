@@ -444,8 +444,9 @@ static PyObject *pyalpm_fetchcb = NULL;
 
 static void pyalpm_logcb_wrapper(alpm_loglevel_t level, const char *fmt, va_list va_args) {
   char *log;
+  PyObject *result;
   vasprintf(&log, fmt, va_args);
-  PyObject *result = PyObject_CallFunction(pyalpm_logcb, "s", log);
+  result = PyObject_CallFunction(pyalpm_logcb, "s", log);
   if (!result) PyErr_Print();
   Py_CLEAR(result);
 }

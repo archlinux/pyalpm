@@ -117,11 +117,13 @@ static void pyalpm_trans_eventcb(alpm_transevt_t event, void* data1, void *data2
     default:
       eventstr = "unknown event";
   }
-  PyObject *result = NULL;
-  result = PyObject_CallFunction(event_cb, "is(NN)",
-      event, eventstr, obj1, obj2);
-  if (PyErr_Occurred()) PyErr_Print();
-  Py_CLEAR(result);
+  {
+    PyObject *result = NULL;
+    result = PyObject_CallFunction(event_cb, "is(NN)",
+        event, eventstr, obj1, obj2);
+    if (PyErr_Occurred()) PyErr_Print();
+    Py_CLEAR(result);
+  }
 }
 
 static void pyalpm_trans_convcb(alpm_transconv_t question,
@@ -275,11 +277,6 @@ PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs) {
     return NULL;
   }
   /* build arguments */
-  int flag_int = 0;
-  int i;
-  for (i = 0; i < 18; i++) {
-    if (flags[i]) flag_int |= 1 << i;
-  }
   if (event_cb) {
     if (!PyCallable_Check(event_cb)) {
       event_cb = NULL;
@@ -306,12 +303,19 @@ PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs) {
   }
 
   /* run alpm_trans_init() */
-  int ret = alpm_trans_init(handle, flag_int
-      , event_cb ? pyalpm_trans_eventcb : NULL
-      , conv_cb ? pyalpm_trans_convcb : NULL
-      , progress_cb ? pyalpm_trans_progresscb : NULL);
-  if (ret == -1) {
-    RET_ERR("transaction could not be initialized", alpm_errno(handle), NULL);
+  {
+    int flag_int = 0;
+    int i, ret;
+    for (i = 0; i < 18; i++) {
+      if (flags[i]) flag_int |= 1 << i;
+    }
+    ret = alpm_trans_init(handle, flag_int
+        , event_cb ? pyalpm_trans_eventcb : NULL
+        , conv_cb ? pyalpm_trans_convcb : NULL
+        , progress_cb ? pyalpm_trans_progresscb : NULL);
+    if (ret == -1) {
+      RET_ERR("transaction could not be initialized", alpm_errno(handle), NULL);
+    }
   }
   result = pyalpm_transaction_from_pmhandle(handle);
   return result;
