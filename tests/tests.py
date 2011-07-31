@@ -1,11 +1,9 @@
 import os
 import pyalpm
 
-pyalpm.initialize()
-pyalpm.options.root = "/"
-pyalpm.options.dbpath = "/var/lib/pacman"
+h = pyalpm.Handle("/", "/var/lib/pacman")
 
-localdb = pyalpm.get_localdb()
+localdb = h.get_localdb()
 print("Local database information")
 print("  DB name:", localdb.name, "url:", localdb.url)
 print("  Packages:", len(localdb.pkgcache))
