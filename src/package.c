@@ -26,12 +26,7 @@
 #include "db.h"
 #include "util.h"
 #include "handle.h"
-
-typedef struct _AlpmPackage {
-  PyObject_HEAD
-  alpm_pkg_t *c_data;
-  int needs_free;
-} AlpmPackage;
+#include "package.h"
 
 PyTypeObject AlpmPackageType;
 extern PyTypeObject AlpmHandleType;

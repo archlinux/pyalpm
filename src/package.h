@@ -25,7 +25,15 @@
 
 #include <Python.h>
 
-extern PyTypeObject AlpmPackageType;
+typedef struct _AlpmPackage {
+  PyObject_HEAD
+  alpm_pkg_t *c_data;
+  int needs_free;
+} AlpmPackage;
+
+#define ALPM_PACKAGE(self) (((AlpmPackage*)(self))->c_data)
+
+PyTypeObject AlpmPackageType;
 int PyAlpmPkg_Check(PyObject *object);
 
 void pyalpm_pkg_unref(PyObject *object);
@@ -35,6 +43,6 @@ alpm_pkg_t *pmpkg_from_pyalpm_pkg(PyObject *object);
 
 int pylist_pkg_to_alpmlist(PyObject *list, alpm_list_t **result);
 
-PyObject *pyalpm_package_load(PyObject *self, PyObject *args);
+PyObject *pyalpm_package_load(PyObject *self, PyObject *args, PyObject *kwargs);
 
 #endif
