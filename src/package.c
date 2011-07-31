@@ -369,7 +369,6 @@ static PyObject* pyalpm_package_get_files(AlpmPackage *self, void *closure) {
     for (i = 0; i < flist->count; i++) {
       const alpm_file_t *file = flist->files + i;
       PyObject *item = Py_BuildValue("(sii)", file->name, file->size, file->mode);
-      if (file->name) puts(file->name);
       if (!item) {
         Py_CLEAR(result);
         return NULL;
