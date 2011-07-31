@@ -272,7 +272,7 @@ PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs) {
 
   /* check all arguments */
   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-        "|bbbbbbbbbbbbbbbbOOO", keywords,
+        "|bbbbbbbbbbbbbbbbOOO", (char**)keywords,
         INDEX_FLAGS(&flags), &event_cb, &conv_cb, &progress_cb)) {
     return NULL;
   }

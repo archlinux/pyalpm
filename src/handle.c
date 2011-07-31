@@ -43,7 +43,7 @@ static PyObject *pyalpm_handle_from_pmhandle(void* data) {
 }
 
 /*pyalpm functions*/
-PyObject* pyalpm_initialize(PyObject *self, PyObject *args, PyObject *kwargs)
+PyObject* pyalpm_initialize(PyTypeObject *subtype, PyObject *args, PyObject *kwargs)
 {
   const char *root;
   const char *dbpath;
