@@ -355,12 +355,29 @@ static PyObject* pyalpm_package_get_replaces(AlpmPackage *self, void *closure) {
 }
 
 static PyObject* pyalpm_package_get_files(AlpmPackage *self, void *closure) {
-  alpm_list_t *files = NULL;
+  const alpm_filelist_t *flist = NULL;
+  PyObject *result = NULL;
 
   CHECK_IF_INITIALIZED();
 
-  files = alpm_pkg_get_files(self->c_data);
-  return alpmlist_to_pylist(files, pyobject_from_string);
+  flist = alpm_pkg_get_files(self->c_data);
+  if (!flist)
+    Py_RETURN_NONE;
+  else {
+    int i;
+    result = PyList_New(flist->count);
+    for (i = 0; i < flist->count; i++) {
+      const alpm_file_t *file = flist->files + i;
+      PyObject *item = Py_BuildValue("(sii)", file->name, file->size, file->mode);
+      if (file->name) puts(file->name);
+      if (!item) {
+        Py_CLEAR(result);
+        return NULL;
+      }
+      PyList_SET_ITEM(result, i, item);
+    }
+  }
+  return result;
 }
 
 /** Convert backup file strings to Python tuples
