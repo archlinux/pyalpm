@@ -310,10 +310,11 @@ PyObject* pyalpm_find_grp_pkgs(PyObject* self, PyObject *args) {
     return NULL;
   }
 
-  int ret = pylist_db_to_alpmlist(dbs, &db_list);
-  if (ret == -1)
-    return NULL;
-
+  {
+    int ret = pylist_db_to_alpmlist(dbs, &db_list);
+    if (ret == -1)
+      return NULL;
+  }
   pkg_list = alpm_find_group_pkgs(db_list, grpname);
   result = alpmlist_to_pylist(pkg_list, pyalpm_package_from_pmpkg);
   alpm_list_free(db_list);
@@ -335,11 +336,11 @@ PyObject* pyalpm_sync_newversion(PyObject *self, PyObject* args) {
     return NULL;
   }
 
-  alpm_pkg_t *rawpkg = pmpkg_from_pyalpm_pkg(pkg);
-  if (!rawpkg)
-    return NULL;
-
-  result = alpm_sync_newversion(rawpkg, db_list);
+  {
+    alpm_pkg_t *rawpkg = pmpkg_from_pyalpm_pkg(pkg);
+    if (!rawpkg) return NULL;
+    result = alpm_sync_newversion(rawpkg, db_list);
+  }
   if (!result)
     Py_RETURN_NONE;
   else

@@ -220,22 +220,24 @@ static PyObject *pyalpm_trans_get_flags(PyObject *self, void *closure)
 static PyObject *pyalpm_trans_get_add(PyObject *self, void *closure)
 {
   alpm_handle_t *handle = ALPM_HANDLE(self);
+  alpm_list_t *to_add;
   /* sanity check */
   int flags = alpm_trans_get_flags(handle);
   if (flags == -1) RET_ERR("no transaction defined", alpm_errno(handle), NULL);
 
-  alpm_list_t *to_add = alpm_trans_get_add(handle);
+  to_add = alpm_trans_get_add(handle);
   return alpmlist_to_pylist(to_add, pyalpm_package_from_pmpkg);
 }
 
 static PyObject *pyalpm_trans_get_remove(PyObject *self, void *closure)
 {
   alpm_handle_t *handle = ALPM_HANDLE(self);
+  alpm_list_t *to_remove;
   /* sanity check */
   int flags = alpm_trans_get_flags(handle);
   if (flags == -1) RET_ERR("no transaction defined", alpm_errno(handle), NULL);
 
-  alpm_list_t *to_remove = alpm_trans_get_remove(handle);
+  to_remove = alpm_trans_get_remove(handle);
   return alpmlist_to_pylist(to_remove, pyalpm_package_from_pmpkg);
 }
 
@@ -362,13 +364,16 @@ PyObject* pyalpm_trans_release(PyObject *self, PyObject *args) {
 /** Transaction contents */
 static PyObject* pyalpm_trans_add_pkg(PyObject *self, PyObject *args) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
+  alpm_pkg_t *pmpkg;
   PyObject *pkg;
+  int ret;
+
   if (!PyArg_ParseTuple(args, "O!", &AlpmPackageType, &pkg)) {
     return NULL;
   }
 
-  alpm_pkg_t *pmpkg = pmpkg_from_pyalpm_pkg(pkg);
-  int ret = alpm_add_pkg(handle, pmpkg);
+  pmpkg = pmpkg_from_pyalpm_pkg(pkg);
+  ret = alpm_add_pkg(handle, pmpkg);
   if (ret == -1) RET_ERR("unable to update transaction", alpm_errno(handle), NULL);
   /* alpm_add_pkg eats the reference to pkg */
   pyalpm_pkg_unref(pkg);
@@ -378,12 +383,15 @@ static PyObject* pyalpm_trans_add_pkg(PyObject *self, PyObject *args) {
 static PyObject* pyalpm_trans_remove_pkg(PyObject *self, PyObject *args) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
   PyObject *pkg;
+  alpm_pkg_t *pmpkg;
+  int ret;
+
   if (!PyArg_ParseTuple(args, "O!", &AlpmPackageType, &pkg)) {
     return NULL;
   }
 
-  alpm_pkg_t *pmpkg = pmpkg_from_pyalpm_pkg(pkg);
-  int ret = alpm_remove_pkg(handle, pmpkg);
+  pmpkg = pmpkg_from_pyalpm_pkg(pkg);
+  ret = alpm_remove_pkg(handle, pmpkg);
   if (ret == -1) RET_ERR("unable to update transaction", alpm_errno(handle), NULL);
   Py_RETURN_NONE;
 }
@@ -392,11 +400,13 @@ static PyObject* pyalpm_trans_sysupgrade(PyObject *self, PyObject *args, PyObjec
   alpm_handle_t *handle = ALPM_HANDLE(self);
   char* keyword[] = {"downgrade", NULL};
   PyObject *downgrade;
+  int do_downgrade, ret;
+
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!", keyword, &PyBool_Type, &downgrade))
     return NULL;
 
-  int do_downgrade = (downgrade == Py_True) ? 1 : 0;
-  int ret = alpm_sync_sysupgrade(handle, do_downgrade);
+  do_downgrade = (downgrade == Py_True) ? 1 : 0;
+  ret = alpm_sync_sysupgrade(handle, do_downgrade);
   if (ret == -1) RET_ERR("unable to update transaction", alpm_errno(handle), NULL);
   Py_RETURN_NONE;
 }

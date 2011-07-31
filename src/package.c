@@ -386,20 +386,22 @@ static PyObject* pyalpm_package_get_files(AlpmPackage *self, void *closure) {
 static PyObject* _pytuple_from_tab_separated(void* data) {
   char* s = (char *)data;
   char* sep = strchr(s, '\t');
-  if (!sep) sep = s + strlen(s);
-  PyObject* fst;
-  PyObject* snd;
   PyObject* tuple;
-  fst = PyUnicode_FromStringAndSize(s, sep - s);
-  if (*sep != '\0')
-    snd = PyUnicode_FromString(sep + 1);
-  else {
-    Py_INCREF(Py_None);
-    snd = Py_None;
+  if (!sep) sep = s + strlen(s);
+  {
+    PyObject* fst;
+    PyObject* snd;
+    fst = PyUnicode_FromStringAndSize(s, sep - s);
+    if (*sep != '\0')
+      snd = PyUnicode_FromString(sep + 1);
+    else {
+      Py_INCREF(Py_None);
+      snd = Py_None;
+    }
+    tuple = PyTuple_Pack(2, fst, snd);
+    Py_DECREF(fst);
+    Py_DECREF(snd);
   }
-  tuple = PyTuple_Pack(2, fst, snd);
-  Py_DECREF(fst);
-  Py_DECREF(snd);
   return tuple;
 }
 
@@ -410,8 +412,9 @@ static PyObject* pyalpm_package_get_backup(AlpmPackage *self, void *closure) {
 }
 
 static PyObject* pyalpm_package_get_db(AlpmPackage *self, void *closure) {
+  alpm_db_t* db;
   CHECK_IF_INITIALIZED();
-  alpm_db_t* db = alpm_pkg_get_db(self->c_data);
+  db = alpm_pkg_get_db(self->c_data);
   if (db)
     return pyalpm_db_from_pmdb(db);
   else
@@ -430,10 +433,13 @@ static PyObject* pyalpm_pkg_download_size(AlpmPackage *self, void *closure) {
 
 static PyObject* pyalpm_pkg_compute_requiredby(PyObject *rawself, PyObject *args) {
   AlpmPackage *self = (AlpmPackage*)rawself;
+  PyObject *pyresult;
   CHECK_IF_INITIALIZED();
-  alpm_list_t *result = alpm_pkg_compute_requiredby(self->c_data);
-  PyObject *pyresult = alpmlist_to_pylist(result, pyobject_from_string);
-  FREELIST(result);
+  {
+    alpm_list_t *result = alpm_pkg_compute_requiredby(self->c_data);
+    pyresult = alpmlist_to_pylist(result, pyobject_from_string);
+    FREELIST(result);
+  }
   return pyresult;
 }
 
