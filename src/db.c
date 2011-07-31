@@ -157,23 +157,6 @@ static PyObject* pyalpm_db_get_pkg(PyObject *rawself, PyObject* args) {
   }
 }
 
-static PyObject* pyalpm_db_set_pkgreason(PyObject* rawself, PyObject* args) {
-  char *pkgname;
-  int reason;
-  AlpmDB *self = (AlpmDB*)rawself;
-  int ret;
-  if (!PyArg_ParseTuple(args, "si", &pkgname, &reason)) {
-    PyErr_SetString(PyExc_TypeError, "expected arguments (str, int)");
-    return NULL;
-  }
-
-  if (self->c_data == NULL) RET_ERR("data is not initialized", 0, NULL);
-  ret = alpm_db_set_pkgreason(self->c_data, pkgname, reason);
-
-  if (ret == -1) RET_ERR("failed setting install reason", 0, NULL);
-  Py_RETURN_NONE;
-}
-
 static PyObject* pyalpm_db_readgrp(PyObject* rawself, PyObject* args) {
   AlpmDB* self = (AlpmDB*)rawself;
   char *grpname;
@@ -233,10 +216,6 @@ static struct PyMethodDef db_methods[] = {
     "get contents of a group\n"
     "args: a group name (string)\n"
     "returns: a tuple (group name, list of packages)" },
-  { "set_pkgreason", pyalpm_db_set_pkgreason, METH_VARARGS,
-    "set install reason for a package\n"
-    "args: a package name (string), a reason (PKG_REASON_DEPEND, PKG_REASON_EXPLICIT)\n"
-    "returns: None" },
   { "update", (PyCFunction)pyalpm_db_update, METH_VARARGS | METH_KEYWORDS,
     "update a database from its url attribute\n"
     "args: force (update even if DB is up to date, boolean)\n"

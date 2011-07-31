@@ -23,6 +23,7 @@
 #include <alpm.h>
 #include <Python.h>
 #include "handle.h"
+#include "package.h"
 #include "db.h"
 #include "options.h"
 #include "util.h"
@@ -104,6 +105,22 @@ static PyObject* pyalpm_register_syncdb(PyObject *self, PyObject *args) {
   }
 
   return pyalpm_db_from_pmdb(result);
+}
+
+static PyObject* pyalpm_set_pkgreason(PyObject* self, PyObject* args) {
+  alpm_handle_t *handle = ALPM_HANDLE(self);
+  alpm_pkg_t *pmpkg = NULL;
+  PyObject *pkg = NULL;
+  int reason, ret;
+  if (!PyArg_ParseTuple(args, "sO!", &AlpmPackageType, &pkg, &reason)) {
+    PyErr_SetString(PyExc_TypeError, "expected arguments (pkg, int)");
+    return NULL;
+  }
+  pmpkg = ALPM_PACKAGE(pkg);
+  ret = alpm_db_set_pkgreason(handle, pmpkg, reason);
+
+  if (ret == -1) RET_ERR("failed setting install reason", alpm_errno(handle), NULL);
+  Py_RETURN_NONE;
 }
 
 struct PyGetSetDef pyalpm_handle_getset[] = {
@@ -218,6 +235,8 @@ static PyMethodDef pyalpm_handle_methods[] = {
    "returns the new database on success"},
   {"get_localdb", pyalpm_get_localdb, METH_NOARGS, "returns an object representing the local DB"},
   {"get_syncdbs", pyalpm_get_syncdbs, METH_NOARGS, "returns a list of sync DBs"},
+  {"set_pkgreason", pyalpm_set_pkgreason, METH_VARARGS,
+    "set install reason for a package (PKG_REASON_DEPEND, PKG_REASON_EXPLICIT)\n"},
 
   /* Option modifiers */
   {"add_noupgrade", option_add_noupgrade_alpm, METH_VARARGS, "add a noupgrade package."},
