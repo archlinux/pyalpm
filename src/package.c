@@ -136,7 +136,7 @@ int pylist_pkg_to_alpmlist(PyObject *list, alpm_list_t **result) {
 
 PyObject *pyalpm_package_load(PyObject *self, PyObject *args, PyObject *kwargs) {
   char *filename;
-  int check_sig = PM_PGP_VERIFY_OPTIONAL;
+  int check_sig = ALPM_SIG_PACKAGE_OPTIONAL;
   char *kws[] = { "handle", "path", "check_sig", NULL };
   PyObject *pyhandle = NULL;
   alpm_handle_t *handle;
@@ -486,14 +486,14 @@ void init_pyalpm_package(PyObject *module) {
   PyModule_AddObject(module, "Package", type);
 
   /* package reasons */
-  PyModule_AddIntConstant(module, "PKG_REASON_EXPLICIT", PM_PKG_REASON_EXPLICIT);
-  PyModule_AddIntConstant(module, "PKG_REASON_DEPEND", PM_PKG_REASON_DEPEND);
+  PyModule_AddIntConstant(module, "PKG_REASON_EXPLICIT", ALPM_PKG_REASON_EXPLICIT);
+  PyModule_AddIntConstant(module, "PKG_REASON_DEPEND", ALPM_PKG_REASON_DEPEND);
 
   /* signature check levels */
-  PyModule_AddIntConstant(module, "PGP_VERIFY_UNKNOWN", PM_PGP_VERIFY_UNKNOWN);
-  PyModule_AddIntConstant(module, "PGP_VERIFY_NEVER", PM_PGP_VERIFY_NEVER);
-  PyModule_AddIntConstant(module, "PGP_VERIFY_OPTIONAL", PM_PGP_VERIFY_OPTIONAL);
-  PyModule_AddIntConstant(module, "PGP_VERIFY_ALWAYS", PM_PGP_VERIFY_ALWAYS);
+  PyModule_AddIntConstant(module, "SIG_PACKAGE", ALPM_SIG_PACKAGE);
+  PyModule_AddIntConstant(module, "SIG_PACKAGE_OPTIONAL", ALPM_SIG_PACKAGE_OPTIONAL);
+  PyModule_AddIntConstant(module, "SIG_PACKAGE_MARGINAL_OK", ALPM_SIG_PACKAGE_MARGINAL_OK);
+  PyModule_AddIntConstant(module, "SIG_PACKAGE_UNKNOWN_OK", ALPM_SIG_PACKAGE_UNKNOWN_OK);
 }
 
 /* vim: set ts=2 sw=2 et: */

@@ -275,6 +275,12 @@ void init_pyalpm_db(PyObject *module) {
   type = (PyObject*)&AlpmDBType;
   Py_INCREF(type);
   PyModule_AddObject(module, "DB", type);
+
+  /* signature check levels */
+  PyModule_AddIntConstant(module, "SIG_DATABASE", ALPM_SIG_DATABASE);
+  PyModule_AddIntConstant(module, "SIG_DATABASE_OPTIONAL", ALPM_SIG_DATABASE_OPTIONAL);
+  PyModule_AddIntConstant(module, "SIG_DATABASE_MARGINAL_OK", ALPM_SIG_DATABASE_MARGINAL_OK);
+  PyModule_AddIntConstant(module, "SIG_DATABASE_UNKNOWN_OK", ALPM_SIG_DATABASE_UNKNOWN_OK);
 }
 
 
