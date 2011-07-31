@@ -243,7 +243,7 @@ PyTypeObject AlpmHandleType = {
   sizeof(AlpmHandle),  /*tp_basicsize*/
   0,                   /*tp_itemsize*/
   .tp_flags = Py_TPFLAGS_DEFAULT,
-  .tp_doc = "An object wrapping a libalpm handle",
+  .tp_doc = "An object wrapping a libalpm handle. Arguments: root path, DB path.",
   .tp_methods = pyalpm_handle_methods,
   .tp_getset = pyalpm_handle_getset,
   .tp_new = pyalpm_initialize,

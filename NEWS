@@ -1,5 +1,8 @@
 pyalpm 0.5 :
-  * now requires pacman > 3.5
+  * now requires pacman 4.0
+  * API: initialize() replaced by Handle() constructor
+  * API: DB.url property replaced by DB.servers
+  * API: Package.files now returns a list of (name, size, mode)
 
 pyalpm 0.4.2 :
   * fix a typo in init_with_config()
