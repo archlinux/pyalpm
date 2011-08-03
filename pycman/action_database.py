@@ -27,14 +27,18 @@ database.
 
 import sys
 import pyalpm
-from . import config
+from pycman import config
+
+handle = None
 
 def commit(pkgs, mode):
-	db = pyalpm.get_localdb()
-	for pkg in pkgs:
-		db.set_pkgreason(pkg, mode)
+	db = handle.get_localdb()
+	for pkgname in pkgs:
+		pkg = db.get_pkg(pkgname)
+		handle.set_pkgreason(pkg, mode)
 
 def main(rawargs):
+	global handle
 	parser = config.make_parser()
 	mode = parser.add_mutually_exclusive_group(required = True)
 	mode.add_argument('--asdeps', dest = 'mode',
@@ -46,7 +50,7 @@ def main(rawargs):
 	parser.add_argument('pkgs', metavar = 'pkg', nargs='*',
 			help = "a dependency string, e.g. 'pacman>=3.4.0'")
 	args = parser.parse_args(rawargs)
-	config.init_with_config_and_options(args)
+	handle = config.init_with_config_and_options(args)
 
 	if args.verbose:
 		print("database " + " ".join(rawargs), file = sys.stderr)

@@ -65,9 +65,9 @@ def display_pkg(pkg, options):
 
 	if options.listfiles:
 		if options.quiet:
-			[print('/' + f) for f in pkg.files]
+			[print('/' + path) for path, size, mode in pkg.files]
 		else:
-			[print(pkg.name, '/' + f) for f in pkg.files]
+			[print(pkg.name, '/' + path) for path, size, mode in pkg.files]
 
 def find_file(filenames, options):
 	"lookup for files in local packages"

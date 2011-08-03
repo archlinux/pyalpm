@@ -32,13 +32,15 @@ from pycman import config
 from pycman import pkginfo
 from pycman import transaction
 
+handle = None
+
 def do_clean(options):
 	raise NotImplementedError
 
 def do_refresh(options):
 	"Sync databases like pacman -Sy"
 	force = (options.refresh > 1)
-	for db in pyalpm.get_syncdbs():
+	for db in handle.get_syncdbs():
 		t = transaction.init_from_options(options)
 		db.update(force)
 		t.release()
@@ -59,7 +61,7 @@ def do_sysupgrade(options):
 
 def do_install(pkgs, options):
 	"Install a list of packages like pacman -S"
-	repos = dict((db.name,db) for db in pyalpm.get_syncdbs())
+	repos = dict((db.name,db) for db in handle.get_syncdbs())
 	if len(pkgs) == 0:
 		print("error: no targets specified")
 		return 1
@@ -99,7 +101,7 @@ def find_sync_package(pkgname, syncdbs):
 
 def show_groups(args):
 	"Show groups like pacman -Sg"
-	for repo in pyalpm.get_syncdbs():
+	for repo in handle.get_syncdbs():
 		if len(args.args) == 0:
 			# list all available groups
 			[print(name) for name, pkgs in repo.grpcache]
@@ -119,7 +121,7 @@ def show_groups(args):
 
 def show_repo(args):
 	"Show repository's list of packages like pacman -Sl"
-	repos = pyalpm.get_syncdbs()
+	repos = handle.get_syncdbs()
 	if len(args.args) > 0:
 		repo_dict = dict((repo.name, repo) for repo in repos)
 		try:
@@ -138,7 +140,7 @@ def show_repo(args):
 def show_packages(args):
 	"Show information about packages like pacman -Si"
 	retcode = 0
-	repos = dict((db.name,db) for db in pyalpm.get_syncdbs())
+	repos = dict((db.name,db) for db in handle.get_syncdbs())
 	if len(args.args) == 0:
 		for repo in repos:
 			for pkg in repo.pkgcache:
@@ -155,7 +157,7 @@ def show_packages(args):
 
 def show_search(patterns, options):
 	results = []
-	for db in pyalpm.get_syncdbs():
+	for db in handle.get_syncdbs():
 		results += db.search(*patterns)
 	if len(results) == 0:
 		return 1
@@ -167,7 +169,7 @@ def show_search(patterns, options):
 			print("    " + pkg.desc)
 	return 0
 
-def main(rawargs):
+def parse_options(rawargs):
 	parser = config.make_parser(prog = 'pycman-sync')
 	# Misc actions
 	group0 = parser.add_argument_group("Actions (default is installing specified packages)")
@@ -217,9 +219,12 @@ def main(rawargs):
 	group1.add_argument('args', metavar = 'arg', nargs = '*',
 			help = 'arguments (group names for -g, repo names for -l, '
 			'package names for -i)')
+	return parser.parse_args(rawargs)
 
-	args = parser.parse_args(rawargs)
-	config.init_with_config_and_options(args)
+def main(rawargs):
+	global handle
+	args = parse_options(rawargs)
+	handle = config.init_with_config_and_options(args)
 
 	if args.verbose:
 		print("sync " + " ".join(rawargs), file = sys.stderr)
