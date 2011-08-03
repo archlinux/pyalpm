@@ -5,7 +5,7 @@ h = pyalpm.Handle("/", "/var/lib/pacman")
 
 localdb = h.get_localdb()
 print("Local database information")
-print("  DB name:", localdb.name, "url:", localdb.url)
+print("  DB name:", localdb.name, "servers:", localdb.servers)
 print("  Packages:", len(localdb.pkgcache))
 
 for name, pkgs in localdb.grpcache:
@@ -13,14 +13,14 @@ for name, pkgs in localdb.grpcache:
 print("")
 
 print("Registering [core], [extra], [community]...")
-core = pyalpm.register_syncdb("core")
-extra = pyalpm.register_syncdb("extra")
-community = pyalpm.register_syncdb("community")
+core = h.register_syncdb("core", pyalpm.SIG_DATABASE_OPTIONAL)
+extra = h.register_syncdb("extra", pyalpm.SIG_DATABASE_OPTIONAL)
+community = h.register_syncdb("community", pyalpm.SIG_DATABASE_OPTIONAL)
 print("")
 
 print("Available sync DBs")
-for db in pyalpm.get_syncdbs():
-    print("  DB:", db.name, "url:", db.url)
+for db in h.get_syncdbs():
+    print("  DB:", db.name, "servers:", db.servers)
 print("")
 
 print("Package information about glibc")
