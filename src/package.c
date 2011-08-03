@@ -374,36 +374,18 @@ static PyObject* pyalpm_package_get_files(AlpmPackage *self, void *closure) {
   return result;
 }
 
-/** Convert backup file strings to Python tuples
- * Strings "file\tmd5sum" are converted to ("file", "md5sum")
- * Strings "file" are converted to ("file", None)
+/** Convert alpm_backup_t to Python tuples
+ * The resulting tuple is (filename, hexadecimal hash)
  */
-static PyObject* _pytuple_from_tab_separated(void* data) {
-  char* s = (char *)data;
-  char* sep = strchr(s, '\t');
-  PyObject* tuple;
-  if (!sep) sep = s + strlen(s);
-  {
-    PyObject* fst;
-    PyObject* snd;
-    fst = PyUnicode_FromStringAndSize(s, sep - s);
-    if (*sep != '\0')
-      snd = PyUnicode_FromString(sep + 1);
-    else {
-      Py_INCREF(Py_None);
-      snd = Py_None;
-    }
-    tuple = PyTuple_Pack(2, fst, snd);
-    Py_DECREF(fst);
-    Py_DECREF(snd);
-  }
+static PyObject* pyobject_from_alpm_backup(void* data) {
+  alpm_backup_t* item = (alpm_backup_t*)data;
+  PyObject* tuple = Py_BuildValue("(ss)", item->name, item->hash);
   return tuple;
 }
 
 static PyObject* pyalpm_package_get_backup(AlpmPackage *self, void *closure) {
   CHECK_IF_INITIALIZED();
-  return alpmlist_to_pylist(alpm_pkg_get_backup(self->c_data),
-			    _pytuple_from_tab_separated);
+  return alpmlist_to_pylist(alpm_pkg_get_backup(self->c_data), pyobject_from_alpm_backup);
 }
 
 static PyObject* pyalpm_package_get_db(AlpmPackage *self, void *closure) {
