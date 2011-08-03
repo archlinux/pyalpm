@@ -93,10 +93,6 @@ static PyMethodDef methods[] = {
     "args: a package, a list of databases\n"
     "returns: an upgrade candidate or None" },
 
-  /* from package.c */
-  {"load_pkg", (PyCFunction)pyalpm_package_load, METH_VARARGS | METH_KEYWORDS,
-    "loads package information from a tarball"},
-
   /* from db.c */
   {"find_grp_pkgs", pyalpm_find_grp_pkgs, METH_VARARGS,
    "find packages from a given group across databases\n"

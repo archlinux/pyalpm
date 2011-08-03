@@ -130,19 +130,15 @@ int pylist_pkg_to_alpmlist(PyObject *list, alpm_list_t **result) {
 /* Python bindings */
 
 PyObject *pyalpm_package_load(PyObject *self, PyObject *args, PyObject *kwargs) {
+  alpm_handle_t *handle = ALPM_HANDLE(self);
   char *filename;
   int check_sig = ALPM_SIG_PACKAGE_OPTIONAL;
-  char *kws[] = { "handle", "path", "check_sig", NULL };
-  PyObject *pyhandle = NULL;
-  alpm_handle_t *handle;
+  char *kws[] = { "path", "check_sig", NULL };
   alpm_pkg_t *result;
   AlpmPackage *pyresult;
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!s|i:load_pkg", kws,
-       &AlpmHandleType, &pyhandle, &filename, &check_sig)) {
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|i:load_pkg", kws, &filename, &check_sig)) {
     return NULL;
   }
-
-  handle = ALPM_HANDLE(pyhandle);
 
   if ((alpm_pkg_load(handle, filename, 1, check_sig, &result) == -1) || !result) {
     RET_ERR("loading package failed", alpm_errno(handle), NULL);

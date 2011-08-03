@@ -229,6 +229,10 @@ static PyMethodDef pyalpm_handle_methods[] = {
     "    -- args: (target name, percentage, number of targets, target number)\n"
   },
 
+  /* Package load */
+  {"load_pkg", (PyCFunction)pyalpm_package_load, METH_VARARGS | METH_KEYWORDS,
+    "loads package information from a tarball"},
+
   /* Database members */
   {"register_syncdb", pyalpm_register_syncdb, METH_VARARGS,
    "registers the database with the given name\n"

@@ -38,7 +38,7 @@ print("")
 print("Package information about a tarball")
 for i in os.listdir("/var/cache/pacman/pkg"):
     filename = os.path.join("/var/cache/pacman/pkg", i)
-    pkg = pyalpm.load_pkg(filename)
+    pkg = h.load_pkg(filename)
     print("Loaded", filename)
     break
 for attr in dir(pkg):
