@@ -112,8 +112,7 @@ static PyObject* pyalpm_set_pkgreason(PyObject* self, PyObject* args) {
   alpm_pkg_t *pmpkg = NULL;
   PyObject *pkg = NULL;
   int reason, ret;
-  if (!PyArg_ParseTuple(args, "sO!", &AlpmPackageType, &pkg, &reason)) {
-    PyErr_SetString(PyExc_TypeError, "expected arguments (pkg, int)");
+  if (!PyArg_ParseTuple(args, "O!i:set_pkgreason", &AlpmPackageType, &pkg, &reason)) {
     return NULL;
   }
   pmpkg = ALPM_PACKAGE(pkg);
