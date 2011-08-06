@@ -91,11 +91,10 @@ def cb_dl(filename, tx, total):
 		sys.stdout.write("\rdownload %s: %s %d/%d" % (filename, '.' * progress, tx, total))
 		sys.stdout.flush()
 
-def init_from_options(options):
+def init_from_options(handle, options):
 	"Transaction initialization"
-	pyalpm.options.dlcb = cb_dl
-	t = pyalpm.transaction
-	t.init(
+	handle.dlcb = cb_dl
+	t = handle.init_transaction(
 			cascade = getattr(options, "cascade", False),
 			nodeps = getattr(options, "nodeps", False),
 			force = getattr(options, 'force', False),

@@ -41,7 +41,7 @@ def do_refresh(options):
 	"Sync databases like pacman -Sy"
 	force = (options.refresh > 1)
 	for db in handle.get_syncdbs():
-		t = transaction.init_from_options(options)
+		t = transaction.init_from_options(handle, options)
 		db.update(force)
 		t.release()
 	return 0
@@ -49,7 +49,7 @@ def do_refresh(options):
 def do_sysupgrade(options):
 	"Upgrade a system like pacman -Su"
 	downgrade = (options.sysupgrade > 1)
-	t = transaction.init_from_options(options)
+	t = transaction.init_from_options(handle, options)
 	t.sysupgrade(downgrade)
 	if len(t.to_add) + len(t.to_remove) == 0:
 		print("nothing to do")
@@ -74,7 +74,7 @@ def do_install(pkgs, options):
 			return 1
 		else:
 			targets.append(pkg)
-	t = transaction.init_from_options(options)
+	t = transaction.init_from_options(handle, options)
 	[t.add_pkg(pkg) for pkg in targets]
 	ok = transaction.finalize(t)
 	return (0 if ok else 1)
