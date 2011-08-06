@@ -28,12 +28,14 @@ the effect on dependencies of/on given targets.
 import sys
 import traceback
 import pyalpm
-from . import config
-from . import transaction
+from pycman import config
+from pycman import transaction
+
+handle = None
 
 def remove(pkgs, options):
 	# prepare target list
-	db = pyalpm.get_localdb()
+	db = handle.get_localdb()
 	targets = []
 	for name in pkgs:
 		pkg = db.get_pkg(name)
@@ -42,7 +44,7 @@ def remove(pkgs, options):
 			return 1
 		targets.append(pkg)
 
-	t = transaction.init_from_options(options)
+	t = transaction.init_from_options(handle, options)
 
 	for pkg in targets:
 		t.remove_pkg(pkg)
@@ -51,6 +53,7 @@ def remove(pkgs, options):
 	return (0 if ok else 1)
 
 def main(rawargs):
+	global handle
 	parser = config.make_parser()
 	group = parser.add_argument_group("Remove options")
 	group.add_argument('-c', '--cascade',
@@ -75,7 +78,7 @@ def main(rawargs):
 			help = "a list of packages, e.g. libreoffice, openjdk6")
 
 	args = parser.parse_args(rawargs)
-	config.init_with_config_and_options(args)
+	handle = config.init_with_config_and_options(args)
 
 	if args.verbose:
 		print("remove " + " ".join(rawargs), file = sys.stderr)

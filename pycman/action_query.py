@@ -194,7 +194,7 @@ def main(rawargs):
 		# a list of package names was specified
 		for pkgname in args.pkgnames:
 			if args.package:
-				pkg = pyalpm.load_pkg(pkgname)
+				pkg = handle.load_pkg(pkgname)
 			else:
 				pkg = db.get_pkg(pkgname)
 			if pkg is None:

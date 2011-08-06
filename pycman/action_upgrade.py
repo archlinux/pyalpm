@@ -28,18 +28,20 @@ the effect of the transaction.
 import sys
 import traceback
 import pyalpm
-from . import config
-from . import transaction
+from pycman import config
+from pycman import transaction
+
+handle = None
 
 def upgrade(pkgs, options):
 	# prepare target list
-	db = pyalpm.get_localdb()
+	db = handle.get_localdb()
 	targets = []
 	for name in pkgs:
 		pkg = pyalpm.load_pkg(name)
 		targets.append(pkg)
 
-	t = transaction.init_from_options(options)
+	t = transaction.init_from_options(handle, options)
 
 	for pkg in targets:
 		t.add_pkg(pkg)
@@ -48,6 +50,7 @@ def upgrade(pkgs, options):
 	return (0 if ok else 1)
 
 def main(rawargs):
+	global handle
 	parser = config.make_parser()
 	group = parser.add_argument_group("upgrade options")
 	group.add_argument('-d', '--nodeps',
@@ -69,7 +72,7 @@ def main(rawargs):
 			help = "a list of package URLs, e.g. package-1.0-1-i686.tar.xz")
 
 	args = parser.parse_args(rawargs)
-	config.init_with_config_and_options(args)
+	handle = config.init_with_config_and_options(args)
 
 	if args.verbose:
 		print("upgrade " + " ".join(rawargs), file = sys.stderr)
