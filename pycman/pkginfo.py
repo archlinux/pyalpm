@@ -25,12 +25,25 @@ This module defines utility function to format package information
 for terminal output.
 """
 
+import sys
 import time
 import textwrap
+
+import struct
+import fcntl
+import termios
+
 import pyalpm
 
 ATTRNAME_FORMAT = '%-14s : '
 ATTR_INDENT = 17 * ' '
+
+def get_term_size():
+	if sys.stdout.isatty():
+		height, width = struct.unpack("HH", fcntl.ioctl(1, termios.TIOCGWINSZ, 4 * b"\x00"))
+		return width
+	else:
+		return 80
 
 def format_attr(attrname, value, format = None):
 	if isinstance(value, list):
@@ -43,7 +56,7 @@ def format_attr(attrname, value, format = None):
 			valuestring = time.strftime("%a %d %b %Y %X %Z", time.localtime(value))
 		else:
 			valuestring = str(value)
-	return textwrap.fill(valuestring, width = 80,
+	return textwrap.fill(valuestring, width = get_term_size(),
 			initial_indent = ATTRNAME_FORMAT % attrname,
 			subsequent_indent = ATTR_INDENT,
 			break_on_hyphens = False,
