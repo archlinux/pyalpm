@@ -184,19 +184,6 @@ static PyObject* pyalpm_package_get_installdate(AlpmPackage *self, void *closure
   return PyLong_FromLong(alpm_pkg_get_installdate(self->c_data));
 }
 
-static PyObject* pyalpm_package_get_arch(AlpmPackage *self, void *closure) {
-  const char *arch;
-
-  CHECK_IF_INITIALIZED();
-
-  arch = alpm_pkg_get_arch(self->c_data);
-  if (arch == NULL) {
-    PyErr_SetString(PyExc_RuntimeError, "unable to get arch");
-    return NULL;
-  }
-  return Py_BuildValue("s", arch);
-}
-
 static PyObject* pyalpm_package_get_size(AlpmPackage *self, void *closure) {
   CHECK_IF_INITIALIZED();
   return PyLong_FromLong(alpm_pkg_get_size(self->c_data));
@@ -299,11 +286,11 @@ static struct PyGetSetDef AlpmPackageGetSet[] = {
   { "licenses", (getter)_get_list_attribute, 0, "list of licenses", &get_licenses } ,
   { "groups",   (getter)_get_list_attribute, 0, "list of package groups", &get_groups } ,
   /* package properties */
-  { "packager", (getter)_get_string_attribute, 0, "packager name", alpm_pkg_get_packager } ,
-  { "md5sum", (getter)_get_string_attribute, 0, "package md5sum", alpm_pkg_get_md5sum } ,
-  { "sha256sum", (getter)_get_string_attribute, 0, "package sha256sum as hexadeciml digits", alpm_pkg_get_sha256sum } ,
+  { "packager",   (getter)_get_string_attribute, 0, "packager name", alpm_pkg_get_packager } ,
+  { "md5sum",     (getter)_get_string_attribute, 0, "package md5sum", alpm_pkg_get_md5sum } ,
+  { "sha256sum",  (getter)_get_string_attribute, 0, "package sha256sum as hexadecimal digits", alpm_pkg_get_sha256sum } ,
   { "base64_sig", (getter)_get_string_attribute, 0, "GPG signature encoded as base64", alpm_pkg_get_base64_sig } ,
-  { "filename", (getter)_get_string_attribute, 0, "package filename", alpm_pkg_get_filename } ,
+  { "filename",   (getter)_get_string_attribute, 0, "package filename", alpm_pkg_get_filename } ,
   { "size", (getter)pyalpm_package_get_size, 0, "package size", NULL } ,
   { "isize", (getter)pyalpm_package_get_isize, 0, "installed size", NULL } ,
   { "reason", (getter)pyalpm_package_get_reason, 0, "install reason (0 = explicit, 1 = depend)", NULL } ,
