@@ -90,8 +90,8 @@ def display_pkginfo(pkg, level = 1, style = 'local'):
 	print(format_attr('Licenses', pkg.licenses))
 	print(format_attr('Groups', pkg.groups))
 	print(format_attr('Provides', pkg.provides))
-	print(format_attr('Depends on', pkg.depends))
-	print(format_attr_oneperline('Optional deps', pkg.optdepends))
+	print(format_attr('Depends On', pkg.depends))
+	print(format_attr_oneperline('Optional Deps', pkg.optdepends))
 	if style == 'local' or level == 2:
 		print(format_attr('Required by', pkg.compute_requiredby()))
 	print(format_attr('Conflicts with', pkg.conflicts))
@@ -119,6 +119,8 @@ def display_pkginfo(pkg, level = 1, style = 'local'):
 		print(format_attr('Install Script', 'Yes' if pkg.has_scriptlet else 'No'))
 	if style == 'sync':
 		print(format_attr('MD5 Sum', pkg.md5sum))
+		print(format_attr('SHA256 Sum', None))
+		print(format_attr('Signatures', None))
 
 	print(format_attr('Description', pkg.desc))
 
