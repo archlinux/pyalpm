@@ -93,14 +93,14 @@ def display_pkginfo(pkg, level = 1, style = 'local'):
 	print(format_attr('Depends On', pkg.depends))
 	print(format_attr_oneperline('Optional Deps', pkg.optdepends))
 	if style == 'local' or level == 2:
-		print(format_attr('Required by', pkg.compute_requiredby()))
-	print(format_attr('Conflicts with', pkg.conflicts))
+		print(format_attr('Required By', pkg.compute_requiredby()))
+	print(format_attr('Conflicts With', pkg.conflicts))
 	print(format_attr('Replaces', pkg.replaces))
 	if style == 'sync':
-		print(format_attr('Download size', '%.2f K' % (pkg.size / 1024)))
+		print(format_attr('Download Size', '%.2f K' % (pkg.size / 1024)))
 	if style == 'file':
-		print(format_attr('Compressed size', '%.2f K' % (pkg.size / 1024)))
-	print(format_attr('Installed size', '%.2f K' % (pkg.isize / 1024)))
+		print(format_attr('Compressed Size', '%.2f K' % (pkg.size / 1024)))
+	print(format_attr('Installed Size', '%.2f K' % (pkg.isize / 1024)))
 	print(format_attr('Packager', pkg.packager))
 	print(format_attr('Architecture', pkg.arch))
 	print(format_attr('Build Date', pkg.builddate, format = 'time'))
