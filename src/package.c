@@ -284,9 +284,9 @@ struct list_getter get_backup   = { alpm_pkg_get_backup, pyobject_from_alpm_back
 struct list_getter get_deltas   = { alpm_pkg_get_deltas, pyobject_from_string };
 struct list_getter get_depends  = { alpm_pkg_get_depends, _pyobject_from_pmdepend };
 struct list_getter get_optdepends = { alpm_pkg_get_optdepends, pyobject_from_string };
-struct list_getter get_replaces   = { alpm_pkg_get_replaces, pyobject_from_string };
-struct list_getter get_provides   = { alpm_pkg_get_provides, pyobject_from_string };
-struct list_getter get_conflicts  = { alpm_pkg_get_conflicts, pyobject_from_string };
+struct list_getter get_replaces   = { alpm_pkg_get_replaces, _pyobject_from_pmdepend };
+struct list_getter get_provides   = { alpm_pkg_get_provides, _pyobject_from_pmdepend };
+struct list_getter get_conflicts  = { alpm_pkg_get_conflicts, _pyobject_from_pmdepend };
 
 static struct PyGetSetDef AlpmPackageGetSet[] = {
   { "db", (getter)pyalpm_package_get_db, 0, "the database from which the package comes from, or None", NULL } ,
