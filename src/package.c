@@ -161,71 +161,6 @@ PyObject *pyalpm_package_load(PyObject *self, PyObject *args, PyObject *kwargs) 
   return (PyObject*)pyresult;
 }
 
-static PyObject *pyalpm_package_get_filename(AlpmPackage *self, void *closure) {
-  const char *filename;
-
-  CHECK_IF_INITIALIZED();
-
-  filename = alpm_pkg_get_filename(self->c_data);
-  if (filename == NULL) {
-    Py_RETURN_NONE;
-  }
-  return Py_BuildValue("s", filename);
-}
-
-static PyObject* pyalpm_package_get_name(AlpmPackage *self, void *closure) {
-  const char *name;
-
-  CHECK_IF_INITIALIZED();
-
-  name = alpm_pkg_get_name(self->c_data);
-  if (name == NULL) {
-    PyErr_SetString(PyExc_RuntimeError, "unable to get name");
-    return NULL;
-  }
-  return Py_BuildValue("s", name);
-}
-
-static PyObject* pyalpm_package_get_version(AlpmPackage *self, void *closure) {
-  const char *version;
-
-  CHECK_IF_INITIALIZED();
-
-  version = alpm_pkg_get_version(self->c_data);
-  if (version == NULL) {
-    PyErr_SetString(PyExc_RuntimeError, "unable to get version");
-    return NULL;
-  }
-  return Py_BuildValue("s", version);
-}
-
-static PyObject* pyalpm_package_get_desc(AlpmPackage *self, void *closure) {
-  const char *desc;
-
-  CHECK_IF_INITIALIZED();
-
-  desc = alpm_pkg_get_desc(self->c_data);
-  if (desc == NULL) {
-    PyErr_SetString(PyExc_RuntimeError, "unable to get desc");
-    return NULL;
-  }
-  return Py_BuildValue("s", desc);
-}
-
-static PyObject* pyalpm_package_get_url(AlpmPackage *self, void *closure) {
-  const char *url;
-
-  CHECK_IF_INITIALIZED();
-
-  url = alpm_pkg_get_url(self->c_data);
-  if (url == NULL) {
-    PyErr_SetString(PyExc_RuntimeError, "unable to get url");
-    return NULL;
-  }
-  return Py_BuildValue("s", url);
-}
-
-
 static PyObject* pyalpm_package_get_builddate(AlpmPackage *self, void *closure) {
   CHECK_IF_INITIALIZED();
   return PyLong_FromLong(alpm_pkg_get_builddate(self->c_data));
@@ -234,30 +169,6 @@ static PyObject* pyalpm_package_get_builddate(AlpmPackage *self, void *closure) 
 static PyObject* pyalpm_package_get_installdate(AlpmPackage *self, void *closure) {
   CHECK_IF_INITIALIZED();
   return PyLong_FromLong(alpm_pkg_get_installdate(self->c_data));
-}
-
-static PyObject* pyalpm_package_get_packager(AlpmPackage *self, void *closure) {
-  const char *packager;
-
-  CHECK_IF_INITIALIZED();
-
-  packager = alpm_pkg_get_packager(self->c_data);
-  if (packager == NULL) {
-    PyErr_SetString(PyExc_RuntimeError, "unable to get packager");
-    return NULL;
-  }
-  return Py_BuildValue("s", packager);
-}
-
-static PyObject* pyalpm_package_get_md5sum(AlpmPackage *self, void *closure) {
-  const char *md5sum;
-
-  CHECK_IF_INITIALIZED();
-
-  md5sum = alpm_pkg_get_md5sum(self->c_data);
-  if (md5sum == NULL)
-    Py_RETURN_NONE;
-  return Py_BuildValue("s", md5sum);
 }
 
 static PyObject* pyalpm_package_get_arch(AlpmPackage *self, void *closure) {
@@ -430,19 +341,19 @@ static PyObject* pyalpm_pkg_compute_requiredby(PyObject *rawself, PyObject *args
 static struct PyGetSetDef AlpmPackageGetSet[] = {
   { "db", (getter)pyalpm_package_get_db, 0, "the database from which the package comes from, or None", NULL } ,
   /* description properties */
-  { "name", (getter)pyalpm_package_get_name, 0, "package name", NULL } ,
-  { "version", (getter)pyalpm_package_get_version, 0, "package version", NULL } ,
-  { "desc", (getter)pyalpm_package_get_desc, 0, "package desc", NULL } ,
-  { "url", (getter)pyalpm_package_get_url, 0, "package URL", NULL } ,
-  { "arch", (getter)pyalpm_package_get_arch, 0, "target architecture", NULL } ,
+  { "name",    (getter)_get_string_attribute, 0, "package name",    alpm_pkg_get_name } ,
+  { "version", (getter)_get_string_attribute, 0, "package version", alpm_pkg_get_version } ,
+  { "desc",    (getter)_get_string_attribute, 0, "package desc",    alpm_pkg_get_desc } ,
+  { "url",     (getter)_get_string_attribute, 0, "package URL",     alpm_pkg_get_url } ,
+  { "arch",    (getter)_get_string_attribute, 0, "target architecture", alpm_pkg_get_arch } ,
   { "licenses", (getter)pyalpm_package_get_licenses, 0, "list of licenses", NULL } ,
   { "groups", (getter)pyalpm_package_get_groups, 0, "list of package groups", NULL } ,
   /* package properties */
-  { "packager", (getter)pyalpm_package_get_packager, 0, "packager name", NULL } ,
-  { "md5sum", (getter)pyalpm_package_get_md5sum, 0, "package md5sum", NULL } ,
+  { "packager", (getter)_get_string_attribute, 0, "packager name", alpm_pkg_get_packager } ,
+  { "md5sum", (getter)_get_string_attribute, 0, "package md5sum", alpm_pkg_get_md5sum } ,
   { "sha256sum", (getter)_get_string_attribute, 0, "package sha256sum as hexadeciml digits", alpm_pkg_get_sha256sum } ,
   { "base64_sig", (getter)_get_string_attribute, 0, "GPG signature encoded as base64", alpm_pkg_get_base64_sig } ,
-  { "filename", (getter)pyalpm_package_get_filename, 0, "package filename", NULL } ,
+  { "filename", (getter)_get_string_attribute, 0, "package filename", alpm_pkg_get_filename } ,
   { "size", (getter)pyalpm_package_get_size, 0, "package size", NULL } ,
   { "isize", (getter)pyalpm_package_get_isize, 0, "installed size", NULL } ,
   { "reason", (getter)pyalpm_package_get_reason, 0, "install reason (0 = explicit, 1 = depend)", NULL } ,
