@@ -65,7 +65,8 @@ BOOLEAN_OPTIONS = (
 	'ShowSize',
 	'UseDelta',
 	'TotalDownload',
-	'CheckSpace'
+	'CheckSpace',
+	'VerbosePkgLists'
 )
 
 def pacman_conf_enumerator(path):
