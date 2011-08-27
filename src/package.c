@@ -297,8 +297,8 @@ static struct PyGetSetDef AlpmPackageGetSet[] = {
   { "builddate", (getter)pyalpm_package_get_builddate, 0, "building time", NULL } ,
   { "installdate", (getter)pyalpm_package_get_installdate, 0, "install time", NULL } ,
   { "files",  (getter)pyalpm_package_get_files, 0, "list of installed files", NULL } ,
-  { "backup", (getter)_get_list_attribute, 0, "list of tuples (filename, md5sum)", NULL } ,
-  { "deltas", (getter)_get_list_attribute, 0, "list of available deltas", NULL } ,
+  { "backup", (getter)_get_list_attribute, 0, "list of tuples (filename, md5sum)", &get_backup } ,
+  { "deltas", (getter)_get_list_attribute, 0, "list of available deltas", &get_deltas } ,
   /* dependency information */
   { "depends",    (getter)_get_list_attribute, 0, "list of dependencies", &get_depends } ,
   { "optdepends", (getter)_get_list_attribute, 0, "list of optional dependencies", &get_optdepends } ,
