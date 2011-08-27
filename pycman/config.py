@@ -31,11 +31,18 @@ import glob
 import sys
 import argparse
 import collections
+import warnings
 
 import pyalpm
 
-class InvalidSyntax(Exception):
-	pass
+class InvalidSyntax(Warning):
+	def __init__(self, filename, problem, arg):
+		self.filename = filename
+		self.problem = problem
+		self.arg = arg
+
+	def __str__(self):
+		return "unable to parse %s, %s: %r" % (self.filename, self.problem, self.arg)
 
 # Options that may occur several times in a section. Their values should be
 # accumulated in a list.
@@ -113,12 +120,12 @@ def pacman_conf_enumerator(path):
 			elif key in SINGLE_OPTIONS:
 				yield (current_section, key, value)
 			else:
-				print(InvalidSyntax(f.name, 'unrecognized option', key))
+				warnings.warn(InvalidSyntax(f.name, 'unrecognized option', key))
 		else:
 			if key in BOOLEAN_OPTIONS:
 				yield (current_section, key, True)
 			else:
-				print(InvalidSyntax(f.name, 'unrecognized option', key))
+				warnings.warn(InvalidSyntax(f.name, 'unrecognized option', key))
 
 class PacmanConfig(object):
 	def __init__(self, conf = None, options = None):
