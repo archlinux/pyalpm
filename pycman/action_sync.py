@@ -140,12 +140,12 @@ def show_repo(args):
 def show_packages(args):
 	"Show information about packages like pacman -Si"
 	retcode = 0
-	repos = dict((db.name,db) for db in handle.get_syncdbs())
 	if len(args.args) == 0:
-		for repo in repos:
+		for repo in handle.get_syncdbs():
 			for pkg in repo.pkgcache:
 				pkginfo.display_pkginfo(pkg, level = args.info, style = 'sync')
 	else:
+		repos = dict((db.name,db) for db in handle.get_syncdbs())
 		for pkgname in args.args:
 			ok, value = find_sync_package(pkgname, repos)
 			if ok:
