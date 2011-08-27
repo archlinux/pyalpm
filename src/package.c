@@ -91,6 +91,17 @@ PyObject *pyalpm_package_from_pmpkg(void* data) {
   return NULL; \
   }
 
+static PyObject* _get_string_attribute(AlpmPackage *self, const char* getter(alpm_pkg_t*)) {
+  const char *attr;
+  if (! self->c_data) {
+    PyErr_SetString(alpm_error, "data is not initialized");
+    return NULL;
+  }
+  attr = getter(self->c_data);
+  if (attr == NULL) Py_RETURN_NONE;
+  return Py_BuildValue("s", attr);
+}
+
 alpm_pkg_t *pmpkg_from_pyalpm_pkg(PyObject *object) {
   AlpmPackage *self = (AlpmPackage*)object;
   CHECK_IF_INITIALIZED();
@@ -429,6 +440,8 @@ static struct PyGetSetDef AlpmPackageGetSet[] = {
   /* package properties */
   { "packager", (getter)pyalpm_package_get_packager, 0, "packager name", NULL } ,
   { "md5sum", (getter)pyalpm_package_get_md5sum, 0, "package md5sum", NULL } ,
+  { "sha256sum", (getter)_get_string_attribute, 0, "package sha256sum as hexadeciml digits", alpm_pkg_get_sha256sum } ,
+  { "base64_sig", (getter)_get_string_attribute, 0, "GPG signature encoded as base64", alpm_pkg_get_base64_sig } ,
   { "filename", (getter)pyalpm_package_get_filename, 0, "package filename", NULL } ,
   { "size", (getter)pyalpm_package_get_size, 0, "package size", NULL } ,
   { "isize", (getter)pyalpm_package_get_isize, 0, "installed size", NULL } ,

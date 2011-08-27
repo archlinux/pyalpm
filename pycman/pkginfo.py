@@ -119,8 +119,8 @@ def display_pkginfo(pkg, level = 1, style = 'local'):
 		print(format_attr('Install Script', 'Yes' if pkg.has_scriptlet else 'No'))
 	if style == 'sync':
 		print(format_attr('MD5 Sum', pkg.md5sum))
-		print(format_attr('SHA256 Sum', None))
-		print(format_attr('Signatures', None))
+		print(format_attr('SHA256 Sum', pkg.sha256sum))
+		print(format_attr('Signatures', 'Yes' if pkg.base64_sig else 'No'))
 
 	print(format_attr('Description', pkg.desc))
 
