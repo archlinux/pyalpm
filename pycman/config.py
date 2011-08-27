@@ -30,6 +30,7 @@ import os
 import glob
 import sys
 import argparse
+import collections
 
 import pyalpm
 
@@ -121,7 +122,7 @@ def pacman_conf_enumerator(path):
 class PacmanConfig(object):
 	def __init__(self, conf = None, options = None):
 		self.options = {}
-		self.repos = {}
+		self.repos = collections.OrderedDict()
 		self.options["RootDir"] = "/"
 		self.options["DBPath"] = "/var/lib/pacman"
 		self.options["LogFile"] = "/var/lib/pacman"
