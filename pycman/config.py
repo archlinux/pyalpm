@@ -133,9 +133,9 @@ class PacmanConfig(object):
 		self.options = {}
 		self.repos = collections.OrderedDict()
 		self.options["RootDir"] = "/"
-		self.options["DBPath"] = "/var/lib/pacman"
+		self.options["DBPath"]  = "/var/lib/pacman"
 		self.options["GPGDir"]  = "/etc/pacman.d/gnupg/"
-		self.options["LogFile"] = "/var/lib/pacman"
+		self.options["LogFile"] = "/var/log/pacman.log"
 		self.options["Architecture"] = os.uname()[-1]
 		if conf is not None:
 			self.load_from_file(conf)
@@ -155,6 +155,8 @@ class PacmanConfig(object):
 				servers = self.repos.setdefault(section, [])
 				if key == 'Server':
 					servers.append(value)
+		if "CacheDir" not in self.options:
+			self.options["CacheDir"]= ["/var/cache/pacman/pkg"]
 
 	def load_from_options(self, options):
 		if options.root is not None:
@@ -167,11 +169,13 @@ class PacmanConfig(object):
 			self.options["Architecture"] = options.arch
 		if options.logfile is not None:
 			self.options["LogFile"] = options.logfile
+		self.options["CacheDir"] = option.cachedirs
 
 	def apply(self, h):
 		h.arch = self.options["Architecture"]
 		h.logfile = self.options["LogFile"]
 		h.gpgdir = self.options["GPGDir"]
+		h.cachedirs = self.options["CacheDir"]
 
 		# set sync databases
 		for repo, servers in self.repos.items():
