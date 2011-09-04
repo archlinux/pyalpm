@@ -4,6 +4,7 @@ pyalpm 0.5 :
   * API: DB.url property replaced by DB.servers
   * API: Package.files now returns a list of (name, size, mode)
   * API: Handle has a new attribute gpgdir
+  * pycman: support --gpgdir, --cachedir, --debug options
   * fix: repository order suhffled in pacman.conf parsing
   * fix: incorrect default values for options
 

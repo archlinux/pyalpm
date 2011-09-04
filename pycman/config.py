@@ -128,6 +128,21 @@ def pacman_conf_enumerator(path):
 			else:
 				warnings.warn(InvalidSyntax(f.name, 'unrecognized option', key))
 
+_logmask = pyalpm.LOG_ERROR | pyalpm.LOG_WARNING
+
+def cb_log(level, line):
+	if not (level & _logmask):
+		return
+	if level & pyalpm.LOG_ERROR:
+		line = "ERROR: " + line
+	elif level & pyalpm.LOG_WARNING:
+		line = "WARNING: " + line
+	elif level & pyalpm.LOG_DEBUG:
+		line = "DEBUG: " + line
+	elif level & pyalpm.LOG_FUNCTION:
+		line = "FUNC: " + line
+	sys.stderr.write(line)
+
 class PacmanConfig(object):
 	def __init__(self, conf = None, options = None):
 		self.options = {}
@@ -159,6 +174,7 @@ class PacmanConfig(object):
 			self.options["CacheDir"]= ["/var/cache/pacman/pkg"]
 
 	def load_from_options(self, options):
+		global _logmask
 		if options.root is not None:
 			self.options["RootDir"] = options.root
 		if options.dbpath is not None:
@@ -169,13 +185,17 @@ class PacmanConfig(object):
 			self.options["Architecture"] = options.arch
 		if options.logfile is not None:
 			self.options["LogFile"] = options.logfile
-		self.options["CacheDir"] = option.cachedirs
+		if options.cachedir is not None:
+			self.options["CacheDir"] = [option.cachedir]
+		if options.debug:
+			_logmask = 0xffff
 
 	def apply(self, h):
 		h.arch = self.options["Architecture"]
 		h.logfile = self.options["LogFile"]
 		h.gpgdir = self.options["GPGDir"]
 		h.cachedirs = self.options["CacheDir"]
+		h.logcb = cb_log
 
 		# set sync databases
 		for repo, servers in self.repos.items():
@@ -213,9 +233,18 @@ def make_parser(*args, **kwargs):
 	common.add_argument('--config', metavar = '<file>',
 			action = 'store', dest = 'config', type = str,
 			help = 'set an alternate configuration file')
+	common.add_argument('--debug',
+			action='store_true', dest='debug',
+			help='display debug messages')
 	common.add_argument('--logfile', metavar = '<file>',
 			action = 'store', dest = 'logfile', type = str,
 			help = 'set an alternate log file')
+	common.add_argument('--gpgdir', metavar = '<dir>',
+			action = 'store', dest = 'gpgdir', type = str,
+			help = 'set an alternate log file')
+	common.add_argument('--cachedir', metavar = '<dir>',
+			action = 'store', dest = 'cachedir', type = str,
+			help = 'set an alternate cche location')
 	return parser
 
 def init_with_config(configpath):

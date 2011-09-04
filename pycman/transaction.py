@@ -94,6 +94,9 @@ def cb_dl(filename, tx, total):
 def init_from_options(handle, options):
 	"Transaction initialization"
 	handle.dlcb = cb_dl
+	handle.eventcb = cb_event
+	handle.questioncb = cb_conv
+	handle.progresscb = cb_progress
 	t = handle.init_transaction(
 			cascade = getattr(options, "cascade", False),
 			nodeps = getattr(options, "nodeps", False),
@@ -105,10 +108,7 @@ def init_from_options(handle, options):
 			recurseall = (getattr(options, 'recursive', 0) > 1),
 			unneeded = getattr(options, 'unneeded', False),
 			alldeps = (getattr(options, 'mode', None) == pyalpm.PKG_REASON_DEPEND),
-			allexplicit = (getattr(options, 'mode', None) == pyalpm.PKG_REASON_EXPLICIT),
-			event_callback = cb_event,
-			conv_callback = cb_conv,
-			progress_callback = cb_progress)
+			allexplicit = (getattr(options, 'mode', None) == pyalpm.PKG_REASON_EXPLICIT))
 	return t
 
 def finalize(t):

@@ -394,6 +394,12 @@ int init_pyalpm_handle(PyObject *module) {
   type = (PyObject*)&AlpmHandleType;
   Py_INCREF(type);
   PyModule_AddObject(module, "Handle", type);
+
+  PyModule_AddIntConstant(module, "LOG_ERROR", ALPM_LOG_ERROR);
+  PyModule_AddIntConstant(module, "LOG_WARNING", ALPM_LOG_WARNING);
+  PyModule_AddIntConstant(module, "LOG_DEBUG", ALPM_LOG_DEBUG);
+  PyModule_AddIntConstant(module, "LOG_FUNCTION", ALPM_LOG_FUNCTION);
+
   return 0;
 }
 
