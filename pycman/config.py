@@ -60,6 +60,7 @@ LIST_OPTIONS = (
 SINGLE_OPTIONS = (
 	'RootDir',
 	'DBPath',
+	'GPGDir',
 	'LogFile',
 	'Architecture',
 	'XferCommand',
@@ -133,6 +134,7 @@ class PacmanConfig(object):
 		self.repos = collections.OrderedDict()
 		self.options["RootDir"] = "/"
 		self.options["DBPath"] = "/var/lib/pacman"
+		self.options["GPGDir"]  = "/etc/pacman.d/gnupg/"
 		self.options["LogFile"] = "/var/lib/pacman"
 		self.options["Architecture"] = os.uname()[-1]
 		if conf is not None:
@@ -159,6 +161,8 @@ class PacmanConfig(object):
 			self.options["RootDir"] = options.root
 		if options.dbpath is not None:
 			self.options["DBPath"] = options.dbpath
+		if options.gpgdir is not None:
+			self.options["GPGDir"] = options.gpgdir
 		if options.arch is not None:
 			self.options["Architecture"] = options.arch
 		if options.logfile is not None:
@@ -167,6 +171,7 @@ class PacmanConfig(object):
 	def apply(self, h):
 		h.arch = self.options["Architecture"]
 		h.logfile = self.options["LogFile"]
+		h.gpgdir = self.options["GPGDir"]
 
 		# set sync databases
 		for repo, servers in self.repos.items():
