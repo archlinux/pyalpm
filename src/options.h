@@ -25,23 +25,6 @@
 
 #include <Python.h>
 
-/** Path options */
-int option_set_root_alpm(PyObject *self, PyObject *args, void* closure);
-PyObject * option_get_root_alpm(PyObject *self, void* closure);
-
-int option_set_dbpath_alpm(PyObject *self, PyObject *args, void* closure);
-PyObject * option_get_dbpath_alpm(PyObject *self, void* closure);
-
-int option_set_logfile_alpm(PyObject *self, PyObject *value, void* closure);
-PyObject * option_get_logfile_alpm(PyObject *self, void* closure);
-
-/* read-only */
-PyObject* option_get_lockfile_alpm(PyObject *self, void* closure);
-
-/** string options */
-int option_set_arch_alpm(PyObject *self, PyObject *value, void* closure);
-PyObject* option_get_arch_alpm(PyObject *self, void* closure);
-
 /** boolean options */
 
 PyObject* option_get_usesyslog_alpm(PyObject *self, void* closure);

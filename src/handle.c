@@ -121,30 +121,76 @@ static PyObject* pyalpm_set_pkgreason(PyObject* self, PyObject* args) {
   Py_RETURN_NONE;
 }
 
+/* String attributes get/setters */
+struct _alpm_str_getset {
+  const char *(*getter)(alpm_handle_t *);
+  int (*setter)(alpm_handle_t *, const char *);
+};
+
+static PyObject *_get_string_attr(PyObject *self, const struct _alpm_str_getset *closure) {
+  alpm_handle_t *handle = ALPM_HANDLE(self);
+  const char *str = closure->getter(handle);
+  if(str == NULL)
+    RET_ERR("failed getting option value", alpm_errno(handle), NULL);
+  return Py_BuildValue("s", str);
+}
+
+static int _set_string_attr(PyObject *self, PyObject *value, const struct _alpm_str_getset *closure) {
+  alpm_handle_t *handle = ALPM_HANDLE(self);
+  char *path = NULL;
+  int ret;
+  if (PyBytes_Check(value)) {
+    path = strdup(PyBytes_AS_STRING(value));
+  } else if (PyUnicode_Check(value)) {
+    PyObject* utf8 = PyUnicode_AsUTF8String(value);
+    path = strdup(PyBytes_AS_STRING(utf8));
+    Py_DECREF(utf8);
+  } else {
+    PyErr_SetString(PyExc_TypeError, "logfile path must be a string");
+    return -1;
+  }
+
+  ret = closure->setter(handle, path);
+  free(path);
+  if (ret == -1) RET_ERR("failed setting option value", alpm_errno(handle), -1);
+  return 0;
+}
+
+static struct _alpm_str_getset root_getset    = { alpm_option_get_root, NULL };
+static struct _alpm_str_getset dbpath_getset  = { alpm_option_get_dbpath, NULL };
+static struct _alpm_str_getset lockfile_getset  = { alpm_option_get_lockfile, NULL };
+static struct _alpm_str_getset logfile_getset = { alpm_option_get_logfile, alpm_option_set_logfile };
+static struct _alpm_str_getset gpgdir_getset = { alpm_option_get_gpgdir, alpm_option_set_gpgdir };
+static struct _alpm_str_getset arch_getset = { alpm_option_get_arch, alpm_option_set_arch };
+
 struct PyGetSetDef pyalpm_handle_getset[] = {
   /** filepaths */
   { "root",
-    (getter)option_get_root_alpm,
+    (getter)_get_string_attr,
     NULL,
-    "system root directory", NULL } ,
+    "system root directory", &root_getset } ,
   { "dbpath",
-    (getter)option_get_dbpath_alpm,
+    (getter)_get_string_attr,
     NULL,
-    "alpm database directory", NULL } ,
+    "alpm database directory", &dbpath_getset } ,
   { "logfile",
-    (getter)option_get_logfile_alpm,
-    (setter)option_set_logfile_alpm,
-    "alpm logfile path", NULL } ,
+    (getter)_get_string_attr,
+    (setter)_set_string_attr,
+    "alpm logfile path", &logfile_getset } ,
   { "lockfile",
-    (getter)option_get_lockfile_alpm,
+    (getter)_get_string_attr,
     NULL,
-    "alpm lockfile path", NULL } ,
+    "alpm lockfile path", &lockfile_getset } ,
+  { "gpgdir",
+    (getter)_get_string_attr,
+    (setter)_set_string_attr,
+    "alpm GnuPG home directory", &gpgdir_getset } ,
 
   /** strings */
   { "arch",
-    (getter)option_get_arch_alpm,
-    (setter)option_set_arch_alpm,
-    "Target archichecture", NULL } ,
+    (getter)_get_string_attr,
+    (setter)_set_string_attr,
+    "Target archichecture", &arch_getset } ,
 
   /** booleans */
   { "usesyslog",
