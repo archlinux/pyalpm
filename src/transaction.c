@@ -32,86 +32,86 @@ static PyObject *event_cb = NULL;
 static PyObject *conv_cb = NULL;
 static PyObject *progress_cb = NULL;
 
-static void pyalpm_trans_eventcb(alpm_transevt_t event, void* data1, void *data2) {
+static void pyalpm_trans_eventcb(alpm_event_t event, void* data1, void *data2) {
   const char *eventstr;
   PyObject *obj1 = Py_None;
   PyObject *obj2 = Py_None;
   switch(event) {
-    case ALPM_TRANS_EVT_CHECKDEPS_START:
+    case ALPM_EVENT_CHECKDEPS_START:
       eventstr = "Checking dependencies";
       break;
-    case ALPM_TRANS_EVT_CHECKDEPS_DONE:
+    case ALPM_EVENT_CHECKDEPS_DONE:
       eventstr = "Done checking dependencies";
       break;
-    case ALPM_TRANS_EVT_FILECONFLICTS_START:
+    case ALPM_EVENT_FILECONFLICTS_START:
       eventstr = "Checking file conflicts";
       break;
-    case ALPM_TRANS_EVT_FILECONFLICTS_DONE:
+    case ALPM_EVENT_FILECONFLICTS_DONE:
       eventstr = "Done checking file conflicts";
       break;
-    case ALPM_TRANS_EVT_RESOLVEDEPS_START:
+    case ALPM_EVENT_RESOLVEDEPS_START:
       eventstr = "Resolving dependencies";
       break;
-    case ALPM_TRANS_EVT_RESOLVEDEPS_DONE:
+    case ALPM_EVENT_RESOLVEDEPS_DONE:
       eventstr = "Done resolving dependencies";
       break;
-    case ALPM_TRANS_EVT_INTERCONFLICTS_START:
+    case ALPM_EVENT_INTERCONFLICTS_START:
       eventstr = "Checking inter conflicts";
       break;
-    case ALPM_TRANS_EVT_INTERCONFLICTS_DONE:
+    case ALPM_EVENT_INTERCONFLICTS_DONE:
       eventstr = "Done checking inter conflicts";
       break;
-    case ALPM_TRANS_EVT_ADD_START:
+    case ALPM_EVENT_ADD_START:
       eventstr = "Adding a package";
       obj1 = pyalpm_package_from_pmpkg(data1);
       break;
-    case ALPM_TRANS_EVT_ADD_DONE:
+    case ALPM_EVENT_ADD_DONE:
       eventstr = "Done adding a package";
       obj1 = pyalpm_package_from_pmpkg(data1);
       if (data2) obj2 = pyalpm_package_from_pmpkg(data2);
       break;
-    case ALPM_TRANS_EVT_REMOVE_START:
+    case ALPM_EVENT_REMOVE_START:
       eventstr = "Remove package";
       obj1 = pyalpm_package_from_pmpkg(data1);
       break;
-    case ALPM_TRANS_EVT_REMOVE_DONE:
+    case ALPM_EVENT_REMOVE_DONE:
       eventstr = "Done removing package";
       obj1 = pyalpm_package_from_pmpkg(data1);
       break;
-    case ALPM_TRANS_EVT_UPGRADE_START:
+    case ALPM_EVENT_UPGRADE_START:
       eventstr = "Upgrading a package";
       obj1 = pyalpm_package_from_pmpkg(data1);
       obj2 = pyalpm_package_from_pmpkg(data2);
       break;
-    case ALPM_TRANS_EVT_UPGRADE_DONE:
+    case ALPM_EVENT_UPGRADE_DONE:
       eventstr = "Done upgrading a package";
       obj1 = pyalpm_package_from_pmpkg(data1);
       obj2 = pyalpm_package_from_pmpkg(data2);
       break;
-    case ALPM_TRANS_EVT_INTEGRITY_START:
+    case ALPM_EVENT_INTEGRITY_START:
       eventstr = "Checking integrity";
       break;
-    case ALPM_TRANS_EVT_INTEGRITY_DONE:
+    case ALPM_EVENT_INTEGRITY_DONE:
       eventstr = "Done checking integrity";
       break;
-    case ALPM_TRANS_EVT_DELTA_INTEGRITY_START:
-    case ALPM_TRANS_EVT_DELTA_INTEGRITY_DONE:
-    case ALPM_TRANS_EVT_DELTA_PATCHES_START:
-    case ALPM_TRANS_EVT_DELTA_PATCHES_DONE:
-    case ALPM_TRANS_EVT_DELTA_PATCH_START:
+    case ALPM_EVENT_DELTA_INTEGRITY_START:
+    case ALPM_EVENT_DELTA_INTEGRITY_DONE:
+    case ALPM_EVENT_DELTA_PATCHES_START:
+    case ALPM_EVENT_DELTA_PATCHES_DONE:
+    case ALPM_EVENT_DELTA_PATCH_START:
       /* info here */
-    case ALPM_TRANS_EVT_DELTA_PATCH_DONE:
-    case ALPM_TRANS_EVT_DELTA_PATCH_FAILED:
-    case ALPM_TRANS_EVT_SCRIPTLET_INFO:
+    case ALPM_EVENT_DELTA_PATCH_DONE:
+    case ALPM_EVENT_DELTA_PATCH_FAILED:
+    case ALPM_EVENT_SCRIPTLET_INFO:
       /* info here */
-    case ALPM_TRANS_EVT_RETRIEVE_START:
+    case ALPM_EVENT_RETRIEVE_START:
       /* info here */
       eventstr = "event not implemented";
       break;
-    case ALPM_TRANS_EVT_DISKSPACE_START:
+    case ALPM_EVENT_DISKSPACE_START:
       eventstr = "Checking disk space";
       break;
-    case ALPM_TRANS_EVT_DISKSPACE_DONE:
+    case ALPM_EVENT_DISKSPACE_DONE:
       eventstr = "Done checking disk space";
       break;
     default:
@@ -126,11 +126,11 @@ static void pyalpm_trans_eventcb(alpm_transevt_t event, void* data1, void *data2
   }
 }
 
-static void pyalpm_trans_convcb(alpm_transconv_t question,
+static void pyalpm_trans_convcb(alpm_question_t question,
         void* data1, void *data2, void* data3, int* retcode) {
 }
 
-static void pyalpm_trans_progresscb(alpm_transprog_t op,
+static void pyalpm_trans_progresscb(alpm_progress_t op,
         const char* target_name, int percentage, size_t n_targets, size_t cur_target) {
   PyObject *result = NULL;
   if (progress_cb) {
