@@ -28,11 +28,9 @@
 #include "util.h"
 
 /** Transaction callbacks */
-static PyObject *event_cb = NULL;
-static PyObject *conv_cb = NULL;
-static PyObject *progress_cb = NULL;
+extern PyObject *global_py_callbacks[N_CALLBACKS];
 
-static void pyalpm_trans_eventcb(alpm_event_t event, void* data1, void *data2) {
+void pyalpm_eventcb(alpm_event_t event, void* data1, void *data2) {
   const char *eventstr;
   PyObject *obj1 = Py_None;
   PyObject *obj2 = Py_None;
@@ -119,22 +117,22 @@ static void pyalpm_trans_eventcb(alpm_event_t event, void* data1, void *data2) {
   }
   {
     PyObject *result = NULL;
-    result = PyObject_CallFunction(event_cb, "is(NN)",
+    result = PyObject_CallFunction(global_py_callbacks[CB_EVENT], "is(NN)",
         event, eventstr, obj1, obj2);
     if (PyErr_Occurred()) PyErr_Print();
     Py_CLEAR(result);
   }
 }
 
-static void pyalpm_trans_convcb(alpm_question_t question,
+void pyalpm_questioncb(alpm_question_t question,
         void* data1, void *data2, void* data3, int* retcode) {
 }
 
-static void pyalpm_trans_progresscb(alpm_progress_t op,
+void pyalpm_progresscb(alpm_progress_t op,
         const char* target_name, int percentage, size_t n_targets, size_t cur_target) {
   PyObject *result = NULL;
-  if (progress_cb) {
-    result = PyObject_CallFunction(progress_cb, "sinn",
+  if (global_py_callbacks[CB_PROGRESS]) {
+    result = PyObject_CallFunction(global_py_callbacks[CB_PROGRESS], "sinn",
       target_name, percentage, n_targets, cur_target);
   } else {
     PyErr_SetString(PyExc_RuntimeError, "progress callback was called but it's not set!");

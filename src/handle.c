@@ -163,6 +163,66 @@ static struct _alpm_str_getset logfile_getset = { alpm_option_get_logfile, alpm_
 static struct _alpm_str_getset gpgdir_getset = { alpm_option_get_gpgdir, alpm_option_set_gpgdir };
 static struct _alpm_str_getset arch_getset = { alpm_option_get_arch, alpm_option_set_arch };
 
+/* Callback attributes get/setters */
+typedef int (*alpm_cb_setter)(alpm_handle_t*, void*);
+struct _alpm_cb_getset {
+  alpm_cb_setter setter;
+  void *cb_wrapper;
+  pyalpm_callback_id id;
+};
+
+void pyalpm_eventcb(alpm_event_t event, void* data1, void *data2);
+void pyalpm_questioncb(alpm_question_t question,
+    void* data1, void *data2, void* data3, int* retcode);
+void pyalpm_progresscb(alpm_progress_t op,
+    const char* target_name, int percentage, size_t n_targets, size_t cur_target);
+
+static struct _alpm_cb_getset cb_getsets[N_CALLBACKS] = {
+  { (alpm_cb_setter)alpm_option_set_logcb, pyalpm_logcb, CB_LOG },
+  { (alpm_cb_setter)alpm_option_set_dlcb, pyalpm_dlcb, CB_DOWNLOAD },
+  { (alpm_cb_setter)alpm_option_set_fetchcb, pyalpm_fetchcb, CB_FETCH },
+  { (alpm_cb_setter)alpm_option_set_totaldlcb, pyalpm_totaldlcb, CB_TOTALDL },
+  { (alpm_cb_setter)alpm_option_set_eventcb, pyalpm_eventcb, CB_EVENT },
+  { (alpm_cb_setter)alpm_option_set_questioncb, pyalpm_questioncb, CB_QUESTION },
+  { (alpm_cb_setter)alpm_option_set_progresscb, pyalpm_progresscb, CB_PROGRESS },
+};
+
+/** Callback options
+ * We use Python callable objects as callbacks: they are
+ * stored in static variables, and the reference count is
+ * increased accordingly.
+ *
+ * These Python functions are wrapped into C functions 
+ * that are passed to libalpm.
+ */
+PyObject *global_py_callbacks[N_CALLBACKS];
+
+static PyObject* _get_cb_attr(PyObject *self, const struct _alpm_cb_getset *closure) {
+  /* AlpmHandle *it = self; */
+  PyObject *pycb = global_py_callbacks[closure->id];
+  if (pycb == NULL) Py_RETURN_NONE;
+  Py_INCREF(pycb);
+  return pycb;
+}
+
+static int _set_cb_attr(PyObject *self, PyObject *value, const struct _alpm_cb_getset *closure) {
+  AlpmHandle *it = (AlpmHandle *)self;
+  if (value == Py_None) {
+    Py_CLEAR(global_py_callbacks[closure->id]);
+    closure->setter(it->c_data, NULL);
+  } else if (PyCallable_Check(value)) {
+    Py_CLEAR(global_py_callbacks[closure->id]);
+    Py_INCREF(value);
+    it->py_callbacks[closure->id] = value;
+    closure->setter(it->c_data, closure->cb_wrapper);
+  } else {
+    PyErr_SetString(PyExc_TypeError, "value must be None or a function");
+    return -1;
+  }
+
+  return 0;
+}
+
 struct PyGetSetDef pyalpm_handle_getset[] = {
   /** filepaths */
   { "root",
@@ -230,28 +290,42 @@ struct PyGetSetDef pyalpm_handle_getset[] = {
 
   /** callbacks */
   { "logcb",
-    (getter)pyalpm_option_get_logcb,
-    (setter)pyalpm_option_set_logcb,
-    "logging callback, with arguments (loglevel, format string, tuple)", NULL },
+    (getter)_get_cb_attr, (setter)_set_cb_attr,
+    "logging callback, with arguments (loglevel, format string, tuple)",
+    &cb_getsets[CB_LOG] },
   { "dlcb",
-    (getter)pyalpm_option_get_dlcb,
-    (setter)pyalpm_option_set_dlcb,
+    (getter)_get_cb_attr, (setter)_set_cb_attr,
     "download status callback (a function)\n"
     "args: filename    :: str\n"
     "      transferred :: int\n"
-    "      total       :: int\n", NULL },
+    "      total       :: int\n",
+    &cb_getsets[CB_DOWNLOAD] },
   { "totaldlcb",
-    (getter)pyalpm_option_get_totaldlcb,
-    (setter)pyalpm_option_set_totaldlcb,
-    "total download size callback: totaldlcb(total_size)", NULL },
+    (getter)_get_cb_attr, (setter)_set_cb_attr,
+    "total download size callback: totaldlcb(total_size)",
+    &cb_getsets[CB_TOTALDL] },
   { "fetchcb",
-    (getter)pyalpm_option_get_fetchcb,
-    (setter)pyalpm_option_set_fetchcb,
+    (getter)_get_cb_attr, (setter)_set_cb_attr,
     "download function\n"
     "args: url              :: string\n"
     "      destination path :: string\n"
     "      overwrite        :: bool\n"
-    "returns: 0 on success, 1 if file exists, -1 on error", NULL },
+    "returns: 0 on success, 1 if file exists, -1 on error",
+    &cb_getsets[CB_FETCH] },
+  { "eventcb",
+    (getter)_get_cb_attr, (setter)_set_cb_attr,
+    "  a function called when an event occurs\n"
+    "    -- args: (event ID, event string, (object 1, object 2))\n",
+    &cb_getsets[CB_EVENT] },
+  { "questioncb",
+    (getter)_get_cb_attr, (setter)_set_cb_attr,
+    "  a function called to get user input\n",
+    &cb_getsets[CB_QUESTION] },
+  { "progresscb",
+    (getter)_get_cb_attr, (setter)_set_cb_attr,
+    "  -- a function called to indicate progress\n"
+    "    -- args: (target name, percentage, number of targets, target number)\n",
+    &cb_getsets[CB_PROGRESS] },
 
   /** terminator */
   { NULL }
@@ -266,11 +340,6 @@ static PyMethodDef pyalpm_handle_methods[] = {
     "  dbonly, alldeps, downloadonly, noscriptlet, noconflicts,\n"
     "  needed, allexplicit, inneeded, recurseall, nolock\n"
     "    -- the transaction options (booleans)\n"
-    "  event_callback -- a function called when an event occurs\n"
-    "    -- args: (event ID, event string, (object 1, object 2))\n"
-    "  conv_callback -- a function called to get user input\n"
-    "  progress_callback -- a function called to indicate progress\n"
-    "    -- args: (target name, percentage, number of targets, target number)\n"
   },
 
   /* Package load */

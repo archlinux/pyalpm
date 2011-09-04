@@ -65,14 +65,10 @@ PyObject * option_add_ignoregrp_alpm(PyObject *self, PyObject *args);
 PyObject * option_remove_ignoregrp_alpm(PyObject *self, PyObject *args);
 
 /** Callback options */
-int pyalpm_option_set_logcb(PyObject *self, PyObject *value, void *closure);
-int pyalpm_option_set_dlcb(PyObject *self, PyObject *value, void *closure);
-int pyalpm_option_set_totaldlcb(PyObject *self, PyObject *value, void *closure);
-int pyalpm_option_set_fetchcb(PyObject *self, PyObject *value, void *closure);
-PyObject* pyalpm_option_get_logcb(PyObject *self, void *closure);
-PyObject* pyalpm_option_get_dlcb(PyObject *self, void *closure);
-PyObject* pyalpm_option_get_totaldlcb(PyObject *self, void *closure);
-PyObject* pyalpm_option_get_fetchcb(PyObject *self, void *closure);
+void pyalpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args);
+void pyalpm_dlcb(const char *filename, off_t xfered, off_t total);
+void pyalpm_totaldlcb(off_t total);
+int pyalpm_fetchcb(const char *url, const char *localpath, int force);
 
 #endif
 

@@ -25,9 +25,21 @@
 
 #include <Python.h>
 
+typedef enum _pyalpm_callback_id {
+  CB_LOG,
+  CB_DOWNLOAD,
+  CB_FETCH,
+  CB_TOTALDL,
+  CB_EVENT,
+  CB_QUESTION,
+  CB_PROGRESS,
+  N_CALLBACKS
+} pyalpm_callback_id;
+
 typedef struct _AlpmHandle {
   PyObject_HEAD
   alpm_handle_t *c_data;
+  PyObject *py_callbacks[N_CALLBACKS];
 } AlpmHandle;
 
 #define ALPM_HANDLE(self) (((AlpmHandle*)(self))->c_data)
