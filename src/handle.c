@@ -110,7 +110,8 @@ static PyObject* pyalpm_set_pkgreason(PyObject* self, PyObject* args) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
   alpm_pkg_t *pmpkg = NULL;
   PyObject *pkg = NULL;
-  int reason, ret;
+  alpm_pkgreason_t reason;
+  int ret;
   if (!PyArg_ParseTuple(args, "O!i:set_pkgreason", &AlpmPackageType, &pkg, &reason)) {
     return NULL;
   }

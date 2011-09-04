@@ -37,7 +37,7 @@ static PyObject* pyalpm_error_str(PyObject* exception) {
   PyObject* args = PyObject_GetAttrString(exception, "args");
   PyObject* result;
   const char* errstring;
-  int errcode;
+  enum _alpm_errno_t errcode;
   PyObject *data;
 
   int handle_format;
@@ -76,8 +76,6 @@ void init_pyalpm_error(PyObject* module) {
   PyModule_AddObject(module, "error", alpm_error);
   Py_INCREF(alpm_error);
 }
-
-static unsigned short init = 0;
 
 /** Python lists and libalpm lists */
 

@@ -186,12 +186,12 @@ static PyObject* pyalpm_package_get_installdate(AlpmPackage *self, void *closure
 
 static PyObject* pyalpm_package_get_size(AlpmPackage *self, void *closure) {
   CHECK_IF_INITIALIZED();
-  return PyLong_FromLong(alpm_pkg_get_size(self->c_data));
+  return PyLong_FromLongLong(alpm_pkg_get_size(self->c_data));
 }
 
 static PyObject* pyalpm_package_get_isize(AlpmPackage *self, void *closure) {
   CHECK_IF_INITIALIZED();
-  return PyLong_FromLong(alpm_pkg_get_isize(self->c_data));
+  return PyLong_FromLongLong(alpm_pkg_get_isize(self->c_data));
 }
 
 static PyObject* pyalpm_package_get_reason(AlpmPackage *self, void *closure) {
@@ -250,7 +250,7 @@ static PyObject* pyalpm_pkg_has_scriptlet(AlpmPackage *self, void *closure) {
 
 static PyObject* pyalpm_pkg_download_size(AlpmPackage *self, void *closure) {
   CHECK_IF_INITIALIZED();
-  return PyLong_FromLong(alpm_pkg_download_size(self->c_data));
+  return PyLong_FromLongLong(alpm_pkg_download_size(self->c_data));
 }
 
 static PyObject* pyalpm_pkg_compute_requiredby(PyObject *rawself, PyObject *args) {
