@@ -248,23 +248,4 @@ ssize_t printf_to_pytype_format(char *dest, const char *format, size_t len) {
   return n_vars;
 }
 
-/** Initialization */
-
-void set_init(unsigned short i) {
-  init = i;
-}
-
-unsigned short check_init(void)
-{
-  switch(init)
-  {
-    case 0:
-      return 0;
-    case 1:
-      return 1;
-   default:
-      return -1;
-  }
-}
-
 /* vim: set ts=2 sw=2 et: */

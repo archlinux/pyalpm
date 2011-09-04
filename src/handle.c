@@ -56,7 +56,6 @@ PyObject* pyalpm_initialize(PyTypeObject *subtype, PyObject *args, PyObject *kwa
 
   h = alpm_initialize(root, dbpath, &errcode);
   if (h) {
-    set_init(1);
     return pyalpm_handle_from_pmhandle((void*)h);
   } else {
     RET_ERR("could not create a libalpm handle", errcode, NULL);

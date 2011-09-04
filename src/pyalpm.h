@@ -33,8 +33,6 @@ This file is part of pyalpm.
 char *error, *warning, *debug, *function;
 unsigned short enable_messages_logcb = 0;
 
-unsigned short check_init(void);
-
 /* submodules init */
 int init_pyalpm_handle(PyObject *module);
 void init_pyalpm_db(PyObject *module);
