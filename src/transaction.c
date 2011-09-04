@@ -260,59 +260,24 @@ static PyObject *pyalpm_trans_get_remove(PyObject *self, void *closure)
 PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
   PyObject *result;
-  const char* keywords[] = {
-    INDEX_FLAGS(flagnames),
-    "event_callback",
-    "conv_callback",
-    "progress_callback", NULL };
+  const char* keywords[] = { INDEX_FLAGS(flagnames), NULL };
   char flags[18] = "\0\0\0\0\0" /* 5 */ "\0\0\0\0\0" /* 10 */ "\0\0\0\0\0" /* 15 */ "\0\0\0";
-  Py_CLEAR(event_cb);
-  Py_CLEAR(conv_cb);
-  Py_CLEAR(progress_cb);
 
   /* check all arguments */
   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
         "|bbbbbbbbbbbbbbbbOOO", (char**)keywords,
-        INDEX_FLAGS(&flags), &event_cb, &conv_cb, &progress_cb)) {
+        INDEX_FLAGS(&flags))) {
     return NULL;
-  }
-  /* build arguments */
-  if (event_cb) {
-    if (!PyCallable_Check(event_cb)) {
-      event_cb = NULL;
-      PyErr_SetString(PyExc_TypeError, "event_callback is not callable!");
-    } else {
-      Py_INCREF(event_cb);
-    }
-  }
-  if (conv_cb) {
-    if (!PyCallable_Check(conv_cb)) {
-      conv_cb = NULL;
-      PyErr_SetString(PyExc_TypeError, "conv_callback is not callable!");
-    } else {
-      Py_INCREF(conv_cb);
-    }
-  }
-  if (progress_cb) {
-    if(!PyCallable_Check(progress_cb)) {
-      progress_cb = NULL;
-      PyErr_SetString(PyExc_TypeError, "progress_callback is not callable!");
-    } else {
-      Py_INCREF(progress_cb);
-    }
   }
 
   /* run alpm_trans_init() */
   {
-    int flag_int = 0;
+    alpm_transflag_t flag_int = 0;
     int i, ret;
     for (i = 0; i < 18; i++) {
       if (flags[i]) flag_int |= 1 << i;
     }
-    ret = alpm_trans_init(handle, flag_int
-        , event_cb ? pyalpm_trans_eventcb : NULL
-        , conv_cb ? pyalpm_trans_convcb : NULL
-        , progress_cb ? pyalpm_trans_progresscb : NULL);
+    ret = alpm_trans_init(handle, flag_int);
     if (ret == -1) {
       RET_ERR("transaction could not be initialized", alpm_errno(handle), NULL);
     }
