@@ -3,6 +3,9 @@ pyalpm 0.5 :
   * API: initialize() replaced by Handle() constructor
   * API: DB.url property replaced by DB.servers
   * API: Package.files now returns a list of (name, size, mode)
+  * API: Handle has a new attribute gpgdir
+  * fix: repository order suhffled in pacman.conf parsing
+  * fix: incorrect default values for options
 
 pyalpm 0.4.2 :
   * fix a typo in init_with_config()
