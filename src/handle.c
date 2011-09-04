@@ -40,6 +40,7 @@ static PyObject *pyalpm_handle_from_pmhandle(void* data) {
   }
 
   self->c_data = handle;
+  /* memset(self->py_callbacks, 0, N_CALLBACKS * sizeof(PyObject*)); */
   return (PyObject *)self;
 }
 
@@ -214,7 +215,7 @@ static int _set_cb_attr(PyObject *self, PyObject *value, const struct _alpm_cb_g
   } else if (PyCallable_Check(value)) {
     Py_CLEAR(global_py_callbacks[closure->id]);
     Py_INCREF(value);
-    it->py_callbacks[closure->id] = value;
+    global_py_callbacks[closure->id] = value;
     closure->setter(it->c_data, closure->cb_wrapper);
   } else {
     PyErr_SetString(PyExc_TypeError, "value must be None or a function");

@@ -38,6 +38,9 @@ void init_pyalpm_error(PyObject* module);
       return ret;                          \
     } while(0)
 
+/* macro to return Python objects in the exception: the use of 'N'
+ * format char is to steal a reference to arg
+ */
 #define RET_ERR_DATA(msg, errno, arg, ret) do { \
       PyObject *error_obj = Py_BuildValue("(siN)", msg, errno, arg); \
       PyErr_SetObject(alpm_error, error_obj); \

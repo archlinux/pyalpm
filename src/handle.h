@@ -39,7 +39,7 @@ typedef enum _pyalpm_callback_id {
 typedef struct _AlpmHandle {
   PyObject_HEAD
   alpm_handle_t *c_data;
-  PyObject *py_callbacks[N_CALLBACKS];
+  /* PyObject *py_callbacks[N_CALLBACKS]; */
 } AlpmHandle;
 
 #define ALPM_HANDLE(self) (((AlpmHandle*)(self))->c_data)

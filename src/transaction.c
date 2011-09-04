@@ -117,8 +117,12 @@ void pyalpm_eventcb(alpm_event_t event, void* data1, void *data2) {
   }
   {
     PyObject *result = NULL;
-    result = PyObject_CallFunction(global_py_callbacks[CB_EVENT], "is(NN)",
-        event, eventstr, obj1, obj2);
+    if (global_py_callbacks[CB_PROGRESS]) {
+      result = PyObject_CallFunction(global_py_callbacks[CB_EVENT], "is(NN)",
+          event, eventstr, obj1, obj2);
+    } else {
+      PyErr_SetString(PyExc_RuntimeError, "event callback was called but it's not set!");
+    }
     if (PyErr_Occurred()) PyErr_Print();
     Py_CLEAR(result);
   }
@@ -174,7 +178,7 @@ static PyObject* pyobject_from_pmfileconflict(void *item) {
   case ALPM_FILECONFLICT_FILESYSTEM:
     return Py_BuildValue("(ssO)", target, filename, Py_None);
   default:
-    PyErr_SetString(PyExc_RuntimeError, "invalid type for alpm_fileconflict_t object");
+    PyErr_Format(PyExc_RuntimeError, "invalid type %d for alpm_fileconflict_t object", conflict->type);
     return NULL;
   }
 }
@@ -302,16 +306,37 @@ static PyObject* pyalpm_trans_prepare(PyObject *self, PyObject *args) {
 static PyObject* pyalpm_trans_commit(PyObject *self, PyObject *args) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
   alpm_list_t *data = NULL;
+  int ret;
+  enum _alpm_errno_t err;
+  PyObject *err_info = NULL;
 
-  int ret = alpm_trans_commit(handle, &data);
-  if (ret == -1) {
-    /* return the list of file conflicts in the exception */
-    PyObject *info = alpmlist_to_pylist(data, pyobject_from_pmfileconflict);
-    if (!info) return NULL;
-    RET_ERR_DATA("transaction failed", alpm_errno(handle), info, NULL);
+  ret = alpm_trans_commit(handle, &data);
+  if (ret == 0) Py_RETURN_NONE;
+  if (ret != -1) {
+    PyErr_Format(PyExc_RuntimeError,
+        "unexpected return value %d from alpm_trans_commit()", ret);
+    return NULL;
   }
 
-  Py_RETURN_NONE;
+  err = alpm_errno(handle);
+  switch(err) {
+    case ALPM_ERR_FILE_CONFLICTS:
+      /* return the list of file conflicts in the exception */
+      err_info = alpmlist_to_pylist(data, pyobject_from_pmfileconflict);
+      break;
+    case ALPM_ERR_PKG_INVALID:
+    case ALPM_ERR_PKG_INVALID_CHECKSUM:
+    case ALPM_ERR_PKG_INVALID_SIG:
+    case ALPM_ERR_DLT_INVALID:
+      err_info = alpmlist_to_pylist(data, pyobject_from_string);
+      break;
+    default:
+      break;
+  }
+  if (err_info)
+    RET_ERR_DATA("transaction failed", err, err_info, NULL);
+  else
+    RET_ERR("transaction failed", err, NULL);
 }
 
 static PyObject* pyalpm_trans_interrupt(PyObject *self, PyObject *args) {
