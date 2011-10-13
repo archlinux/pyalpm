@@ -65,7 +65,7 @@ SINGLE_OPTIONS = (
 	'Architecture',
 	'XferCommand',
 	'CleanMethod',
-	'VerifySig'
+	'SigLevel'
 )
 
 BOOLEAN_OPTIONS = (
@@ -109,8 +109,8 @@ def pacman_conf_enumerator(path):
 			# repos only have the Server option
 			if key == 'Server' and equal == '=':
 				yield (current_section, 'Server', value)
-			elif key == 'VerifySig' and equal == '=':
-				yield (current_section, 'VerifySig', value)
+			elif key == 'SigLevel' and equal == '=':
+				yield (current_section, 'SigLevel', value)
 			else:
 				raise InvalidSyntax(f.name, 'invalid key for repository configuration', line)
 			continue
