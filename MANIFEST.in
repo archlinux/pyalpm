@@ -3,4 +3,5 @@ include INSTALL
 include LICENSE
 include src/*.h
 include scripts/pycman
+include scripts/lsoptdepends
 
