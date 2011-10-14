@@ -26,6 +26,15 @@
 #include "options.h"
 #include "util.h"
 
+static int PyLong_to_int(PyObject *value, int overflow_val)
+{
+  int overflow;
+  long lval = PyLong_AsLongAndOverflow(value, &overflow);
+  if (overflow != 0) return overflow_val;
+  if (lval > INT_MAX || lval < INT_MIN) return overflow_val;
+  return (int)lval;
+}
+
 /** Boolean options
  */
 /*
@@ -55,7 +64,7 @@ int option_set_usesyslog_alpm(PyObject *self, PyObject *value, void* closure)
     return -1;
   }
 
-  alpm_option_set_usesyslog(handle, PyLong_AsLong(value));
+  alpm_option_set_usesyslog(handle, PyLong_to_int(value, -1));
   return 0;
 }
 
@@ -77,7 +86,7 @@ int option_set_usedelta_alpm(PyObject *self, PyObject *value, void* closure)
     return -1;
   }
 
-  alpm_option_set_usedelta(handle, PyLong_AsLong(value));
+  alpm_option_set_usedelta(handle, PyLong_to_int(value, -1));
   return 0;
 }
 
@@ -98,7 +107,7 @@ int option_set_checkspace_alpm(PyObject *self, PyObject *value, void* closure)
     PyErr_SetString(PyExc_TypeError, "wrong arguments");
     return -1;
   }
-  alpm_option_set_checkspace(handle, PyLong_AsLong(value));
+  alpm_option_set_checkspace(handle, PyLong_to_int(value, -1));
   return 0;
 }
 
@@ -352,13 +361,9 @@ int pyalpm_fetchcb(const char *url, const char *localpath, int force) {
   if (!PyLong_Check(result)) {
     return -1;
   } else {
-    int overflow;
-    long ret = PyLong_AsLongAndOverflow(result, &overflow);
+    int ret = PyLong_to_int(result, -1);
     Py_DECREF(result);
-    if (overflow != 0)
-      return -1;
-    else
-      return ret;
+    return ret;
   }
 }
 
