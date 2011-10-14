@@ -131,7 +131,7 @@ PyObject* alpmlist_to_pylist(alpm_list_t *prt, PyObject* pybuilder(void*))
   }
 
   for(tmp = prt; tmp; tmp = alpm_list_next(tmp)) {
-    stritem = pybuilder(alpm_list_getdata(tmp));
+    stritem = pybuilder(tmp->data);
     if (!stritem) {
       Py_CLEAR(stritem);
       return NULL;
