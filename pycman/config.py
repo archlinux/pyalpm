@@ -74,7 +74,8 @@ BOOLEAN_OPTIONS = (
 	'UseDelta',
 	'TotalDownload',
 	'CheckSpace',
-	'VerbosePkgLists'
+	'VerbosePkgLists',
+	'ILoveCandy'
 )
 
 def pacman_conf_enumerator(path):
