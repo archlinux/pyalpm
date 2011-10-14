@@ -1,3 +1,6 @@
+pyalpm 0.5.1 :
+  * pycman: parse ILoveCandy and SigLevel in pacman.conf
+
 pyalpm 0.5 :
   * now requires pacman 4.0
   * API: initialize() replaced by Handle() constructor
