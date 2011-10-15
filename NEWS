@@ -1,3 +1,6 @@
+pyalpm 0.5.3 :
+  * fix: incorrect integer types in file lists
+
 pyalpm 0.5.2 :
   * fix: optimistic cast on 64-bit platforms
   * fix: UnicodeDecodeError on some packages with non-UTF8
