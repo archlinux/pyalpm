@@ -214,8 +214,8 @@ static PyObject* pyalpm_package_get_files(AlpmPackage *self, void *closure) {
     for (i = 0; i < flist->count; i++) {
       const alpm_file_t *file = flist->files + i;
       PyObject *filename = PyUnicode_DecodeFSDefault(file->name);
-      PyObject *filesize = PyLong_FromLong(file->size);
-      PyObject *filemode = PyLong_FromLong(file->mode);
+      PyObject *filesize = PyLong_FromLongLong(file->size);
+      PyObject *filemode = PyLong_FromUnsignedLong(file->mode);
       PyObject *item = PyTuple_New(3);
       if (item && filename && filesize && filemode) {
         PyTuple_SET_ITEM(item, 0, filename);
