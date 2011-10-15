@@ -213,12 +213,22 @@ static PyObject* pyalpm_package_get_files(AlpmPackage *self, void *closure) {
     result = PyList_New(flist->count);
     for (i = 0; i < flist->count; i++) {
       const alpm_file_t *file = flist->files + i;
-      PyObject *item = Py_BuildValue("(sii)", file->name, file->size, file->mode);
-      if (!item) {
-        Py_CLEAR(result);
+      PyObject *filename = PyUnicode_DecodeFSDefault(file->name);
+      PyObject *filesize = PyLong_FromLong(file->size);
+      PyObject *filemode = PyLong_FromLong(file->mode);
+      PyObject *item = PyTuple_New(3);
+      if (item && filename && filesize && filemode) {
+        PyTuple_SET_ITEM(item, 0, filename);
+        PyTuple_SET_ITEM(item, 1, filesize);
+        PyTuple_SET_ITEM(item, 2, filemode);
+        PyList_SET_ITEM(result, i, item);
+      } else {
+        Py_CLEAR(item);
+        Py_CLEAR(filename);
+        Py_CLEAR(filesize);
+        Py_CLEAR(filemode);
         return NULL;
       }
-      PyList_SET_ITEM(result, i, item);
     }
   }
   return result;
