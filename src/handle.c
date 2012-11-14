@@ -80,12 +80,12 @@ PyObject* pyalpm_release(PyObject *self, PyObject *args)
 
 static PyObject* pyalpm_get_localdb(PyObject *self, PyObject *dummy) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
-  return pyalpm_db_from_pmdb(alpm_option_get_localdb(handle));
+  return pyalpm_db_from_pmdb(alpm_get_localdb(handle));
 }
 
 static PyObject* pyalpm_get_syncdbs(PyObject *self, PyObject *dummy) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
-  return alpmlist_to_pylist(alpm_option_get_syncdbs(handle),
+  return alpmlist_to_pylist(alpm_get_syncdbs(handle),
 			    pyalpm_db_from_pmdb);
 }
 
@@ -100,7 +100,7 @@ static PyObject* pyalpm_register_syncdb(PyObject *self, PyObject *args) {
     return NULL;
   }
 
-  result = alpm_db_register_sync(handle, dbname, pgp_level);
+  result = alpm_register_syncdb(handle, dbname, pgp_level);
   if (! result) {
     PyErr_Format(alpm_error, "unable to register sync database %s", dbname);
     return NULL;
@@ -119,7 +119,7 @@ static PyObject* pyalpm_set_pkgreason(PyObject* self, PyObject* args) {
     return NULL;
   }
   pmpkg = ALPM_PACKAGE(pkg);
-  ret = alpm_db_set_pkgreason(handle, pmpkg, reason);
+  ret = alpm_pkg_set_reason(pmpkg, reason);
 
   if (ret == -1) RET_ERR("failed setting install reason", alpm_errno(handle), NULL);
   Py_RETURN_NONE;
@@ -261,10 +261,10 @@ struct PyGetSetDef pyalpm_handle_getset[] = {
     (getter)option_get_usesyslog_alpm,
     (setter)option_set_usesyslog_alpm,
     "use syslog (an integer, 0 = False, 1 = True)", NULL } ,
-  { "usedelta",
-    (getter)option_get_usedelta_alpm,
-    (setter)option_set_usedelta_alpm,
-    "use deltas (an integer, 0 = False, 1 = True)", NULL } ,
+  { "deltaratio",
+    (getter)option_get_deltaratio_alpm,
+    (setter)option_set_deltaratio_alpm,
+    "set deltaratio (a float). Deltas are enabled if this is nonzero.", NULL } ,
   { "checkspace",
     (getter)option_get_checkspace_alpm,
     (setter)option_set_checkspace_alpm,

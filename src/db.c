@@ -157,7 +157,7 @@ static PyObject* pyalpm_db_get_pkg(PyObject *rawself, PyObject* args) {
   }
 }
 
-static PyObject* pyalpm_db_readgrp(PyObject* rawself, PyObject* args) {
+static PyObject* pyalpm_db_get_group(PyObject* rawself, PyObject* args) {
   AlpmDB* self = (AlpmDB*)rawself;
   char *grpname;
   alpm_group_t *grp;
@@ -166,7 +166,7 @@ static PyObject* pyalpm_db_readgrp(PyObject* rawself, PyObject* args) {
     return NULL;
   }
 
-  grp = alpm_db_readgroup(self->c_data, grpname);
+  grp = alpm_db_get_group(self->c_data, grpname);
   return _pyobject_from_pmgrp(grp);
 }
 
@@ -212,7 +212,7 @@ static struct PyMethodDef db_methods[] = {
     "search for packages matching a list of regexps\n"
     "args: a variable number of regexps (strings)\n"
     "returns: packages matching all these regexps" },
-  { "read_grp", pyalpm_db_readgrp, METH_VARARGS,
+  { "read_grp", pyalpm_db_get_group, METH_VARARGS,
     "get contents of a group\n"
     "args: a group name (string)\n"
     "returns: a tuple (group name, list of packages)" },
