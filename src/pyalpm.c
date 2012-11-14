@@ -106,10 +106,11 @@ static struct PyModuleDef pyalpm_def = {
   "alpm",
   "This module wraps the libalpm library",
   -1,
-  methods
+  methods,
+  NULL, NULL, NULL, NULL,
 };
 
-PyMODINIT_FUNC PyInit_pyalpm()
+PyMODINIT_FUNC PyInit_pyalpm(void)
 {
   PyObject* m = PyModule_Create(&pyalpm_def);
 

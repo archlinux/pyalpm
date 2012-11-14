@@ -20,8 +20,10 @@
  *
  */
 
+#include <pyconfig.h>
 #include <alpm.h>
 #include <Python.h>
+
 #include "handle.h"
 #include "package.h"
 #include "db.h"

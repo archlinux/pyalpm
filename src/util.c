@@ -21,6 +21,8 @@
  *
  */
 
+/* Include pyconfig for feature test macros. */
+#include <pyconfig.h>
 #include <string.h>
 #include <regex.h>
 
