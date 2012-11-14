@@ -277,7 +277,7 @@ PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs) {
     alpm_transflag_t flag_int = 0;
     int i, ret;
     for (i = 0; i < 18; i++) {
-      if (flags[i]) flag_int |= 1 << i;
+      if (flags[i]) flag_int |= 1U << i;
     }
     ret = alpm_trans_init(handle, flag_int);
     if (ret == -1) {

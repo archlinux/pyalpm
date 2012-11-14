@@ -6,7 +6,12 @@ os.putenv('LC_CTYPE', 'en_US.UTF-8')
 
 pyalpm_version = '0.5.3'
 
-cflags = ['-Wall', '-Wconversion', '-ansi', '-Wdeclaration-after-statement', '-D_FILE_OFFSET_BITS=64']
+cflags = ['-Wall', '-Wextra', '-Werror',
+    '-Wconversion',
+    '-Wno-unused-parameter',
+    '-Wno-unused-function',
+    '-Wdeclaration-after-statement',
+    '-ansi', '-D_FILE_OFFSET_BITS=64']
 
 alpm = Extension('pyalpm',
     libraries = ['alpm'],

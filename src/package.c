@@ -210,7 +210,7 @@ static PyObject* pyalpm_package_get_files(AlpmPackage *self, void *closure) {
     Py_RETURN_NONE;
   else {
     ssize_t i;
-    result = PyList_New(flist->count);
+    result = PyList_New((Py_ssize_t)flist->count);
     for (i = 0; i < (ssize_t)flist->count; i++) {
       const alpm_file_t *file = flist->files + i;
       PyObject *filename = PyUnicode_DecodeFSDefault(file->name);
