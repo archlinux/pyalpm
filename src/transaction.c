@@ -92,6 +92,8 @@ void pyalpm_eventcb(alpm_event_t event, void* data1, void *data2) {
     case ALPM_EVENT_INTEGRITY_DONE:
       eventstr = "Done checking integrity";
       break;
+    case ALPM_EVENT_LOAD_START:
+    case ALPM_EVENT_LOAD_DONE:
     case ALPM_EVENT_DELTA_INTEGRITY_START:
     case ALPM_EVENT_DELTA_INTEGRITY_DONE:
     case ALPM_EVENT_DELTA_PATCHES_START:
@@ -112,6 +114,12 @@ void pyalpm_eventcb(alpm_event_t event, void* data1, void *data2) {
     case ALPM_EVENT_DISKSPACE_DONE:
       eventstr = "Done checking disk space";
       break;
+    case ALPM_EVENT_OPTDEP_REQUIRED:
+    case ALPM_EVENT_DATABASE_MISSING:
+    case ALPM_EVENT_KEYRING_START:
+    case ALPM_EVENT_KEYRING_DONE:
+    case ALPM_EVENT_KEY_DOWNLOAD_START:
+    case ALPM_EVENT_KEY_DOWNLOAD_DONE:
     default:
       eventstr = "unknown event";
   }
