@@ -176,12 +176,12 @@ PyObject *pyalpm_package_load(PyObject *self, PyObject *args, PyObject *kwargs) 
 
 static PyObject* pyalpm_package_get_builddate(AlpmPackage *self, void *closure) {
   CHECK_IF_INITIALIZED();
-  return PyLong_FromLong(alpm_pkg_get_builddate(self->c_data));
+  return PyLong_FromLongLong(alpm_pkg_get_builddate(self->c_data));
 }
 
 static PyObject* pyalpm_package_get_installdate(AlpmPackage *self, void *closure) {
   CHECK_IF_INITIALIZED();
-  return PyLong_FromLong(alpm_pkg_get_installdate(self->c_data));
+  return PyLong_FromLongLong(alpm_pkg_get_installdate(self->c_data));
 }
 
 static PyObject* pyalpm_package_get_size(AlpmPackage *self, void *closure) {
