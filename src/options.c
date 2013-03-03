@@ -334,7 +334,11 @@ extern PyObject *global_py_callbacks[N_CALLBACKS];
 void pyalpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
   char *log;
   PyObject *result;
-  vasprintf(&log, fmt, va_args);
+  int ret;
+
+  ret = vasprintf(&log, fmt, va_args);
+  if(ret == -1)
+    log = "pyalpm_logcb: could not allocate memory";
   result = PyObject_CallFunction(global_py_callbacks[CB_LOG], "is", level, log);
   if (!result) PyErr_Print();
   Py_CLEAR(result);
