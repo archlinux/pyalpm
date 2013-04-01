@@ -1,3 +1,6 @@
+pyalpm 0.6 :
+  * compatible with pacman 4.1
+
 pyalpm 0.5.3 :
   * fix: incorrect integer types in file lists
 
