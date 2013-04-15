@@ -1,3 +1,6 @@
+pyalpm 0.6.1 :
+  * fix: incorrect warnings from new pacman.conf options (FS#34591).
+
 pyalpm 0.6 :
   * compatible with pacman 4.1
 
