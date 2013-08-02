@@ -66,7 +66,8 @@ SINGLE_OPTIONS = (
 	'XferCommand',
 	'CleanMethod',
 	'SigLevel',
-	'LocalFileSigLevel'
+	'LocalFileSigLevel',
+	'RemoteFileSigLevel'
 )
 
 BOOLEAN_OPTIONS = (
