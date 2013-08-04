@@ -195,10 +195,22 @@ class PacmanConfig(object):
 			_logmask = 0xffff
 
 	def apply(self, h):
-		h.arch = self.options["Architecture"]
+		# File paths
 		h.logfile = self.options["LogFile"]
 		h.gpgdir = self.options["GPGDir"]
+		# Strings
+		h.arch = self.options["Architecture"]
+		# Lists
 		h.cachedirs = self.options["CacheDir"]
+		if "NoUpgrade" in self.options:
+			h.noupgrades = self.options["NoUpgrade"]
+		if "NoExtract" in self.options:
+			h.noextracts = self.options["NoExtract"]
+		if "IgnorePkg" in self.options:
+			h.ignorepkgs = self.options["IgnorePkg"]
+		if "IgnoreGroup" in self.options:
+			h.ignoregrps = self.options["IgnoreGroup"]
+
 		h.logcb = cb_log
 
 		# set sync databases
