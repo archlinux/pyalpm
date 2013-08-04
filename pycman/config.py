@@ -67,7 +67,8 @@ SINGLE_OPTIONS = (
 	'CleanMethod',
 	'SigLevel',
 	'LocalFileSigLevel',
-	'RemoteFileSigLevel'
+	'RemoteFileSigLevel',
+	'UseDelta',
 )
 
 BOOLEAN_OPTIONS = (
