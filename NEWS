@@ -1,3 +1,7 @@
+pyalpm 0.6.2 :
+  * pycman: recognize RemoteFileSigLevel and UseDelta=x options (FS#34791)
+  * init_with_config now handles IgnorePkg and similar options (FS#29688)
+
 pyalpm 0.6.1 :
   * fix: incorrect warnings from new pacman.conf options (FS#34591).
 
