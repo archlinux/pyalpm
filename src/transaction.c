@@ -30,11 +30,9 @@
 /** Transaction callbacks */
 extern PyObject *global_py_callbacks[N_CALLBACKS];
 
-void pyalpm_eventcb(alpm_event_t event, void* data1, void *data2) {
+void pyalpm_eventcb(alpm_event_t *event) {
   const char *eventstr;
-  PyObject *obj1 = Py_None;
-  PyObject *obj2 = Py_None;
-  switch(event) {
+  switch(event->type) {
     case ALPM_EVENT_CHECKDEPS_START:
       eventstr = "Checking dependencies";
       break;
@@ -59,32 +57,45 @@ void pyalpm_eventcb(alpm_event_t event, void* data1, void *data2) {
     case ALPM_EVENT_INTERCONFLICTS_DONE:
       eventstr = "Done checking inter conflicts";
       break;
-    case ALPM_EVENT_ADD_START:
-      eventstr = "Adding a package";
-      obj1 = pyalpm_package_from_pmpkg(data1);
+    case ALPM_EVENT_PACKAGE_OPERATION_START:
+      eventstr = "Operating on a package";
+      switch(((alpm_event_package_operation_t*)event)->operation) {
+      case ALPM_PACKAGE_INSTALL:
+        eventstr = "Adding a package";
+        break;
+      case ALPM_PACKAGE_UPGRADE:
+        eventstr = "Upgrading a package";
+        break;
+      case ALPM_PACKAGE_REINSTALL:
+        eventstr = "Reinstalling a package";
+        break;
+      case ALPM_PACKAGE_DOWNGRADE:
+        eventstr = "Downgrading a package";
+        break;
+      case ALPM_PACKAGE_REMOVE:
+        eventstr = "Removing a package";
+        break;
+      }
       break;
-    case ALPM_EVENT_ADD_DONE:
-      eventstr = "Done adding a package";
-      obj1 = pyalpm_package_from_pmpkg(data1);
-      if (data2) obj2 = pyalpm_package_from_pmpkg(data2);
-      break;
-    case ALPM_EVENT_REMOVE_START:
-      eventstr = "Remove package";
-      obj1 = pyalpm_package_from_pmpkg(data1);
-      break;
-    case ALPM_EVENT_REMOVE_DONE:
-      eventstr = "Done removing package";
-      obj1 = pyalpm_package_from_pmpkg(data1);
-      break;
-    case ALPM_EVENT_UPGRADE_START:
-      eventstr = "Upgrading a package";
-      obj1 = pyalpm_package_from_pmpkg(data1);
-      obj2 = pyalpm_package_from_pmpkg(data2);
-      break;
-    case ALPM_EVENT_UPGRADE_DONE:
-      eventstr = "Done upgrading a package";
-      obj1 = pyalpm_package_from_pmpkg(data1);
-      obj2 = pyalpm_package_from_pmpkg(data2);
+    case ALPM_EVENT_PACKAGE_OPERATION_DONE:
+      eventstr = "Done operating on a package";
+      switch(((alpm_event_package_operation_t*)event)->operation) {
+      case ALPM_PACKAGE_INSTALL:
+        eventstr = "Done adding a package";
+        break;
+      case ALPM_PACKAGE_UPGRADE:
+        eventstr = "Done upgrading a package";
+        break;
+      case ALPM_PACKAGE_REINSTALL:
+        eventstr = "Done reinstalling a package";
+        break;
+      case ALPM_PACKAGE_DOWNGRADE:
+        eventstr = "Done downgrading a package";
+        break;
+      case ALPM_PACKAGE_REMOVE:
+        eventstr = "Done removing a package";
+        break;
+      }
       break;
     case ALPM_EVENT_INTEGRITY_START:
       eventstr = "Checking integrity";
@@ -105,6 +116,8 @@ void pyalpm_eventcb(alpm_event_t event, void* data1, void *data2) {
     case ALPM_EVENT_SCRIPTLET_INFO:
       /* info here */
     case ALPM_EVENT_RETRIEVE_START:
+    case ALPM_EVENT_RETRIEVE_DONE:
+    case ALPM_EVENT_RETRIEVE_FAILED:
       /* info here */
       eventstr = "event not implemented";
       break;
@@ -114,20 +127,28 @@ void pyalpm_eventcb(alpm_event_t event, void* data1, void *data2) {
     case ALPM_EVENT_DISKSPACE_DONE:
       eventstr = "Done checking disk space";
       break;
-    case ALPM_EVENT_OPTDEP_REQUIRED:
+    case ALPM_EVENT_OPTDEP_REMOVAL:
     case ALPM_EVENT_DATABASE_MISSING:
+      eventstr = "event not implemented";
+      break;
     case ALPM_EVENT_KEYRING_START:
+      eventstr = "Checking keys in keyring";
+      break;
     case ALPM_EVENT_KEYRING_DONE:
+      eventstr = "Done checking keys in keyring";
+      break;
     case ALPM_EVENT_KEY_DOWNLOAD_START:
     case ALPM_EVENT_KEY_DOWNLOAD_DONE:
+    case ALPM_EVENT_PACNEW_CREATED:
+    case ALPM_EVENT_PACSAVE_CREATED:
+    case ALPM_EVENT_PACORIG_CREATED:
     default:
       eventstr = "unknown event";
   }
   {
     PyObject *result = NULL;
     if (global_py_callbacks[CB_PROGRESS]) {
-      result = PyObject_CallFunction(global_py_callbacks[CB_EVENT], "is(NN)",
-          event, eventstr, obj1, obj2);
+      result = PyObject_CallFunction(global_py_callbacks[CB_EVENT], "is", event->type, eventstr);
     } else {
       PyErr_SetString(PyExc_RuntimeError, "event callback was called but it's not set!");
     }
