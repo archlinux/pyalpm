@@ -141,7 +141,6 @@ void pyalpm_eventcb(alpm_event_t *event) {
     case ALPM_EVENT_KEY_DOWNLOAD_DONE:
     case ALPM_EVENT_PACNEW_CREATED:
     case ALPM_EVENT_PACSAVE_CREATED:
-    case ALPM_EVENT_PACORIG_CREATED:
     default:
       eventstr = "unknown event";
   }
