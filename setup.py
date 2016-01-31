@@ -4,7 +4,7 @@ from distutils.core import Extension, setup
 
 os.putenv('LC_CTYPE', 'en_US.UTF-8')
 
-pyalpm_version = '0.7'
+pyalpm_version = '0.8'
 
 cflags = ['-Wall', '-Wextra',
     '-Wconversion',

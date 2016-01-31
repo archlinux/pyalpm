@@ -1,5 +1,8 @@
+pyalpm 0.8 :
+  * compatible with pacman 5
+
 pyalpm 0.7 :
-  * compatible with pacman 4.1
+  * compatible with pacman 4.2
   * pycman: recognize Usage option of repositories
 
 pyalpm 0.6.2 :
