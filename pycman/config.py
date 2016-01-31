@@ -48,6 +48,7 @@ class InvalidSyntax(Warning):
 # accumulated in a list.
 LIST_OPTIONS = (
 	'CacheDir',
+	'HookDir',
 	'HoldPkg',
 	'SyncFirst',
 	'IgnoreGroup',
