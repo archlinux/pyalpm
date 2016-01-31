@@ -6,10 +6,11 @@ os.putenv('LC_CTYPE', 'en_US.UTF-8')
 
 pyalpm_version = '0.7'
 
-cflags = ['-Wall', '-Wextra', '-Werror',
+cflags = ['-Wall', '-Wextra',
     '-Wconversion',
     '-Wno-unused-parameter',
     '-Wno-unused-function',
+    '-Wno-format',
     '-Wdeclaration-after-statement',
     '-ansi', '-D_FILE_OFFSET_BITS=64']
 
