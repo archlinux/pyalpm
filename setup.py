@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
+import subprocess
+from distutils.cmd import Command
 from distutils.core import Extension, setup
 
 os.putenv('LC_CTYPE', 'en_US.UTF-8')
@@ -32,6 +34,21 @@ alpm = Extension('pyalpm',
         'src/util.h',
         ])
 
+class TestCommand(Command):
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        raise SystemExit(
+            subprocess.call(['nosetests',
+                             'tests']))
+
+
 setup(name = 'pyalpm',
       version = pyalpm_version,
       description = 'libalpm bindings for Python 3',
@@ -41,6 +58,9 @@ setup(name = 'pyalpm',
       packages = ["pycman"],
       scripts = ["scripts/lsoptdepends"] + ["scripts/pycman-" + i
           for i in ['database', 'deptest', 'query', 'remove', 'sync', 'upgrade', 'version']],
-      ext_modules = [alpm])
+      ext_modules = [alpm],
+      cmdclass = {
+          'test': TestCommand
+        })
 
 # vim: set ts=4 sw=4 et tw=0:
