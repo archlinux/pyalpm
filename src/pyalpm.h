@@ -20,12 +20,6 @@ This file is part of pyalpm.
 */
 #include <Python.h>
 
-#include <alpm.h>
-#include <alpm_list.h>
-
-#include <stdio.h>
-#include <string.h>
-
 #ifndef PYALPM_H
 #define PYALPM_H
 

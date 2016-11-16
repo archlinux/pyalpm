@@ -20,7 +20,6 @@
 
 #include "pyalpm.h"
 #include "util.h"
-#include "handle.h"
 #include "package.h"
 #include "db.h"
 
