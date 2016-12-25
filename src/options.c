@@ -342,6 +342,7 @@ void pyalpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
   result = PyObject_CallFunction(global_py_callbacks[CB_LOG], "is", level, log);
   if (!result) PyErr_Print();
   Py_CLEAR(result);
+  if (ret != 1) free(log);
 }
 
 void pyalpm_dlcb(const char *filename, off_t xfered, off_t total) {
