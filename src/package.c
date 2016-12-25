@@ -20,6 +20,7 @@
  *
  */
 
+#include <pyconfig.h>
 #include <string.h>
 #include <alpm.h>
 #include <Python.h>

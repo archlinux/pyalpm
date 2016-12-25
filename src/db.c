@@ -20,6 +20,7 @@
  *
  */
 
+#include <pyconfig.h>
 #include <alpm.h>
 #include <Python.h>
 #include "db.h"
