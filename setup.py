@@ -12,7 +12,7 @@ cflags = ['-Wall', '-Wextra',
     '-Wno-unused-function',
     '-Wno-format',
     '-Wdeclaration-after-statement',
-    '-ansi', '-D_FILE_OFFSET_BITS=64']
+    '-std=c99', '-D_FILE_OFFSET_BITS=64']
 
 alpm = Extension('pyalpm',
     libraries = ['alpm'],
