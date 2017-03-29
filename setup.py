@@ -7,11 +7,8 @@ os.putenv('LC_CTYPE', 'en_US.UTF-8')
 pyalpm_version = '0.8'
 
 cflags = ['-Wall', '-Wextra', '-Werror',
-    '-Wconversion',
     '-Wno-unused-parameter',
     '-Wno-unused-function',
-    '-Wno-format',
-    '-Wdeclaration-after-statement',
     '-std=c99', '-D_FILE_OFFSET_BITS=64']
 
 alpm = Extension('pyalpm',
