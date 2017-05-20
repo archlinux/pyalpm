@@ -8,7 +8,6 @@ pyalpm_version = '0.8'
 
 cflags = ['-Wall', '-Wextra', '-Werror',
     '-Wno-unused-parameter',
-    '-Wno-unused-function',
     '-std=c99', '-D_FILE_OFFSET_BITS=64']
 
 alpm = Extension('pyalpm',

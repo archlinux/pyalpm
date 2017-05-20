@@ -193,14 +193,6 @@ static PyObject* pyobject_from_pmdepmissing(void *item) {
   return result;
 }
 
-static PyObject* pyobject_from_pmconflict(void *item) {
-  alpm_conflict_t* conflict = (alpm_conflict_t*)item;
-  return Py_BuildValue("(sss)",
-      conflict->package1,
-      conflict->package2,
-      conflict->reason);
-}
-
 static PyObject* pyobject_from_pmfileconflict(void *item) {
   alpm_fileconflict_t* conflict = (alpm_fileconflict_t*)item;
   const char *target = conflict->target;
