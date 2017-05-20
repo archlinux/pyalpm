@@ -38,7 +38,7 @@ setup(name = 'pyalpm',
       description = 'libalpm bindings for Python 3',
       author = "Rémy Oudompheng",
       author_email = "remy@archlinux.org",
-      url = "http://projects.archlinux.org/users/remy/pyalpm.git",
+      url = "https://projects.archlinux.org/pyalpm.git",
       packages = ["pycman"],
       scripts = ["scripts/lsoptdepends"] + ["scripts/pycman-" + i
           for i in ['database', 'deptest', 'query', 'remove', 'sync', 'upgrade', 'version']],
