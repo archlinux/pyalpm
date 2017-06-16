@@ -1,0 +1,20 @@
+dist: trusty
+
+sudo: required
+
+env: ARCH_TRAVIS_CLEAN_CHROOT=1
+
+arch:
+
+  packages:
+    - python
+    - python-nose
+
+  script:
+    - python3 -m py_compile $(git ls-files '*.py')
+    - sudo python3 setup.py install
+    - python3 setup.py test
+
+script: 'curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash'
+
+# vim: ft=yaml ts=2 sw=2 et:
