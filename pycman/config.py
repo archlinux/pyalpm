@@ -86,10 +86,11 @@ BOOLEAN_OPTIONS = (
 def pacman_conf_enumerator(path):
 	filestack = []
 	current_section = None
-	filestack.append(open(path))
+	filestack.append(open(path, 'rb'))
 	while len(filestack) > 0:
 		f = filestack[-1]
 		line = f.readline()
+		line = line.decode('utf-8')
 		if len(line) == 0:
 			# end of file
 			filestack.pop()
@@ -109,7 +110,7 @@ def pacman_conf_enumerator(path):
 
 		# include files
 		if equal == '=' and key == 'Include':
-			filestack.extend(open(f) for f in glob.glob(value))
+			filestack.extend(open(f, 'rb') for f in glob.glob(value))
 			continue
 		if current_section != 'options':
 			# repos only have the Server, SigLevel, Usage options
