@@ -191,7 +191,7 @@ class PacmanConfig(object):
 		if options.logfile is not None:
 			self.options["LogFile"] = options.logfile
 		if options.cachedir is not None:
-			self.options["CacheDir"] = [option.cachedir]
+			self.options["CacheDir"] = [options.cachedir]
 		if options.debug:
 			_logmask = 0xffff
 
