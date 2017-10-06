@@ -38,7 +38,8 @@ def upgrade(pkgs, options):
 	db = handle.get_localdb()
 	targets = []
 	for name in pkgs:
-		pkg = pyalpm.load_pkg(name)
+		#pkg = pyalpm.load_pkg(name)
+		pkg = handle.load_pkg(name)
 		targets.append(pkg)
 
 	t = transaction.init_from_options(handle, options)
