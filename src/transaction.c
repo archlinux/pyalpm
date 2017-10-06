@@ -35,75 +35,91 @@ void pyalpm_eventcb(alpm_event_t *event) {
   const char *eventstr;
   switch(event->type) {
     case ALPM_EVENT_CHECKDEPS_START:
-      eventstr = "Checking dependencies";
-      break;
-    case ALPM_EVENT_CHECKDEPS_DONE:
-      eventstr = "Done checking dependencies";
+      eventstr = "Checking dependencies.\n";
       break;
     case ALPM_EVENT_FILECONFLICTS_START:
-      eventstr = "Checking file conflicts";
-      break;
-    case ALPM_EVENT_FILECONFLICTS_DONE:
-      eventstr = "Done checking file conflicts";
+      eventstr = "Checking file conflicts.\n";
       break;
     case ALPM_EVENT_RESOLVEDEPS_START:
-      eventstr = "Resolving dependencies";
-      break;
-    case ALPM_EVENT_RESOLVEDEPS_DONE:
-      eventstr = "Done resolving dependencies";
+      eventstr = "Resolving dependencies.\n";
       break;
     case ALPM_EVENT_INTERCONFLICTS_START:
-      eventstr = "Checking inter conflicts";
-      break;
-    case ALPM_EVENT_INTERCONFLICTS_DONE:
-      eventstr = "Done checking inter conflicts";
+      eventstr = "Checking inter conflicts.\n";
       break;
     case ALPM_EVENT_PACKAGE_OPERATION_START:
-      eventstr = "Operating on a package";
-      switch(((alpm_event_package_operation_t*)event)->operation) {
-      case ALPM_PACKAGE_INSTALL:
-        eventstr = "Adding a package";
-        break;
-      case ALPM_PACKAGE_UPGRADE:
-        eventstr = "Upgrading a package";
-        break;
-      case ALPM_PACKAGE_REINSTALL:
-        eventstr = "Reinstalling a package";
-        break;
-      case ALPM_PACKAGE_DOWNGRADE:
-        eventstr = "Downgrading a package";
-        break;
-      case ALPM_PACKAGE_REMOVE:
-        eventstr = "Removing a package";
-        break;
-      }
-      break;
-    case ALPM_EVENT_PACKAGE_OPERATION_DONE:
-      eventstr = "Done operating on a package";
-      switch(((alpm_event_package_operation_t*)event)->operation) {
-      case ALPM_PACKAGE_INSTALL:
-        eventstr = "Done adding a package";
-        break;
-      case ALPM_PACKAGE_UPGRADE:
-        eventstr = "Done upgrading a package";
-        break;
-      case ALPM_PACKAGE_REINSTALL:
-        eventstr = "Done reinstalling a package";
-        break;
-      case ALPM_PACKAGE_DOWNGRADE:
-        eventstr = "Done downgrading a package";
-        break;
-      case ALPM_PACKAGE_REMOVE:
-        eventstr = "Done removing a package";
-        break;
+      {
+	eventstr = " ";
+	char msg[100];
+	alpm_event_package_operation_t *e = &event->package_operation;
+	switch(e->operation) {
+	case ALPM_PACKAGE_INSTALL:
+	  sprintf(msg, "Installing %s-%s.\n", alpm_pkg_get_name(e->newpkg),
+		  alpm_pkg_get_version(e->newpkg));
+	  eventstr = msg;
+	  break;
+	case ALPM_PACKAGE_UPGRADE:
+	  sprintf(msg, "Upgrading %s (%s)->(%s).\n", alpm_pkg_get_name(e->newpkg),
+		  alpm_pkg_get_version(e->oldpkg), alpm_pkg_get_version(e->newpkg));
+	  eventstr = msg;
+	  break;
+	case ALPM_PACKAGE_REINSTALL:
+	  sprintf(msg, "Reinstalling %s-%s.\n", alpm_pkg_get_name(e->newpkg),
+		  alpm_pkg_get_version(e->newpkg));
+	  eventstr = msg;
+	  break;
+	case ALPM_PACKAGE_DOWNGRADE:
+	  sprintf(msg, "Downgrading %s (%s)->(%s).\n", alpm_pkg_get_name(e->newpkg),
+		  alpm_pkg_get_version(e->oldpkg), alpm_pkg_get_version(e->newpkg));
+	  eventstr = msg;
+	  break;
+	case ALPM_PACKAGE_REMOVE:
+	  sprintf(msg, "Removing %s.\n", alpm_pkg_get_name(e->newpkg));
+	  eventstr = msg;
+	}
       }
       break;
     case ALPM_EVENT_INTEGRITY_START:
-      eventstr = "Checking integrity";
+      eventstr = "Checking integrity.\n";
       break;
+    case ALPM_EVENT_SCRIPTLET_INFO:
+      eventstr = event->scriptlet_info.line;
+      break;
+    case ALPM_EVENT_DISKSPACE_START:
+      eventstr = "Checking disk space.\n";
+      break;
+    case ALPM_EVENT_KEYRING_START:
+      eventstr = "Checking keys in keyring.\n";
+      break;
+    case ALPM_EVENT_HOOK_START:
+      if(event->hook.when == ALPM_HOOK_PRE_TRANSACTION) {
+	eventstr = "Running pre-transaction hooks.\n";
+      } else {
+	eventstr = "Running post-transaction hooks.\n";
+      }
+      break;
+    case ALPM_EVENT_HOOK_RUN_START:
+      {
+	char msg[100];
+	alpm_event_hook_run_t *e = &event->hook_run;
+	sprintf(msg, "(%2zd/%2zd) %s\n", e->position, e->total, 
+	       e->desc ? e->desc : e->name);
+	eventstr = msg;
+      }
+      break;
+
+    case ALPM_EVENT_INTERCONFLICTS_DONE:
+    case ALPM_EVENT_RESOLVEDEPS_DONE:
+    case ALPM_EVENT_FILECONFLICTS_DONE:
+    case ALPM_EVENT_CHECKDEPS_DONE:
+    case ALPM_EVENT_KEYRING_DONE:
+    case ALPM_EVENT_DISKSPACE_DONE:
     case ALPM_EVENT_INTEGRITY_DONE:
-      eventstr = "Done checking integrity";
-      break;
+    case ALPM_EVENT_PACKAGE_OPERATION_DONE:
+    case ALPM_EVENT_RETRIEVE_FAILED:
+    case ALPM_EVENT_OPTDEP_REMOVAL:
+    case ALPM_EVENT_DATABASE_MISSING:
+    case ALPM_EVENT_RETRIEVE_START:
+    case ALPM_EVENT_RETRIEVE_DONE:
     case ALPM_EVENT_LOAD_START:
     case ALPM_EVENT_LOAD_DONE:
     case ALPM_EVENT_DELTA_INTEGRITY_START:
@@ -111,43 +127,16 @@ void pyalpm_eventcb(alpm_event_t *event) {
     case ALPM_EVENT_DELTA_PATCHES_START:
     case ALPM_EVENT_DELTA_PATCHES_DONE:
     case ALPM_EVENT_DELTA_PATCH_START:
-      /* info here */
     case ALPM_EVENT_DELTA_PATCH_DONE:
     case ALPM_EVENT_DELTA_PATCH_FAILED:
-    case ALPM_EVENT_SCRIPTLET_INFO:
-      /* info here */
-    case ALPM_EVENT_RETRIEVE_START:
-    case ALPM_EVENT_RETRIEVE_DONE:
-    case ALPM_EVENT_RETRIEVE_FAILED:
-      /* info here */
-      eventstr = "event not implemented";
-      break;
-    case ALPM_EVENT_DISKSPACE_START:
-      eventstr = "Checking disk space";
-      break;
-    case ALPM_EVENT_DISKSPACE_DONE:
-      eventstr = "Done checking disk space";
-      break;
-    case ALPM_EVENT_OPTDEP_REMOVAL:
-    case ALPM_EVENT_DATABASE_MISSING:
-      eventstr = "event not implemented";
-      break;
-    case ALPM_EVENT_KEYRING_START:
-      eventstr = "Checking keys in keyring";
-      break;
-    case ALPM_EVENT_KEYRING_DONE:
-      eventstr = "Done checking keys in keyring";
-      break;
     case ALPM_EVENT_KEY_DOWNLOAD_START:
     case ALPM_EVENT_KEY_DOWNLOAD_DONE:
     case ALPM_EVENT_PACNEW_CREATED:
     case ALPM_EVENT_PACSAVE_CREATED:
-    case ALPM_EVENT_HOOK_START:
     case ALPM_EVENT_HOOK_DONE:
-    case ALPM_EVENT_HOOK_RUN_START:
     case ALPM_EVENT_HOOK_RUN_DONE:
     default:
-      eventstr = "unknown event";
+      eventstr = "!unknown event\n";
   }
   {
     PyObject *result = NULL;
