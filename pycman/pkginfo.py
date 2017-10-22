@@ -85,6 +85,7 @@ def display_pkginfo(pkg, level = 1, style = 'local'):
 	if style == 'sync':
 		print(format_attr('Repository', pkg.db.name))
 	print(format_attr('Name', pkg.name))
+	print(format_attr('Base', pkg.base))
 	print(format_attr('Version', pkg.version))
 	print(format_attr('URL', pkg.url))
 	print(format_attr('Licenses', pkg.licenses))
