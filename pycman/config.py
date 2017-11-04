@@ -25,7 +25,6 @@ This module handles pacman.conf files as well as pycman options that
 are common to all action modes.
 """
 
-import io
 import os
 import glob
 import sys
