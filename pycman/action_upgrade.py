@@ -69,7 +69,7 @@ def main(rawargs):
 			action = "store_const",
 			const = pyalpm.PKG_REASON_EXPLICIT)
 	group.add_argument('pkgs', metavar = 'pkg', nargs='*',
-			help = "a list of package URLs, e.g. package-1.0-1-i686.tar.xz")
+			help = "a list of package URLs, e.g. package-1.0-1-x86_64.tar.xz")
 
 	args = parser.parse_args(rawargs)
 	handle = config.init_with_config_and_options(args)
