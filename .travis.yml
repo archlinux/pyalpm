@@ -15,6 +15,6 @@ arch:
     - sudo python3 setup.py install
     - python3 setup.py test
 
-script: 'curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash'
+script: 'curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/0cd93d462e840261d55c96000d794c22f8fbd76e/arch-travis.sh | bash'
 
 # vim: ft=yaml ts=2 sw=2 et:
