@@ -95,10 +95,9 @@ def pacman_conf_enumerator(path):
 			filestack.pop()
 			continue
 
+		line = line.split('#')[0]
 		line = line.strip()
 		if len(line) == 0: continue
-		if line[0] == '#':
-			continue
 		if line[0] == '[' and line[-1] == ']':
 			current_section = line[1:-1]
 			continue
