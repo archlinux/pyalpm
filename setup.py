@@ -9,8 +9,8 @@ os.putenv('LC_CTYPE', 'en_US.UTF-8')
 pyalpm_version = '0.8'
 
 cflags = ['-Wall', '-Wextra', '-Werror',
-    '-Wno-unused-parameter',
-    '-std=c99', '-D_FILE_OFFSET_BITS=64']
+    '-Wno-unused-parameter', '-Wno-incompatible-pointer-types',
+    '-Wno-cast-function-type', '-std=c99', '-D_FILE_OFFSET_BITS=64']
 
 alpm = Extension('pyalpm',
     libraries = ['alpm'],
