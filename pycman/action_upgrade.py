@@ -26,7 +26,6 @@ the effect of the transaction.
 """
 
 import sys
-import traceback
 import pyalpm
 from pycman import config
 from pycman import transaction

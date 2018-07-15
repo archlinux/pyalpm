@@ -26,8 +26,6 @@ the effect on dependencies of/on given targets.
 """
 
 import sys
-import traceback
-import pyalpm
 from pycman import config
 from pycman import transaction
 
