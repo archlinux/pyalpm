@@ -79,7 +79,8 @@ BOOLEAN_OPTIONS = (
 	'CheckSpace',
 	'VerbosePkgLists',
 	'ILoveCandy',
-	'Color'
+	'Color',
+	'DisableDownloadTimeout',
 )
 
 def pacman_conf_enumerator(path):
