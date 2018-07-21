@@ -83,55 +83,74 @@ BOOLEAN_OPTIONS = (
 	'DisableDownloadTimeout',
 )
 
-def pacman_conf_enumerator(path):
-	filestack = []
-	current_section = None
-	filestack.append(open(path, 'rb'))
-	while len(filestack) > 0:
-		f = filestack[-1]
-		line = f.readline()
-		line = line.decode('utf-8')
-		if len(line) == 0:
-			# end of file
-			filestack.pop()
-			continue
 
-		line = line.strip()
-		if len(line) == 0: continue
-		if line[0] == '#':
-			continue
-		if line[0] == '[' and line[-1] == ']':
-			current_section = line[1:-1]
-			continue
-		if current_section is None:
-			raise InvalidSyntax(f.name, 'statement outside of a section', line)
-		# read key, value
-		key, equal, value = [x.strip() for x in line.partition('=')]
+class PacmanConfEnumeratorSession():
 
-		# include files
-		if equal == '=' and key == 'Include':
-			filestack.extend(open(f, 'rb') for f in glob.glob(value))
-			continue
-		if current_section != 'options':
-			# repos only have the Server, SigLevel, Usage options
-			if key in ('Server', 'SigLevel', 'Usage') and equal == '=':
-				yield (current_section, key, value)
+	def __init__(self, path):
+		self.path = path
+		self.file_descriptors = []
+
+	def _enumerator(self):
+		filestack = []
+		current_section = None
+		new_fd = open(self.path, 'rb')
+		self.file_descriptors.append(new_fd)
+		filestack.append(new_fd)
+		while len(filestack) > 0:
+			f = filestack[-1]
+			line = f.readline()
+			line = line.decode('utf-8')
+			if len(line) == 0:
+				# end of file
+				filestack.pop()
+				continue
+
+			line = line.strip()
+			if len(line) == 0: continue
+			if line[0] == '#':
+				continue
+			if line[0] == '[' and line[-1] == ']':
+				current_section = line[1:-1]
+				continue
+			if current_section is None:
+				raise InvalidSyntax(f.name, 'statement outside of a section', line)
+			# read key, value
+			key, equal, value = [x.strip() for x in line.partition('=')]
+
+			# include files
+			if equal == '=' and key == 'Include':
+				new_fds = [open(f, 'rb') for f in glob.glob(value)]
+				filestack.extend(new_fds)
+				self.file_descriptors.extend(new_fds)
+				continue
+			if current_section != 'options':
+				# repos only have the Server, SigLevel, Usage options
+				if key in ('Server', 'SigLevel', 'Usage') and equal == '=':
+					yield (current_section, key, value)
+				else:
+					raise InvalidSyntax(f.name, 'invalid key for repository configuration', line)
+				continue
+			if equal == '=':
+				if key in LIST_OPTIONS:
+					for val in value.split():
+						yield (current_section, key, val)
+				elif key in SINGLE_OPTIONS:
+					yield (current_section, key, value)
+				else:
+					warnings.warn(InvalidSyntax(f.name, 'unrecognized option', key))
 			else:
-				raise InvalidSyntax(f.name, 'invalid key for repository configuration', line)
-			continue
-		if equal == '=':
-			if key in LIST_OPTIONS:
-				for val in value.split():
-					yield (current_section, key, val)
-			elif key in SINGLE_OPTIONS:
-				yield (current_section, key, value)
-			else:
-				warnings.warn(InvalidSyntax(f.name, 'unrecognized option', key))
-		else:
-			if key in BOOLEAN_OPTIONS:
-				yield (current_section, key, True)
-			else:
-				warnings.warn(InvalidSyntax(f.name, 'unrecognized option', key))
+				if key in BOOLEAN_OPTIONS:
+					yield (current_section, key, True)
+				else:
+					warnings.warn(InvalidSyntax(f.name, 'unrecognized option', key))
+
+	def __enter__(self):
+		return self._enumerator
+
+	def __exit__(self, *exc_details):
+		for fd in self.file_descriptors:
+			fd.close()
+
 
 _logmask = pyalpm.LOG_ERROR | pyalpm.LOG_WARNING
 
@@ -163,18 +182,19 @@ class PacmanConfig(object):
 			self.load_from_options(options)
 
 	def load_from_file(self, filename):
-		for section, key, value in pacman_conf_enumerator(filename):
-			if section == 'options':
-				if key == 'Architecture' and value == 'auto':
-					continue
-				if key in LIST_OPTIONS:
-					self.options.setdefault(key, []).append(value)
+		with PacmanConfEnumeratorSession(filename) as pacman_conf_enumerator:
+			for section, key, value in pacman_conf_enumerator():
+				if section == 'options':
+					if key == 'Architecture' and value == 'auto':
+						continue
+					if key in LIST_OPTIONS:
+						self.options.setdefault(key, []).append(value)
+					else:
+						self.options[key] = value
 				else:
-					self.options[key] = value
-			else:
-				servers = self.repos.setdefault(section, [])
-				if key == 'Server':
-					servers.append(value)
+					servers = self.repos.setdefault(section, [])
+					if key == 'Server':
+						servers.append(value)
 		if "CacheDir" not in self.options:
 			self.options["CacheDir"]= ["/var/cache/pacman/pkg"]
 
