@@ -13,6 +13,7 @@ arch:
   script:
     - python3 -m py_compile $(git ls-files '*.py')
     - sudo python3 setup.py install
+    - sudo mkdir /var/cache/pacman/pkg
     - python3 setup.py test
 
 script: 'curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash'
