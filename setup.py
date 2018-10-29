@@ -9,14 +9,14 @@ os.putenv('LC_CTYPE', 'en_US.UTF-8')
 pyalpm_version = '0.8'
 
 cflags = ['-Wall', '-Wextra', '-Werror',
-    '-Wno-unused-parameter', '-Wno-incompatible-pointer-types',
-    '-Wno-cast-function-type', '-std=c99', '-D_FILE_OFFSET_BITS=64']
+          '-Wno-unused-parameter', '-Wno-incompatible-pointer-types',
+          '-Wno-cast-function-type', '-std=c99', '-D_FILE_OFFSET_BITS=64']
 
 alpm = Extension('pyalpm',
-    libraries = ['alpm'],
-    extra_compile_args = cflags + ['-DVERSION="%s"' % pyalpm_version],
-    language = 'C',
-    sources = [
+    libraries=['alpm'],
+    extra_compile_args=cflags + ['-DVERSION="%s"' % pyalpm_version],
+    language='C',
+    sources=[
         'src/pyalpm.c',
         'src/util.c',
         'src/package.c',
@@ -25,7 +25,7 @@ alpm = Extension('pyalpm',
         'src/handle.c',
         'src/transaction.c'
         ],
-    depends = [
+    depends=[
         'src/handle.h',
         'src/db.h',
         'src/options.h',
@@ -49,18 +49,18 @@ class TestCommand(Command):
                              'tests']))
 
 
-setup(name = 'pyalpm',
-      version = pyalpm_version,
-      description = 'libalpm bindings for Python 3',
-      author = "Rémy Oudompheng",
-      author_email = "remy@archlinux.org",
-      url = "https://projects.archlinux.org/pyalpm.git",
-      packages = ["pycman"],
-      scripts = ["scripts/lsoptdepends"] + ["scripts/pycman-" + i
+setup(name='pyalpm',
+      version=pyalpm_version,
+      description='libalpm bindings for Python 3',
+      author="Rémy Oudompheng",
+      author_email="remy@archlinux.org",
+      url="https://projects.archlinux.org/pyalpm.git",
+      packages=["pycman"],
+      scripts=["scripts/lsoptdepends"] + ["scripts/pycman-" + i
           for i in ['database', 'deptest', 'query', 'remove', 'sync', 'upgrade', 'version']],
-      ext_modules = [alpm],
-      cmdclass = {
+      ext_modules=[alpm],
+      cmdclass={
           'test': TestCommand
-        })
+      })
 
 # vim: set ts=4 sw=4 et tw=0:
