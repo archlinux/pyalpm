@@ -6,7 +6,7 @@ from distutils.core import Extension, setup
 
 os.putenv('LC_CTYPE', 'en_US.UTF-8')
 
-pyalpm_version = '0.8'
+pyalpm_version = '0.8.4'
 
 cflags = ['-Wall', '-Wextra', '-Werror',
           '-Wno-unused-parameter', '-Wno-incompatible-pointer-types',
@@ -49,9 +49,13 @@ class TestCommand(Command):
                              'tests']))
 
 
+with open("README", "r") as fh:
+    long_description = fh.read()
+
 setup(name='pyalpm',
       version=pyalpm_version,
       description='libalpm bindings for Python 3',
+      long_description=long_description,
       author="Rémy Oudompheng",
       author_email="remy@archlinux.org",
       url="https://projects.archlinux.org/pyalpm.git",
@@ -61,6 +65,11 @@ setup(name='pyalpm',
       ext_modules=[alpm],
       cmdclass={
           'test': TestCommand
-      })
+      },
+      classifiers=[
+        'Development Status :: 6 - Mature',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Programming Language :: C',
+      ])
 
 # vim: set ts=4 sw=4 et tw=0:
