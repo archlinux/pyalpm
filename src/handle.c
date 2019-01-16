@@ -377,6 +377,16 @@ static PyMethodDef pyalpm_handle_methods[] = {
   {NULL, NULL, 0, NULL},
 };
 
+static void pyalpm_dealloc(PyObject* self) {
+  alpm_handle_t *handle = ALPM_HANDLE(self);
+  int ret = alpm_release(handle);
+  if (ret == -1) {
+    PyErr_Format(alpm_error, "unable to release alpm handle");
+  }
+  handle = NULL;
+  Py_TYPE(self)->tp_free((PyObject *)self);
+}
+
 PyTypeObject AlpmHandleType = {
   PyVarObject_HEAD_INIT(NULL, 0)
   "alpm.Handle",       /*tp_name*/
@@ -387,6 +397,7 @@ PyTypeObject AlpmHandleType = {
   .tp_methods = pyalpm_handle_methods,
   .tp_getset = pyalpm_handle_getset,
   .tp_new = pyalpm_initialize,
+  .tp_dealloc = (destructor) pyalpm_dealloc,
 };
 
 /** Initializes Handle class in module */
