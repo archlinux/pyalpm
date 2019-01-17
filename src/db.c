@@ -308,7 +308,7 @@ PyObject* pyalpm_sync_newversion(PyObject *self, PyObject* args) {
   PyObject *pkg;
   PyObject *dbs;
   alpm_list_t *db_list;
-  alpm_pkg_t *result;
+  alpm_pkg_t *result = NULL;
   if(!PyArg_ParseTuple(args, "OO", &pkg, &dbs)
       || !PyAlpmPkg_Check(pkg)
       || pylist_db_to_alpmlist(dbs, &db_list) == -1)
@@ -319,8 +319,10 @@ PyObject* pyalpm_sync_newversion(PyObject *self, PyObject* args) {
 
   {
     alpm_pkg_t *rawpkg = pmpkg_from_pyalpm_pkg(pkg);
-    if (!rawpkg) return NULL;
-    result = alpm_sync_newversion(rawpkg, db_list);
+    if (rawpkg) {
+      result = alpm_sync_newversion(rawpkg, db_list);
+    }
+    alpm_list_free(db_list);
   }
   if (!result)
     Py_RETURN_NONE;
