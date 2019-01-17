@@ -100,13 +100,32 @@ static PyMethodDef methods[] = {
   {NULL, NULL, 0, NULL}
 };
 
+static int pyalpm_clear(PyObject *m)
+{
+  PyObject *dict = PyModule_GetDict(m);
+  if (dict == NULL) {
+    return 0;
+  }
+
+  PyObject *error = PyDict_GetItemString(dict, "error");
+  if (error == NULL) {
+    return 0;
+  }
+
+  Py_DECREF(error);
+
+  return 0;
+}
+
 static struct PyModuleDef pyalpm_def = {
   PyModuleDef_HEAD_INIT,
   "alpm",
   "This module wraps the libalpm library",
   -1,
   methods,
-  NULL, NULL, NULL, NULL,
+  NULL, NULL,
+  pyalpm_clear,
+  NULL,
 };
 
 PyMODINIT_FUNC PyInit_pyalpm(void)
