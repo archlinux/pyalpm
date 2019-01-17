@@ -1,3 +1,6 @@
+pyalpm 8.8.5 :
+  * resolve memory leaks caused by not releasing the alpm_handle
+
 pyalpm 0.8 :
   * compatible with pacman 5
 
