@@ -87,7 +87,7 @@ static PyMethodDef methods[] = {
     "args: a list of packages, a dependency string\n"
     "returns: a Package object or None" },
 
-  {"sync_newversion", pyalpm_sync_newversion, METH_VARARGS,
+  {"sync_newversion", pyalpm_sync_get_new_version, METH_VARARGS,
     "finds an available upgrade for a package in a list of databases\n"
     "args: a package, a list of databases\n"
     "returns: an upgrade candidate or None" },
