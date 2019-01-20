@@ -9,12 +9,13 @@ arch:
   packages:
     - python
     - python-pytest
+    - python-pytest-cov
 
   script:
     - python3 -m py_compile $(git ls-files '*.py')
     - sudo python3 setup.py install
     - sudo mkdir /var/cache/pacman/pkg
-    - pytest tests
+    - make test
 
 script: 'curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash'
 
