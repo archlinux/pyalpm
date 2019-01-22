@@ -1,45 +1,52 @@
-import unittest
-import pyalpm
+from conftest import handle
 
 
-class handle(unittest.TestCase):
+def test_cachedirs(handle):
+    handle.add_cachedir('/tmp/')
+    assert '/tmp/' in handle.cachedirs
 
-    def setUp(self):
-        self.handle = pyalpm.Handle('/', '/var/lib/pacman')
+    handle.remove_cachedir('/tmp/')
+    assert '/tmp/' not in handle.cachedirs
 
-    def test_cachedirs(self):
-        self.handle.add_cachedir('/tmp/')
-        self.assertIn('/tmp/', self.handle.cachedirs)
+def test_ignoregrps(handle):
+    handle.add_ignoregrp('base')
+    assert 'base' in handle.ignoregrps
 
-        self.handle.remove_cachedir('/tmp/')
-        self.assertNotIn('/tmp/', self.handle.cachedirs)
+    handle.remove_ignoregrp('base')
+    assert 'base' not in handle.ignoregrps
 
-    def test_ignoregrps(self):
-        self.handle.add_ignoregrp('base')
-        self.assertIn('base', self.handle.ignoregrps)
+def test_ignorepkg(handle):
+    handle.add_ignorepkg('pacman')
+    assert 'pacman' in handle.ignorepkgs
 
-        self.handle.remove_ignoregrp('base')
-        self.assertNotIn('base', self.handle.ignoregrps)
+    handle.remove_ignorepkg('pacman')
+    assert 'pacman' not in  handle.ignorepkgs
 
-    def test_ignorepkg(self):
-        self.handle.add_ignorepkg('pacman')
-        self.assertIn('pacman', self.handle.ignorepkgs)
+def test_noextracts(handle):
+    handle.add_noextract('index.php')
+    assert 'index.php' in handle.noextracts
 
-        self.handle.remove_ignorepkg('pacman')
-        self.assertNotIn('pacman', self.handle.ignorepkgs)
+    handle.remove_noextract('index.php')
+    assert 'index.php' not in handle.noextracts
 
-    def test_noextracts(self):
-        self.handle.add_noextract('index.php')
-        self.assertIn('index.php', self.handle.noextracts)
+def test_noupgrade(handle):
+    handle.add_noupgrade('linux')
+    assert 'linux' in handle.noupgrades
 
-        self.handle.remove_noextract('index.php')
-        self.assertNotIn('index.php', self.handle.noextracts)
+    handle.remove_noupgrade('linux')
+    assert 'linux' not in handle.noupgrades
 
-    def test_noupgrade(self):
-        self.handle.add_noupgrade('linux')
-        self.assertIn('linux', self.handle.noupgrades)
+def test_usesyslog(handle):
+    assert not handle.usesyslog
 
-        self.handle.remove_noupgrade('linux')
-        self.assertNotIn('linux', self.handle.noupgrades)
+def test_deltaratio(handle):
+    assert handle.deltaratio == 0.0
+
+def test_checkspace(handle):
+    assert not handle.checkspace
+
+def test_noupgrades(handle):
+    assert not handle.noupgrades
+
 
 # vim: set ts=4 sw=4 et:
