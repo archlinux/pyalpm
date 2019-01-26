@@ -9,3 +9,12 @@ Requirements :
 * Python 3 or later
 
 * libalpm 10 or later
+
+* python-setuptools
+
+
+Running tests :
+
+* python-pytest
+
+Unit tests can be run with pytest tests
