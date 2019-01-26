@@ -55,31 +55,31 @@ def main(rawargs):
 	parser = config.make_parser()
 	group = parser.add_argument_group("Remove options")
 	group.add_argument('-c', '--cascade',
-			action = 'store_true', default = False,
-			help = 'remove packages and all packages that depend on them')
+			action='store_true', default=False,
+			help='remove packages and all packages that depend on them')
 	group.add_argument('-d', '--nodeps',
-			action = 'store_true', default = False,
-			help = 'skip dependency checks')
+			action='store_true', default=False,
+			help='skip dependency checks')
 	group.add_argument('-k', '--dbonly',
-			action = 'store_true', default = False,
-			help = 'only modify database entries, not package files')
+			action='store_true', default=False,
+			help='only modify database entries, not package files')
 	group.add_argument('-n', '--nosave',
-			action = 'store_true', default = False,
-			help = 'remove configuration files as well')
+			action='store_true', default=False,
+			help='remove configuration files as well')
 	group.add_argument('-s', '--recursive',
-			action = 'store_true', default = False,
-			help = "remove dependencies also (that won't break packages)")
+			action='store_true', default=False,
+			help="remove dependencies also (that won't break packages)")
 	group.add_argument('-u', '--unneeded',
-			action = 'store_true', default = False,
-			help = "remove unneeded packages (that won't break packages)")
-	group.add_argument('pkgs', metavar = 'pkg', nargs='*',
-			help = "a list of packages, e.g. libreoffice, openjdk6")
+			action='store_true', default=False,
+			help="remove unneeded packages (that won't break packages)")
+	group.add_argument('pkgs', metavar='pkg', nargs='*',
+			help="a list of packages, e.g. libreoffice, openjdk6")
 
 	args = parser.parse_args(rawargs)
 	handle = config.init_with_config_and_options(args)
 
 	if args.verbose:
-		print("remove " + " ".join(rawargs), file = sys.stderr)
+		print("remove " + " ".join(rawargs), file=sys.stderr)
 
 	if len(args.pkgs) == 0:
 		print('error: no targets specified')

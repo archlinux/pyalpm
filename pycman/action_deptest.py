@@ -39,13 +39,13 @@ def deptest(deps):
 def main(rawargs):
 	global handle
 	parser = config.make_parser()
-	parser.add_argument('deps', metavar = 'dep', nargs='*',
-			help = "a dependency string, e.g. 'pacman>=3.4.0'")
+	parser.add_argument('deps', metavar='dep', nargs='*',
+			help="a dependency string, e.g. 'pacman>=3.4.0'")
 	args = parser.parse_args(rawargs)
 	handle = config.init_with_config_and_options(args)
 
 	if args.verbose:
-		print("deptest " + " ".join(rawargs), file = sys.stderr)
+		print("deptest " + " ".join(rawargs), file=sys.stderr)
 	missing = deptest(args.deps)
 
 	if len(missing) == 0:

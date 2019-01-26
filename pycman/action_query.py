@@ -56,7 +56,7 @@ def filter_pkglist(pkglist, options):
 def display_pkg(pkg, options):
 	displaystyle = 'file' if options.package else 'local'
 	if options.info > 0:
-		pkginfo.display_pkginfo(pkg, level = options.info, style = displaystyle)
+		pkginfo.display_pkginfo(pkg, level=options.info, style=displaystyle)
 	elif not options.listfiles:
 		if options.quiet:
 			print(pkg.name)
@@ -135,42 +135,42 @@ def find_search(patterns, options):
 
 def main(rawargs):
 	global handle
-	parser = config.make_parser(prog = 'pycman-query')
+	parser = config.make_parser(prog='pycman-query')
 	group = parser.add_argument_group("Query options")
 	group.add_argument('-d', '--deps',
-			action = 'store_true', default = False,
-			help = 'list packages installed as dependencies [filter]')
+			action='store_true', default=False,
+			help='list packages installed as dependencies [filter]')
 	group.add_argument('-e', '--explicit',
-			action = 'store_true', default = False,
-			help = 'list packages explicitly installed [filter]')
+			action='store_true', default=False,
+			help='list packages explicitly installed [filter]')
 	group.add_argument('-i', '--info',
-			action = 'count', dest = 'info', default = 0,
-			help = 'view package information')
+			action='count', dest='info', default=0,
+			help='view package information')
 	group.add_argument('-l', '--list',
-			action = 'store_true', dest = 'listfiles', default = False,
-			help = 'list the contents of the queried package')
+			action='store_true', dest='listfiles', default=False,
+			help='list the contents of the queried package')
 	group.add_argument('-m', '--foreign',
-			action = 'store_true', default = False,
-			help = 'list installed packages not found in sync db(s) [filter]')
+			action='store_true', default=False,
+			help='list installed packages not found in sync db(s) [filter]')
 	group.add_argument('-o', '--owns',
-			action = 'store_true', default = False,
-			help = 'query the package that owns <file>')
+			action='store_true', default=False,
+			help='query the package that owns <file>')
 	group.add_argument('-p', '--package',
-			action = 'store_true', default = False,
-			help = 'query a package file instead of the database')
+			action='store_true', default=False,
+			help='query a package file instead of the database')
 	group.add_argument('-q', '--quiet',
-			action = 'store_true', dest = 'quiet', default = False,
-			help = 'show less information for query and search')
-	group.add_argument('-s', '--search', action = 'store_true', default = False,
-			help = 'search locally-installed packages for matching strings')
+			action='store_true', dest='quiet', default=False,
+			help='show less information for query and search')
+	group.add_argument('-s', '--search', action='store_true', default=False,
+			help='search locally-installed packages for matching strings')
 	group.add_argument('-t', '--unrequired',
-			action = 'store_true', default = False,
-			help = "list packages not required by any package [filter]")
+			action='store_true', default=False,
+			help="list packages not required by any package [filter]")
 	group.add_argument('-u', '--upgrades',
-			action = 'store_true', default = False,
-			help = "list outdated packages [filter]")
-	group.add_argument('pkgnames', metavar = 'pkg', nargs = '*',
-			help = 'packages to show (show all packages if no arguments) '
+			action='store_true', default=False,
+			help="list outdated packages [filter]")
+	group.add_argument('pkgnames', metavar='pkg', nargs='*',
+			help='packages to show (show all packages if no arguments) '
 			'(when used with -o: a filename, '
 			'when used with -p: the path to a package file)')
 
@@ -178,7 +178,7 @@ def main(rawargs):
 	handle = config.init_with_config_and_options(args)
 
 	if args.verbose:
-		print("query " + " ".join(rawargs), file = sys.stderr)
+		print("query " + " ".join(rawargs), file=sys.stderr)
 
 	db = handle.get_localdb()
 	retcode = 0

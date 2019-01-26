@@ -40,20 +40,20 @@ def commit(pkgs, mode):
 def main(rawargs):
 	global handle
 	parser = config.make_parser()
-	mode = parser.add_mutually_exclusive_group(required = True)
-	mode.add_argument('--asdeps', dest = 'mode',
-			action = "store_const",
-			const = pyalpm.PKG_REASON_DEPEND)
-	mode.add_argument('--asexplicit', dest = 'mode',
-			action = "store_const",
-			const = pyalpm.PKG_REASON_EXPLICIT)
-	parser.add_argument('pkgs', metavar = 'pkg', nargs='*',
-			help = "a dependency string, e.g. 'pacman>=3.4.0'")
+	mode = parser.add_mutually_exclusive_group(required=True)
+	mode.add_argument('--asdeps', dest='mode',
+			action="store_const",
+			const=pyalpm.PKG_REASON_DEPEND)
+	mode.add_argument('--asexplicit', dest='mode',
+			action="store_const",
+			const=pyalpm.PKG_REASON_EXPLICIT)
+	parser.add_argument('pkgs', metavar='pkg', nargs='*',
+			help="a dependency string, e.g. 'pacman>=3.4.0'")
 	args = parser.parse_args(rawargs)
 	handle = config.init_with_config_and_options(args)
 
 	if args.verbose:
-		print("database " + " ".join(rawargs), file = sys.stderr)
+		print("database " + " ".join(rawargs), file=sys.stderr)
 
 	commit(args.pkgs, args.mode)
 	return 0

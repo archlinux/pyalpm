@@ -168,12 +168,12 @@ def cb_log(level, line):
 	sys.stderr.write(line)
 
 class PacmanConfig(object):
-	def __init__(self, conf = None, options = None):
+	def __init__(self, conf=None, options=None):
 		self.options = {}
 		self.repos = collections.OrderedDict()
 		self.options["RootDir"] = "/"
-		self.options["DBPath"]  = "/var/lib/pacman"
-		self.options["GPGDir"]  = "/etc/pacman.d/gnupg/"
+		self.options["DBPath"] = "/var/lib/pacman"
+		self.options["GPGDir"] = "/etc/pacman.d/gnupg/"
 		self.options["LogFile"] = "/var/log/pacman.log"
 		self.options["Architecture"] = os.uname()[-1]
 		if conf is not None:
@@ -196,7 +196,7 @@ class PacmanConfig(object):
 					if key == 'Server':
 						servers.append(value)
 		if "CacheDir" not in self.options:
-			self.options["CacheDir"]= ["/var/cache/pacman/pkg"]
+			self.options["CacheDir"] = ["/var/cache/pacman/pkg"]
 
 	def load_from_options(self, options):
 		global _logmask
@@ -255,38 +255,38 @@ class PacmanConfig(object):
 def make_parser(*args, **kwargs):
 	parser = argparse.ArgumentParser(*args, **kwargs)
 	common = parser.add_argument_group('Common options')
-	common.add_argument('-b', '--dbpath', metavar = '<path>',
-			action = 'store', dest = 'dbpath', type = str,
-			help = 'set an alternate database location')
-	common.add_argument('-r', '--root', metavar = '<path>',
-			action = 'store', dest = 'root', type = str,
-			help = 'set an alternate installation root')
+	common.add_argument('-b', '--dbpath', metavar='<path>',
+			action='store', dest='dbpath', type=str,
+			help='set an alternate database location')
+	common.add_argument('-r', '--root', metavar='<path>',
+			action='store', dest='root', type=str,
+			help='set an alternate installation root')
 	common.add_argument('-v', '--verbose',
-			action = 'store_true', dest = 'verbose', default = False,
-			help = 'be verbose')
-	common.add_argument('--arch', metavar = '<arch>',
-			action = 'store', dest = 'arch', type = str,
-			help = 'set an alternate architecture')
-	common.add_argument('--config', metavar = '<file>',
-			action = 'store', dest = 'config', type = str,
-			help = 'set an alternate configuration file')
+			action='store_true', dest='verbose', default=False,
+			help='be verbose')
+	common.add_argument('--arch', metavar='<arch>',
+			action='store', dest='arch', type=str,
+			help='set an alternate architecture')
+	common.add_argument('--config', metavar='<file>',
+			action='store', dest='config', type=str,
+			help='set an alternate configuration file')
 	common.add_argument('--debug',
 			action='store_true', dest='debug',
 			help='display debug messages')
-	common.add_argument('--logfile', metavar = '<file>',
-			action = 'store', dest = 'logfile', type = str,
-			help = 'set an alternate log file')
-	common.add_argument('--gpgdir', metavar = '<dir>',
-			action = 'store', dest = 'gpgdir', type = str,
-			help = 'set an alternate log file')
-	common.add_argument('--cachedir', metavar = '<dir>',
-			action = 'store', dest = 'cachedir', type = str,
-			help = 'set an alternate cche location')
+	common.add_argument('--logfile', metavar='<file>',
+			action='store', dest='logfile', type=str,
+			help='set an alternate log file')
+	common.add_argument('--gpgdir', metavar='<dir>',
+			action='store', dest='gpgdir', type=str,
+			help='set an alternate log file')
+	common.add_argument('--cachedir', metavar='<dir>',
+			action='store', dest='cachedir', type=str,
+			help='set an alternate cche location')
 	return parser
 
 def init_with_config(configpath):
 	"Reads configuration from given path and apply it to libalpm"
-	config = PacmanConfig(conf = configpath)
+	config = PacmanConfig(conf=configpath)
 	return config.initialize_alpm()
 
 def init_with_config_and_options(options):
@@ -297,7 +297,7 @@ def init_with_config_and_options(options):
 	else:
 		config_file = "/etc/pacman.conf"
 
-	conf = PacmanConfig(conf = config_file, options = options)
+	conf = PacmanConfig(conf=config_file, options=options)
 	return conf.initialize_alpm()
 
 # vim: set ts=4 sw=4 tw=0 noet:

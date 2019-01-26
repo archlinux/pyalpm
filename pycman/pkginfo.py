@@ -45,7 +45,7 @@ def get_term_size():
 	else:
 		return 80
 
-def format_attr(attrname, value, format = None):
+def format_attr(attrname, value, format=None):
 	if isinstance(value, list):
 		if len(value) == 0:
 			valuestring = 'None'
@@ -56,11 +56,11 @@ def format_attr(attrname, value, format = None):
 			valuestring = time.strftime("%a %d %b %Y %X %Z", time.localtime(value))
 		else:
 			valuestring = str(value)
-	return textwrap.fill(valuestring, width = get_term_size(),
-			initial_indent = ATTRNAME_FORMAT % attrname,
-			subsequent_indent = ATTR_INDENT,
-			break_on_hyphens = False,
-			break_long_words = False)
+	return textwrap.fill(valuestring, width=get_term_size(),
+			initial_indent=ATTRNAME_FORMAT % attrname,
+			subsequent_indent=ATTR_INDENT,
+			break_on_hyphens=False,
+			break_long_words=False)
 
 def format_attr_oneperline(attrname, value):
 	if len(value) == 0:
@@ -69,7 +69,7 @@ def format_attr_oneperline(attrname, value):
 	s += ('\n' + ATTR_INDENT).join(value)
 	return s
 
-def display_pkginfo(pkg, level = 1, style = 'local'):
+def display_pkginfo(pkg, level=1, style='local'):
 	"""
 	Displays pretty-printed package information.
 
@@ -104,11 +104,11 @@ def display_pkginfo(pkg, level = 1, style = 'local'):
 	print(format_attr('Installed Size', '%.2f K' % (pkg.isize / 1024)))
 	print(format_attr('Packager', pkg.packager))
 	print(format_attr('Architecture', pkg.arch))
-	print(format_attr('Build Date', pkg.builddate, format = 'time'))
+	print(format_attr('Build Date', pkg.builddate, format='time'))
 
 	if style == 'local':
 		# local installation information
-		print(format_attr('Install Date', pkg.installdate, format = 'time'))
+		print(format_attr('Install Date', pkg.installdate, format='time'))
 		if pkg.reason == pyalpm.PKG_REASON_EXPLICIT:
 			reason = 'Explicitly installed'
 		elif pkg.reason == pyalpm.PKG_REASON_DEPEND:

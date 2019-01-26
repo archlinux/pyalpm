@@ -61,7 +61,7 @@ def do_sysupgrade(options):
 
 def do_install(pkgs, options):
 	"Install a list of packages like pacman -S"
-	repos = dict((db.name,db) for db in handle.get_syncdbs())
+	repos = dict((db.name, db) for db in handle.get_syncdbs())
 	if len(pkgs) == 0:
 		print("error: no targets specified")
 		return 1
@@ -143,13 +143,13 @@ def show_packages(args):
 	if len(args.args) == 0:
 		for repo in handle.get_syncdbs():
 			for pkg in repo.pkgcache:
-				pkginfo.display_pkginfo(pkg, level = args.info, style = 'sync')
+				pkginfo.display_pkginfo(pkg, level=args.info, style='sync')
 	else:
-		repos = dict((db.name,db) for db in handle.get_syncdbs())
+		repos = dict((db.name, db) for db in handle.get_syncdbs())
 		for pkgname in args.args:
 			ok, value = find_sync_package(pkgname, repos)
 			if ok:
-				pkginfo.display_pkginfo(value, level = args.info, style = 'sync')
+				pkginfo.display_pkginfo(value, level=args.info, style='sync')
 			else:
 				retcode = 1
 				print("error:", value)
@@ -170,54 +170,54 @@ def show_search(patterns, options):
 	return 0
 
 def parse_options(rawargs):
-	parser = config.make_parser(prog = 'pycman-sync')
+	parser = config.make_parser(prog='pycman-sync')
 	# Misc actions
 	group0 = parser.add_argument_group("Actions (default is installing specified packages)")
 	group0.add_argument("-c", "--clean",
-			action = 'count', default = 0,
-			help = 'remove old packages from cache directory (-cc for all)')
+			action='count', default=0,
+			help='remove old packages from cache directory (-cc for all)')
 	group0.add_argument("-u", "--sysupgrade",
-			action = 'count', default = 0,
-			help = 'upgrade installed packages (-uu allows downgrade)')
+			action='count', default=0,
+			help='upgrade installed packages (-uu allows downgrade)')
 	group0.add_argument("-y", "--refresh",
-			action = 'count', default = 0,
-			help = 'download fresh package databases from the server')
+			action='count', default=0,
+			help='download fresh package databases from the server')
 	# Installation options
 	grp_install = parser.add_argument_group("Install options")
 	grp_install.add_argument('-d', '--nodeps',
-			action = 'store_true', default = False,
-			help = 'skip dependency checks')
+			action='store_true', default=False,
+			help='skip dependency checks')
 	grp_install.add_argument('-f', '--force',
-			action = 'store_true', default = False,
-			help = 'force install, overwrite conflicting files')
+			action='store_true', default=False,
+			help='force install, overwrite conflicting files')
 	grp_install.add_argument('-k', '--dbonly',
-			action = 'store_true', default = False,
-			help = 'only modify database entries, not package files')
+			action='store_true', default=False,
+			help='only modify database entries, not package files')
 	grp_install.add_argument('-w', '--downloadonly',
-			action = 'store_true', default = False,
-			help = 'download packages but do not install/upgrade anything')
-	grp_install.add_argument('--asdeps', dest = 'mode',
-			action = "store_const",
-			const = pyalpm.PKG_REASON_DEPEND)
-	grp_install.add_argument('--asexplicit', dest = 'mode',
-			action = "store_const",
-			const = pyalpm.PKG_REASON_EXPLICIT)
+			action='store_true', default=False,
+			help='download packages but do not install/upgrade anything')
+	grp_install.add_argument('--asdeps', dest='mode',
+			action="store_const",
+			const=pyalpm.PKG_REASON_DEPEND)
+	grp_install.add_argument('--asexplicit', dest='mode',
+			action="store_const",
+			const=pyalpm.PKG_REASON_EXPLICIT)
 	# Options to query sync databases
 	group1 = parser.add_argument_group("Query actions")
-	group1.add_argument('-g', '--groups', action = 'store_true', default = False,
-			help = 'view list of groups, or all members of a package group')
+	group1.add_argument('-g', '--groups', action='store_true', default=False,
+			help='view list of groups, or all members of a package group')
 	group1.add_argument('-i', '--info',
-			action = 'count', dest = 'info', default = 0,
-			help = 'view package information')
-	group1.add_argument('-l', '--list', action = 'store_true', default = False,
-			help = 'list the contents of repositories')
-	group1.add_argument('-s', '--search', action = 'store_true', default = False,
-			help = 'search remote repositories for matching strings')
+			action='count', dest='info', default=0,
+			help='view package information')
+	group1.add_argument('-l', '--list', action='store_true', default=False,
+			help='list the contents of repositories')
+	group1.add_argument('-s', '--search', action='store_true', default=False,
+			help='search remote repositories for matching strings')
 	group1.add_argument('-q', '--quiet',
-			action = 'store_true', dest = 'quiet', default = False,
-			help = 'show less information for query and search')
-	group1.add_argument('args', metavar = 'arg', nargs = '*',
-			help = 'arguments (group names for -g, repo names for -l, '
+			action='store_true', dest='quiet', default=False,
+			help='show less information for query and search')
+	group1.add_argument('args', metavar='arg', nargs='*',
+			help='arguments (group names for -g, repo names for -l, '
 			'package names for -i)')
 	return parser.parse_args(rawargs)
 
@@ -227,7 +227,7 @@ def main(rawargs):
 	handle = config.init_with_config_and_options(args)
 
 	if args.verbose:
-		print("sync " + " ".join(rawargs), file = sys.stderr)
+		print("sync " + " ".join(rawargs), file=sys.stderr)
 
 	# Refresh databases if necessary
 	if args.refresh > 0:

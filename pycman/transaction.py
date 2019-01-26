@@ -98,17 +98,17 @@ def init_from_options(handle, options):
 	handle.questioncb = cb_conv
 	handle.progresscb = cb_progress
 	t = handle.init_transaction(
-			cascade = getattr(options, "cascade", False),
-			nodeps = getattr(options, "nodeps", False),
-			force = getattr(options, 'force', False),
-			dbonly = getattr(options, 'dbonly', False),
-			downloadonly = getattr(options, 'downloadonly', False),
-			nosave = getattr(options, 'nosave', False),
-			recurse = (getattr(options, 'recursive', 0) > 0),
-			recurseall = (getattr(options, 'recursive', 0) > 1),
-			unneeded = getattr(options, 'unneeded', False),
-			alldeps = (getattr(options, 'mode', None) == pyalpm.PKG_REASON_DEPEND),
-			allexplicit = (getattr(options, 'mode', None) == pyalpm.PKG_REASON_EXPLICIT))
+			cascade=getattr(options, "cascade", False),
+			nodeps=getattr(options, "nodeps", False),
+			force=getattr(options, 'force', False),
+			dbonly=getattr(options, 'dbonly', False),
+			downloadonly=getattr(options, 'downloadonly', False),
+			nosave=getattr(options, 'nosave', False),
+			recurse=(getattr(options, 'recursive', 0) > 0),
+			recurseall=(getattr(options, 'recursive', 0) > 1),
+			unneeded=getattr(options, 'unneeded', False),
+			alldeps=(getattr(options, 'mode', None) == pyalpm.PKG_REASON_DEPEND),
+			allexplicit=(getattr(options, 'mode', None) == pyalpm.PKG_REASON_EXPLICIT))
 	return t
 
 def finalize(t):

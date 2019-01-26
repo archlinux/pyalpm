@@ -53,28 +53,28 @@ def main(rawargs):
 	parser = config.make_parser()
 	group = parser.add_argument_group("upgrade options")
 	group.add_argument('-d', '--nodeps',
-			action = 'store_true', default = False,
-			help = 'skip dependency checks')
+			action='store_true', default=False,
+			help='skip dependency checks')
 	group.add_argument('-f', '--force',
-			action = 'store_true', default = False,
-			help = 'force install, overwrite conflicting files')
+			action='store_true', default=False,
+			help='force install, overwrite conflicting files')
 	group.add_argument('-k', '--dbonly',
-			action = 'store_true', default = False,
-			help = 'only modify database entries, not package files')
-	group.add_argument('--asdeps', dest = 'mode',
-			action = "store_const",
-			const = pyalpm.PKG_REASON_DEPEND)
-	group.add_argument('--asexplicit', dest = 'mode',
-			action = "store_const",
-			const = pyalpm.PKG_REASON_EXPLICIT)
-	group.add_argument('pkgs', metavar = 'pkg', nargs='*',
-			help = "a list of package URLs, e.g. package-1.0-1-x86_64.tar.xz")
+			action='store_true', default=False,
+			help='only modify database entries, not package files')
+	group.add_argument('--asdeps', dest='mode',
+			action="store_const",
+			const=pyalpm.PKG_REASON_DEPEND)
+	group.add_argument('--asexplicit', dest='mode',
+			action="store_const",
+			const=pyalpm.PKG_REASON_EXPLICIT)
+	group.add_argument('pkgs', metavar='pkg', nargs='*',
+			help="a list of package URLs, e.g. package-1.0-1-x86_64.tar.xz")
 
 	args = parser.parse_args(rawargs)
 	handle = config.init_with_config_and_options(args)
 
 	if args.verbose:
-		print("upgrade " + " ".join(rawargs), file = sys.stderr)
+		print("upgrade " + " ".join(rawargs), file=sys.stderr)
 
 	return upgrade(args.pkgs, args)
 
