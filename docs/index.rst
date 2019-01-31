@@ -3,13 +3,26 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to pyalpm's documentation!
-==================================
+Pyalpm documentation
+=====================
+
+Pyalpm is a python package that provides you native bindings to both libalpm
+and pacman. If you need to interact with alpm databases or programatically call
+pacman in a safe, sensible way, you're in the right place.
+
+
+Package structure
+----------------
+
+Pyalpm exposes two python modules: alpm (python bindings libalpm) and pycman (a
+python module exposing pacman functionalities).
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   pyalpm/pyalpm
+   pycman/pycman
 
 
 Indices and tables
