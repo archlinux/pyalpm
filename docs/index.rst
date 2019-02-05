@@ -12,7 +12,7 @@ pacman in a safe, sensible way, you're in the right place.
 
 
 Package structure
-----------------
+-----------------
 
 Pyalpm exposes two python modules: alpm (python bindings libalpm) and pycman (a
 python module exposing pacman functionalities).
