@@ -12,9 +12,15 @@ Requirements :
 
 * python-setuptools
 
+* python-sphinx (optional, to build the docs)
+
 
 Running tests :
 
 * python-pytest
 
 Unit tests can be run with pytest tests
+
+Building the docs:
+
+* make -C docs html
