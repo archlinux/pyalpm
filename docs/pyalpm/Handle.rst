@@ -40,7 +40,7 @@ Handles are objects that provide access to pacman databases and transactions.
       dependency)
 
       :param str path: the path to the cachedir to add.
-      :param str path: the path to the cachedir to add.
+      :param str reason: the reason to add (e.g., asdep)
       :returns: Nothing
 
    .. py:method:: add_cachedir()
