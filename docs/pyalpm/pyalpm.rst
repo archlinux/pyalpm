@@ -2,7 +2,7 @@ Pyalpm
 =======
 
 Pyalpm is a python module that provides native bindings libalpm to interact
-with archlinux package databases.
+with Arch Linux package databases.
 
 .. toctree::
    :maxdepth: 2
