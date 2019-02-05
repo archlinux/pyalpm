@@ -10,12 +10,14 @@ arch:
     - python
     - python-pytest
     - python-pytest-cov
+    - python-sphinx
 
   script:
     - python3 -m py_compile $(git ls-files '*.py')
     - sudo python3 setup.py install
     - sudo mkdir /var/cache/pacman/pkg
     - make test
+    - make -C docs html
 
 script: 'curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash'
 
