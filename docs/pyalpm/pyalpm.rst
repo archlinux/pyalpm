@@ -43,7 +43,7 @@ reference.
 .. code-block:: python
 
    print(coreutils.packager)
-   # 'Sébastien Luttringer <seblu@seblu.net>'
+   # 'John Doe <johndoe@archlinux.org>'
 
    print(coreutils.licenses)
    # ['GPL3']
