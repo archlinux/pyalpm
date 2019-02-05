@@ -23,7 +23,8 @@ information.
    .. py:attribute:: grpcache (list)
 
       A list of tuples of the form: 
-      .. code-block:: 
+      ::
+
          [
             ( 'GROUPNAME', [package-list] ),
             ( 'GROUPNAME2', [...]),
@@ -46,7 +47,7 @@ information.
 
      :param str name: The name of the group (e.g., 'base')
      :returns: a list of package objects that correspond to the packages that
-     belong to that group or None if the group is not found.
+      belong to that group or None if the group is not found.
 
    .. py:method:: update(force: boolean)
 
@@ -54,7 +55,7 @@ information.
 
       :param bool force: If the database should be updated even if it's up-to-date
       :returns: True if the update was successful, or an error if that's not
-      the case.
+       the case.
 
    .. py:method:: search(query: string) 
 
