@@ -22,7 +22,6 @@ python module exposing pacman functionalities).
    :caption: Contents:
 
    pyalpm/pyalpm
-   pycman/pycman
 
 
 Indices and tables
