@@ -45,7 +45,7 @@ if __name__ == "__main__":
           author_email="remy@archlinux.org",
           url="https://projects.archlinux.org/pyalpm.git",
           packages=["pycman"],
-          scripts=["scripts/lsoptdepends"] + [f'scripts/pycman-{p}' for p in PYCMAN_SCRIPTS],
+          scripts=["scripts/lsoptdepends"] + ['scripts/pycman-{}'.format(p) for p in PYCMAN_SCRIPTS],
           ext_modules=[alpm],
           classifiers=[
               'Development Status :: 6 - Mature',
