@@ -12,9 +12,13 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('..'))
+
+# import as pyalpm_setup to avoid shadowing the setup method
+# used by sphinx
+import setup as pyalpm_setup
 
 
 # -- Project information -----------------------------------------------------
@@ -26,7 +30,7 @@ author = 'Dan McGee <dan@archlinux.org>, Imanol Celaya <ilcra1989@gmail.com>, Je
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = '0.8.4-8'
+release = pyalpm_setup.pyalpm_version
 
 
 # -- General configuration ---------------------------------------------------
