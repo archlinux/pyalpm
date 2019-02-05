@@ -34,7 +34,7 @@ information.
 
    .. py:method:: get_pkg(name: string)
 
-      Retreives a package instance with the name 'name'
+      Retrieves a package instance with the name 'name'
 
      :param str name: The name of the package (e.g., 'coreutils')
      :returns: a reference to the Package object with the name 'name' or None
@@ -42,7 +42,7 @@ information.
 
    .. py:method:: read_group(name: string)
 
-      Retreives the list of packages that belong to the group by the name passed
+      Retrieves the list of packages that belong to the group by the name passed
 
      :param str name: The name of the group (e.g., 'base')
      :returns: a list of package objects that correspond to the packages that
