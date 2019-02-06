@@ -33,7 +33,7 @@ if __name__ == "__main__":
                               'src/pyalpm.h',
                               'src/util.h'])
 
-    with open("README", "r") as fh:
+    with open("README.md", "r") as fh:
         long_description = fh.read()
 
     setup(name='pyalpm',
