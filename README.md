@@ -1,4 +1,4 @@
-pyalpm - python bindings for the libalpm library
+pyalpm - python bindings for the libalpm library [![Build Status](https://travis-ci.org/archlinux/pyalpm.svg?branch=master)](https://travis-ci.com/archlinux/pyalpm) [![Documentation Status](https://readthedocs.org/projects/pyalpm/badge/?version=latest)](https://pyalpm.readthedocs.io/en/latest/?badge=latest)
 
 pyalpm is a C extension for Python 3 that give access to the
 libalpm API for package management, which is used, for example
