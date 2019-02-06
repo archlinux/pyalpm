@@ -1,4 +1,6 @@
-from conftest import handle, localdb
+import pytest
+
+from conftest import handle, localdb, syncdb
 
 
 def test_empty_getsyncdb(handle):
@@ -10,8 +12,22 @@ def test_localdb_empty(localdb):
 def test_search_empty(localdb):
     assert localdb.search('bar') == []
 
-def test_read_grp_empty(localdb):
+def test_read_grp(localdb):
     assert localdb.read_grp('foo') is None
+
+def test_read_grp_error(localdb):
+    with pytest.raises(TypeError) as excinfo:
+        localdb.read_grp()
+    assert 'expected string argument' in str(excinfo.value)
+
+def test_get_pkg(localdb):
+    with pytest.raises(TypeError) as excinfo:
+        localdb.get_pkg()
+    assert 'takes a string argument' in str(excinfo.value)
+
+def test_update(syncdb):
+    syncdb.update(False)
+    assert not syncdb.search('pacman') is None
 
 # DB properties
 

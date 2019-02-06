@@ -6,8 +6,10 @@ import pytest
 from pyalpm import Handle
 
 
+ARCH = 'x86_64'
+PKG = 'pacman'
 REPO_1 = 'core'
-TEST_MIRROR = 'http://mirror.rackspace.com/archlinux/{}/os/x86_64'
+TEST_MIRROR = 'http://mirror.rackspace.com/archlinux/{}/os/{}'
 
 
 @pytest.fixture()
@@ -25,7 +27,7 @@ def real_handle():
     dbpath = mkdtemp(dir='/tmp')
     handle = Handle('/', dbpath)
     repo = handle.register_syncdb(REPO_1, 0)
-    repo.servers = [TEST_MIRROR.format(REPO_1)]
+    repo.servers = [TEST_MIRROR.format(REPO_1, ARCH)]
     yield handle
     rmtree(dbpath)
 
@@ -38,6 +40,6 @@ def syncdb(real_handle, name=REPO_1):
 
 
 @pytest.fixture(scope="module")
-def package(syncdb, name='pacman'):
+def package(syncdb, name=PKG):
     syncdb.update(False)
     return syncdb.get_pkg(name)
