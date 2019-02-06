@@ -31,7 +31,7 @@ Building the docs:
 Required test dependency:
 
 * python-pytest
-* gcovr (optional, genenrating C coverage) 
+* gcovr (optional, generating C coverage) 
 
 Unit tests can be run with:
 
