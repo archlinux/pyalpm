@@ -43,3 +43,10 @@ def syncdb(real_handle, name=REPO_1):
 def package(syncdb, name=PKG):
     syncdb.update(False)
     return syncdb.get_pkg(name)
+
+
+@pytest.fixture(scope="module")
+def transaction(real_handle):
+    transaction = real_handle.init_transaction()
+    yield transaction
+    transaction.release()
