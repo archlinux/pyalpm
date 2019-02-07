@@ -24,7 +24,6 @@
 /* Include pyconfig for feature test macros. */
 #include <pyconfig.h>
 #include <string.h>
-#include <regex.h>
 
 #include <Python.h>
 #include <alpm.h>
@@ -143,109 +142,6 @@ PyObject* alpmlist_to_pylist(alpm_list_t *prt, PyObject* pybuilder(void*))
   }
 
   return output;
-}
-
-/** Format strings */
-
-/** from manpage printf(3p) */
-const char format_regex[] = "^%"
-  "['-+ #0]*"              /* flags */
-  "(\\*|-?[0-9]+)?"         /* field width */
-  "(\\.\\*|\\.[0-9]*)?"       /* precision */
-  "(hh|ll|[hljztL])?"      /* modifier */
-  "[diouxfegaXFEGAcspnCS]"; /* type specifier */
-
-/** Converts a printf-style format string to a Python type specification
- * returns: the numbers of characters written, -1 if an error occurred
- */
-ssize_t printf_to_pytype_format(char *dest, const char *format, size_t len) {
-  regex_t regex;
-  regmatch_t match;
-  int n_vars = 0;
-  const char *p;
-
-  if (regcomp(&regex, format_regex, REG_EXTENDED) != 0) {
-    puts("Error in regex compilation !\n");
-    return -1;
-  }
-
-  for (p = format; *p; p++) {
-    const char* spec;
-    if(*p != '%')
-      continue;
-    if(p[1] == '%') {
-      /* exclude '%%' */
-      p++; continue;
-    }
-    if (regexec(&regex, p, 1, &match, 0) != 0)
-      /* regex does not match */
-      continue;
-
-    spec = p + match.rm_eo;
-    switch(spec[-1]) {
-    case 'd':
-    case 'i':
-      /* signed integer */
-      switch (spec[-2]) {
-      case 'l':
-        dest[n_vars] = spec[-3] == 'l' ? 'L' : 'l';
-        break;
-      case 'h':
-        dest[n_vars] = spec[-3] == 'h' ? 'b' : 'h';
-        break;
-      default:
-        dest[n_vars] = 'i';
-      }
-      break;
-    case 'o':
-    case 'u':
-    case 'x':
-    case 'X':
-      /* unsigned */
-      switch (spec[-2]) {
-      case 'l':
-        dest[n_vars] = spec[-3] == 'l' ? 'K' : 'k';
-        break;
-      case 'h':
-        dest[n_vars] = spec[-3] == 'h' ? 'B' : 'H';
-        break;
-      default:
-        dest[n_vars] = 'I';
-      }
-      break;
-    case 'f':
-    case 'e':
-    case 'g':
-    case 'a':
-    case 'F':
-    case 'E':
-    case 'G':
-    case 'A':
-      /* floating point */
-      dest[n_vars] = 'd';
-      break;
-    case 'c':
-      /* char */
-      dest[n_vars] = 'i';
-      break;
-    case 's':
-      /* string */
-      dest[n_vars] = 's';
-      break;
-    case 'p':
-      /* pointer */
-      dest[n_vars] = 'n';
-      break;
-    default:
-      fprintf(stderr, "unsupported type specifier %c", spec[-1]);
-      dest[n_vars] = '?';
-      return -1;
-    }
-    n_vars++;
-  }
-
-  dest[n_vars] = '\0';
-  return n_vars;
 }
 
 /* vim: set ts=2 sw=2 et: */
