@@ -71,4 +71,7 @@ def test_set_noupgrades(handle):
     handle.noupgrades = [PKG]
     assert handle.noupgrades == [PKG]
 
+def test_root(handle):
+    assert handle.root == '/'
+
 # vim: set ts=4 sw=4 et:

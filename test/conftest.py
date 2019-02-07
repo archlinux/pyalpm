@@ -45,7 +45,7 @@ def package(syncdb, name=PKG):
     return syncdb.get_pkg(name)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def transaction(real_handle):
     transaction = real_handle.init_transaction()
     yield transaction
