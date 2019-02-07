@@ -122,7 +122,7 @@ PyObject* pyobject_from_string(void *s) {
 
 PyObject* alpmlist_to_pylist(alpm_list_t *prt, PyObject* pybuilder(void*))
 {
-  PyObject *output;
+  PyObject *output, *stritem;
   alpm_list_t *tmp;
 
   output = PyList_New(0);
@@ -132,7 +132,7 @@ PyObject* alpmlist_to_pylist(alpm_list_t *prt, PyObject* pybuilder(void*))
   }
 
   for(tmp = prt; tmp; tmp = alpm_list_next(tmp)) {
-    PyObject stritem = pybuilder(tmp->data);
+    stritem = pybuilder(tmp->data);
     if (!stritem) {
       Py_CLEAR(stritem);
       return NULL;
