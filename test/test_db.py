@@ -40,7 +40,7 @@ def test_db_servers(localdb):
 def test_db_pkgcache(localdb):
     assert localdb.pkgcache == []
 
-def test_db_grpcache(localdb):
+def test_db_grpcache_empty(localdb):
     assert localdb.grpcache == []
 
 # vim: set ts=4 sw=4 et:
