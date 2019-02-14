@@ -24,7 +24,7 @@ Building is as easy as running make
 
 Building the docs:
 
-	make -C docs html
+	make -C doc html
 
 # Testing
 
