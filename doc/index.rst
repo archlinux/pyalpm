@@ -6,7 +6,7 @@
 Pyalpm documentation
 =====================
 
-Pyalpm is a python package that provides you native bindings to both libalpm
+Pyalpm is a Python package that provides you native bindings to both libalpm
 and pacman. If you need to interact with alpm databases or programatically call
 pacman in a safe, sensible way, you're in the right place.
 
@@ -14,8 +14,8 @@ pacman in a safe, sensible way, you're in the right place.
 Package structure
 -----------------
 
-Pyalpm exposes two python modules: alpm (python bindings libalpm) and pycman (a
-python module exposing pacman functionalities).
+Pyalpm exposes two Python modules: alpm (Python bindings libalpm) and pycman (a
+Python module exposing pacman functionalities).
 
 .. toctree::
    :maxdepth: 2

@@ -1,7 +1,7 @@
 Pyalpm
 =======
 
-Pyalpm is a python module that provides native bindings libalpm to interact
+Pyalpm is a Python module that provides native bindings libalpm to interact
 with Arch Linux package databases.
 
 .. toctree::
