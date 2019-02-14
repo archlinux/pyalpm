@@ -6,8 +6,9 @@ PYTEST_INPUT?=test
 PYTEST_COVERAGE_OPTIONS+=--cov-report=term-missing --cov-report=html:test/coverage --cov=pycman
 EXT_COVERAGE_DIR=test/ext-coverage
 BUILD_DIR=build/lib.linux-x86_64-3.7
+DOC_DIR=doc
 
-.PHONY: test
+.PHONY: test doc
 
 build:
 	$(PYTHON) setup.py build
@@ -30,6 +31,13 @@ ext-coverage:
 open-ext-coverage: ext-coverage
 	${BROWSER} ${EXT_COVERAGE_DIR}/index.html
 
+doc:
+	make -C ${DOC_DIR} html
+
+open-doc: doc
+	${BROWSER} ${DOC_DIR}/_build/html/index.html
+
 .PHONY: clean
 clean:
 	-rm -r build
+	make -C ${DOC_DIR} clean
