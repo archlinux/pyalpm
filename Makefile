@@ -9,6 +9,9 @@ BUILD_DIR=build/lib.linux-x86_64-3.7
 
 .PHONY: test
 
+build:
+	$(PYTHON) setup.py build
+
 test: test-py
 
 test-py coverage:
