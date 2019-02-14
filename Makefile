@@ -1,11 +1,13 @@
 # Inspired by https://github.com/archlinux/arch-security-tracker/blob/master/Makefile
 
+PYTHON?=python
 PYTEST?=py.test
 PYTEST_OPTIONS+=-s
 PYTEST_INPUT?=test
 PYTEST_COVERAGE_OPTIONS+=--cov-report=term-missing --cov-report=html:test/coverage --cov=pycman
 EXT_COVERAGE_DIR=test/ext-coverage
-BUILD_DIR=build/lib.linux-x86_64-3.7
+PY_VERSION=$(shell ${PYTHON} -c "import sys; print('{0[0]}.{0[1]}'.format(sys.version_info))")
+BUILD_DIR=build/lib.linux-x86_64-${PY_VERSION}
 DOC_DIR=doc
 
 .PHONY: test doc
