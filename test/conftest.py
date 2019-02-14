@@ -50,3 +50,9 @@ def transaction(real_handle):
     transaction = real_handle.init_transaction()
     yield transaction
     transaction.release()
+
+
+def assert_string_argument(func):
+    with pytest.raises(TypeError) as excinfo:
+        func(1)
+    assert 'expecting a string argument' in str(excinfo)

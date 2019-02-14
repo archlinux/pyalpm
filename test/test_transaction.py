@@ -1,7 +1,7 @@
 from unittest import mock
 from pytest import raises
 
-from conftest import real_handle as handle, transaction, package, PKG
+from conftest import real_handle as handle, syncdb, transaction, package, PKG
 
 from pyalpm import error
 
