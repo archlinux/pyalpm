@@ -65,17 +65,6 @@ PyObject* pyalpm_initialize(PyTypeObject *subtype, PyObject *args, PyObject *kwa
   }
 }
 
-PyObject* pyalpm_release(PyObject *self, PyObject *args)
-{
-  AlpmHandle *pyhandle;
-  if(!PyArg_ParseTuple(args, "O!", &AlpmHandleType, &pyhandle))
-    return NULL;
-
-  alpm_release(pyhandle->c_data);
-  pyhandle->c_data = NULL;
-  Py_RETURN_NONE;
-}
-
 /* Database getters/setters */
 
 static PyObject* pyalpm_get_localdb(PyObject *self, PyObject *dummy) {
