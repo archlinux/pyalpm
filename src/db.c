@@ -304,7 +304,7 @@ PyObject* pyalpm_find_grp_pkgs(PyObject* self, PyObject *args) {
 }
 
 /** Finds an available upgrade for a package in a list of databases */
-PyObject* pyalpm_sync_newversion(PyObject *self, PyObject* args) {
+PyObject* pyalpm_sync_get_new_version(PyObject *self, PyObject* args) {
   PyObject *pkg;
   PyObject *dbs;
   alpm_list_t *db_list;
@@ -313,7 +313,7 @@ PyObject* pyalpm_sync_newversion(PyObject *self, PyObject* args) {
       || !PyAlpmPkg_Check(pkg)
       || pylist_db_to_alpmlist(dbs, &db_list) == -1)
   {
-    PyErr_SetString(PyExc_TypeError, "sync_newversion() takes a Package and a list of DBs");
+    PyErr_SetString(PyExc_TypeError, "sync_get_new_version() takes a Package and a list of DBs");
     return NULL;
   }
 

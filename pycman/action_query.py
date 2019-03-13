@@ -48,7 +48,7 @@ def filter_pkglist(pkglist, options):
 			continue
 		if options.foreign and pkg.name in syncpkgs:
 			continue
-		if options.upgrades and pyalpm.sync_newversion(pkg, handle.get_syncdbs()) is None:
+		if options.upgrades and pyalpm.sync_get_new_version(pkg, handle.get_syncdbs()) is None:
 			continue
 		result.append(pkg)
 	return result

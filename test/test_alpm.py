@@ -41,12 +41,12 @@ def test_find_grp_pkgs_error():
         pyalpm.find_grp_pkgs()
     assert 'expected arguments' in str(excinfo.value)
 
-def test_sync_newversion(syncdb, package):
-    assert pyalpm.sync_newversion(package, [syncdb]) is None
+def test_sync_get_new_version(syncdb, package):
+    assert pyalpm.sync_get_new_version(package, [syncdb]) is None
 
-def test_sync_newversion_error():
+def test_sync_get_new_version_error():
     with pytest.raises(TypeError) as excinfo:
-        pyalpm.sync_newversion()
+        pyalpm.sync_get_new_version()
     assert 'takes a Package and a list of DBs' in str(excinfo.value)
 
 # vim: set ts=4 sw=4 et:
