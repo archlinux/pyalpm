@@ -36,9 +36,6 @@ def test_files(package):
 def test_backup(package):
     assert package.backup == []
 
-def test_deltas(package):
-    assert package.deltas == []
-
 def test_depends(package):
     assert package.depends != []
 

@@ -30,9 +30,6 @@
 PyObject* option_get_usesyslog_alpm(PyObject *self, void* closure);
 int option_set_usesyslog_alpm(PyObject *self, PyObject *value, void* closure);
 
-PyObject* option_get_deltaratio_alpm(PyObject *self, void* closure);
-int option_set_deltaratio_alpm(PyObject *self, PyObject *value, void* closure);
-
 PyObject* option_get_checkspace_alpm(PyObject *self, void* closure);
 int option_set_checkspace_alpm(PyObject *self, PyObject *value, void* closure);
 

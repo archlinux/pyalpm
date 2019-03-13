@@ -35,10 +35,6 @@ Packages
 
       A list of licenses for this package.
 
-   .. py:attribute:: deltas (list)
-
-      A list of deltas for this package
-
    .. py:attribute:: desc (string)
 
       Package description.
