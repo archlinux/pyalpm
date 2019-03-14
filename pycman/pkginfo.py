@@ -40,19 +40,19 @@ ATTR_INDENT = 17 * ' '
 
 def get_term_size():
 	if sys.stdout.isatty():
-		height, width = struct.unpack("HH", fcntl.ioctl(1, termios.TIOCGWINSZ, 4 * b"\x00"))
+		_, width = struct.unpack("HH", fcntl.ioctl(1, termios.TIOCGWINSZ, 4 * b"\x00"))
 		return width
 	else:
 		return 80
 
-def format_attr(attrname, value, format=None):
+def format_attr(attrname, value, format_str=None):
 	if isinstance(value, list):
 		if len(value) == 0:
 			valuestring = 'None'
 		else:
 			valuestring = '  '.join(str(v) for v in value)
 	else:
-		if format == "time":
+		if format_str == "time":
 			valuestring = time.strftime("%a %d %b %Y %X %Z", time.localtime(value))
 		else:
 			valuestring = str(value)
