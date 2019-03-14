@@ -85,11 +85,6 @@ def test_usesyslog_error(handle):
         handle.usesyslog = "nope"
     assert 'wrong arguments' in str(excinfo)
 
-def test_deltaratio(handle):
-    assert handle.deltaratio == 0.0
-    handle.deltaratio = 1
-    assert handle.deltaratio == 1.0
-
 def test_checkspace(handle):
     assert not handle.checkspace
     handle.checkspace = True

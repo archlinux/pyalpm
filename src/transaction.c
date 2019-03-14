@@ -106,14 +106,6 @@ void pyalpm_eventcb(alpm_event_t *event) {
       break;
     case ALPM_EVENT_LOAD_START:
     case ALPM_EVENT_LOAD_DONE:
-    case ALPM_EVENT_DELTA_INTEGRITY_START:
-    case ALPM_EVENT_DELTA_INTEGRITY_DONE:
-    case ALPM_EVENT_DELTA_PATCHES_START:
-    case ALPM_EVENT_DELTA_PATCHES_DONE:
-    case ALPM_EVENT_DELTA_PATCH_START:
-      /* info here */
-    case ALPM_EVENT_DELTA_PATCH_DONE:
-    case ALPM_EVENT_DELTA_PATCH_FAILED:
     case ALPM_EVENT_SCRIPTLET_INFO:
       /* info here */
     case ALPM_EVENT_RETRIEVE_START:
@@ -352,9 +344,6 @@ static PyObject* pyalpm_trans_commit(PyObject *self, PyObject *args) {
     case ALPM_ERR_PKG_INVALID:
     case ALPM_ERR_PKG_INVALID_CHECKSUM:
     case ALPM_ERR_PKG_INVALID_SIG:
-    case ALPM_ERR_DLT_INVALID:
-      err_info = alpmlist_to_pylist(data, pyobject_from_string);
-      break;
     default:
       break;
   }

@@ -279,7 +279,6 @@ static PyObject* pyalpm_pkg_compute_requiredby(PyObject *rawself, PyObject *args
 struct list_getter get_licenses = { alpm_pkg_get_licenses, pyobject_from_string };
 struct list_getter get_groups   = { alpm_pkg_get_groups, pyobject_from_string };
 struct list_getter get_backup   = { alpm_pkg_get_backup, pyobject_from_alpm_backup };
-struct list_getter get_deltas   = { alpm_pkg_get_deltas, pyobject_from_string };
 struct list_getter get_depends  = { alpm_pkg_get_depends, _pyobject_from_pmdepend };
 struct list_getter get_optdepends = { alpm_pkg_get_optdepends, _pyobject_from_pmdepend };
 struct list_getter get_replaces   = { alpm_pkg_get_replaces, _pyobject_from_pmdepend };
@@ -310,7 +309,6 @@ static struct PyGetSetDef AlpmPackageGetSet[] = {
   { "installdate", (getter)pyalpm_package_get_installdate, 0, "install time", NULL } ,
   { "files",  (getter)pyalpm_package_get_files, 0, "list of installed files", NULL } ,
   { "backup", (getter)_get_list_attribute, 0, "list of tuples (filename, md5sum)", &get_backup } ,
-  { "deltas", (getter)_get_list_attribute, 0, "list of available deltas", &get_deltas } ,
   /* dependency information */
   { "depends",    (getter)_get_list_attribute, 0, "list of dependencies", &get_depends } ,
   { "optdepends", (getter)_get_list_attribute, 0, "list of optional dependencies", &get_optdepends } ,

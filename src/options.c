@@ -68,28 +68,6 @@ int option_set_usesyslog_alpm(PyObject *self, PyObject *value, void* closure)
   return 0;
 }
 
-PyObject* option_get_deltaratio_alpm(PyObject *self, void* closure) {
-  alpm_handle_t *handle = ALPM_HANDLE(self);
-  double ret = alpm_option_get_deltaratio(handle);
-  if (ret == -1) {
-    RET_ERR("failed getting deltaratio", alpm_errno(handle), NULL);
-  } else
-    return PyFloat_FromDouble(ret);
-}
-
-int option_set_deltaratio_alpm(PyObject *self, PyObject *value, void* closure)
-{
-  alpm_handle_t *handle = ALPM_HANDLE(self);
-  double fval = PyFloat_AsDouble(value);
-
-  if(PyErr_Occurred()) {
-    return -1;
-  }
-
-  alpm_option_set_deltaratio(handle, fval);
-  return 0;
-}
-
 PyObject* option_get_checkspace_alpm(PyObject *self, void* closure) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
   int ret = alpm_option_get_checkspace(handle);
