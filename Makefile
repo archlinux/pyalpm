@@ -1,6 +1,7 @@
 # Inspired by https://github.com/archlinux/arch-security-tracker/blob/master/Makefile
 
 PYTHON?=python
+PYLINT?=pylint
 PYTEST?=py.test
 PYTEST_OPTIONS+=-s
 PYTEST_INPUT?=test
@@ -10,7 +11,7 @@ PY_VERSION=$(shell ${PYTHON} -c "import sys; print('{0[0]}.{0[1]}'.format(sys.ve
 BUILD_DIR=build/lib.linux-x86_64-${PY_VERSION}
 DOC_DIR=doc
 
-.PHONY: test doc
+.PHONY: test doc lint
 
 build:
 	$(PYTHON) setup.py build
@@ -38,6 +39,9 @@ doc:
 
 open-doc: doc
 	${BROWSER} ${DOC_DIR}/_build/html/index.html
+
+lint:
+	$(PYLINT) pycman
 
 .PHONY: clean
 clean:
