@@ -13,12 +13,7 @@ arch:
     - python-sphinx
 
   script:
-    - python3 -m py_compile $(git ls-files '*.py')
-    - sudo python3 setup.py install
-    - sudo mkdir /var/cache/pacman/pkg
-    - make test
-    - make pylint
-    - make -C doc html
+    - ./build.sh
 
 script: 'curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash'
 
