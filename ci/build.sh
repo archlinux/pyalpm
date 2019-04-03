@@ -10,7 +10,7 @@ if [ "$branch" == "next" ]; then
   echo "Building with pacman-git"
   ./build-pacman-git.sh $tmpdir
 else
-  make build
+  CC=gcc make build
 fi
 
 LD_LIBRARY_PATH=$tmpdir/usr/include make test
