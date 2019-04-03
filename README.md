@@ -45,3 +45,8 @@ Coverage for the CPython code can be generated as following:
 
 	make open-ext-coverage
 
+# Pacman development compatibility
+
+The master branch tracks the most recent pacman release and thus libalpm
+release, the [next](https://github.com/archlinux/pyalpm/tree/next) branch
+follows [pacman's master branch](https://git.archlinux.org/pacman.git/).
