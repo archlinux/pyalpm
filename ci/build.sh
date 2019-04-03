@@ -10,7 +10,7 @@ if [ "$branch" == "next" ]; then
   echo "Building with pacman-git"
   ./build-pacman-git.sh $tmpdir
 else
-  python3 setup.py build
+  make build
 fi
 
 LD_LIBRARY_PATH=$tmpdir/usr/include make test
