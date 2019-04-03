@@ -7,6 +7,7 @@ python3 -m py_compile $(git ls-files '*.py')
 sudo mkdir /var/cache/pacman/pkg
 
 if [ "$branch" == "next" ]; then
+  echo "Building with pacman-git"
   ./build-pacman-git.sh $tmpdir
 else
   python3 setup.py build
