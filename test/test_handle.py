@@ -113,6 +113,10 @@ def test_load_pkg(handle):
         handle.load_pkg('/tmp/noexistant.txt')
     assert 'loading package failed' in str(excinfo)
 
+def test_set_pkgreason(handle, package):
+    with raises(pyalpm.error) as excinfo:
+        handle.set_pkgreason(package, -1)
+    assert 'failed setting install reason' in str(excinfo)
 
 
 # vim: set ts=4 sw=4 et:
