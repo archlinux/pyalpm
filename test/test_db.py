@@ -43,4 +43,8 @@ def test_db_pkgcache(localdb):
 def test_db_grpcache_empty(localdb):
     assert localdb.grpcache == []
 
+def test_db_grpcache_not_empty(syncdb):
+    syncdb.update(False)
+    assert syncdb.grpcache != []
+
 # vim: set ts=4 sw=4 et:
