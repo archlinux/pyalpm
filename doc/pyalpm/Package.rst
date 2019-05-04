@@ -95,4 +95,4 @@ Packages
 
       Computes a list of the packages required by this package
 
-     :returns list[Packages]: the packages required by this package 
+     :returns: the packages required by this package
