@@ -41,14 +41,6 @@ information.
      :returns: a reference to the Package object with the name 'name' or None
       if it doesn't exist
 
-   .. py:method:: read_group(name: string)
-
-      Retrieves the list of packages that belong to the group by the name passed
-
-     :param str name: The name of the group (e.g., 'base')
-     :returns: a list of package objects that correspond to the packages that
-      belong to that group or None if the group is not found.
-
    .. py:method:: update(force: boolean)
 
       Attempts to update the sync database (i.e., alpm_db_update).
