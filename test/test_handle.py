@@ -117,6 +117,15 @@ def test_invalid_logfile(handle):
         handle.logfile = 1
     assert 'logfile path must be a string' in str(excinfo)
 
+def test_invalid_logcb(handle):
+    with raises(TypeError) as excinfo:
+        handle.logcb = 1
+    assert 'value must be None or a function' in str(excinfo)
+
+def test_logcb(handle):
+    handle.logcb = None
+    assert handle.logcb == None
+
 def test_load_pkg(handle):
     with raises(pyalpm.error) as excinfo:
         handle.load_pkg('/tmp/noexistant.txt')
