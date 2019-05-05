@@ -48,6 +48,13 @@ def test_db_name(localdb):
 def test_db_servers(localdb):
     assert localdb.servers == []
 
+    with pytest.raises(TypeError) as excinfo:
+        localdb.servers = [1]
+    assert 'list must contain only strings' in str(excinfo)
+
+    localdb.servers = [b'server']
+    assert localdb.servers == ['server']
+
 def test_db_pkgcache(localdb):
     assert localdb.pkgcache == []
 
