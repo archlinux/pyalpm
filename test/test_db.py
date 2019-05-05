@@ -1,5 +1,7 @@
 import pytest
 
+from pyalpm import error
+
 from conftest import handle, localdb, syncdb
 
 
@@ -28,6 +30,15 @@ def test_get_pkg(localdb):
 def test_update(syncdb):
     syncdb.update(False)
     assert not syncdb.search('pacman') is None
+
+def test_update_error(handle, syncdb):
+    servers = syncdb.servers
+    syncdb.servers = ['nonexistant']
+    with pytest.raises(error) as excinfo:
+        syncdb.update(False)
+    assert 'unable to update database' in str(excinfo)
+    # TODO(jelle): remove when handle is no longer scope="module"
+    syncdb.servers = servers
 
 # DB properties
 
