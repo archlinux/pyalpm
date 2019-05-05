@@ -107,6 +107,10 @@ def test_root(handle):
 
 def test_gpgdir(handle):
     handle.gpgdir = '/'
+    assert handle.gpgdir == '/'
+
+    handle.gpgdir = b'/'
+    assert handle.gpgdir == '/'
 
 def test_load_pkg(handle):
     with raises(pyalpm.error) as excinfo:
