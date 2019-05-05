@@ -57,3 +57,8 @@ def test_interrupt_error(transaction):
     with raises(error) as excinfo:
         transaction.interrupt()
     assert 'unable to interrupt transaction' in str(excinfo)
+
+def test_commit_error(transaction):
+    with raises(error) as excinfo:
+        transaction.commit()
+    assert 'transaction failed' in str(excinfo)
