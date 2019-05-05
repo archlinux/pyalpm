@@ -112,6 +112,11 @@ def test_gpgdir(handle):
     handle.gpgdir = b'/'
     assert handle.gpgdir == '/'
 
+def test_invalid_logfile(handle):
+    with raises(TypeError) as excinfo:
+        handle.logfile = 1
+    assert 'logfile path must be a string' in str(excinfo)
+
 def test_load_pkg(handle):
     with raises(pyalpm.error) as excinfo:
         handle.load_pkg('/tmp/noexistant.txt')
