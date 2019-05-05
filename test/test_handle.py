@@ -2,7 +2,7 @@ from pytest import raises
 
 import pyalpm
 
-from conftest import assert_string_argument, handle, PKG
+from conftest import assert_string_argument, PKG
 
 
 def test_cachedirs(handle):
