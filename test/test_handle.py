@@ -118,5 +118,13 @@ def test_set_pkgreason(handle, package):
         handle.set_pkgreason(package, -1)
     assert 'failed setting install reason' in str(excinfo)
 
+def test_register_syncdb_invalid(handle):
+    with raises(TypeError) as excinfo:
+        handle.register_syncdb([], -1)
+    assert 'takes a string and an integer' in str(excinfo)
+
+    with raises(TypeError) as excinfo:
+        handle.register_syncdb("foo", "bar")
+    assert 'takes a string and an integer' in str(excinfo)
 
 # vim: set ts=4 sw=4 et:
