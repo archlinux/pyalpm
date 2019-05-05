@@ -52,3 +52,8 @@ def test_sysupgrade(transaction):
     transaction.sysupgrade(False)
     assert transaction.to_add == []
     assert transaction.to_remove == []
+
+def test_interrupt_error(transaction):
+    with raises(error) as excinfo:
+        transaction.interrupt()
+    assert 'unable to interrupt transaction' in str(excinfo)
