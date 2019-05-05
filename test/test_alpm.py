@@ -45,6 +45,10 @@ def test_find_grp_pkgs_error():
         pyalpm.find_grp_pkgs()
     assert 'expected arguments' in str(excinfo.value)
 
+    with pytest.raises(TypeError) as excinfo:
+        pyalpm.find_grp_pkgs([None], 'test')
+    assert 'list must contain only Database objects' in str(excinfo.value)
+
 def test_sync_newversion(syncdb, package):
     assert pyalpm.sync_newversion(package, [syncdb]) is None
 
