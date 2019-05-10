@@ -34,13 +34,13 @@ Handles are objects that provide access to pacman databases and transactions.
       (i.e., an ALPM_SIG_* constant as exported in the parent module)
      :returns: an alpm database object for this syncdb
 
-   .. py:method:: set_pkgreason(package: string, reason: pkgreason)
+   .. py:method:: set_pkgreason(package: Package, reason: int)
 
       Sets the reason for this package installation's (e.g., explicitly or as a
       dependency)
 
-      :param str path: the path to the cachedir to add.
-      :param str reason: the reason to add (e.g., asdep)
+      :param Package package: the package.
+      :param int reason: 0 for explicitly requrested by a user or 1 for as dependency of another package
       :returns: Nothing
 
    .. py:method:: add_cachedir()
