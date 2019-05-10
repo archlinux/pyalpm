@@ -77,3 +77,25 @@ Handles are objects that provide access to pacman databases and transactions.
 
       :param str pkgname: the package name to noextract
       :returns: nothing
+
+   .. py:method:: init_transaction()
+
+      Initializes a transaction
+
+      :param bool nodeps: skip dependency checks
+      :param bool force: overwrite existing packages (deprecated)
+      :param bool nosave: do not save .pacsave files
+      :param bool nodepversion: undocumented
+      :param bool cascade: remove all dependent packages
+      :param bool recurse: remove also explicitly installed unneeded dependent packages
+      :param bool dbonly: only remove database entry, do not remove files
+      :param bool alldeps: mark packages as non-explicitly installed
+      :param bool downloadonly: download pakcages but do not install/upgrade anything
+      :param bool noscriptlet: do not execute the install scriptlet of one exists
+      :param bool noconflicts: ignore conflicts
+      :param bool needed: do not reinstall the targets that are already up-to-date.
+      :param bool allexplicit: undocmented
+      :param bool unneeded: remove also explicitly unneeded deps
+      :param bool recurseall: undocumented
+      :param bool nolock: do not database
+      :returns: a :class:`Transaction` object

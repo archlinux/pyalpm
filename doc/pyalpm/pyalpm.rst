@@ -12,6 +12,7 @@ with Arch Linux package databases.
    Database
    Package
    Pyalpm
+   Transaction
 
 
 
