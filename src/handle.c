@@ -327,7 +327,7 @@ static PyMethodDef pyalpm_handle_methods[] = {
     "Arguments:\n"
     "  nodeps, force, nosave, nodepversion, cascade, recurse,\n"
     "  dbonly, alldeps, downloadonly, noscriptlet, noconflicts,\n"
-    "  needed, allexplicit, inneeded, recurseall, nolock\n"
+    "  needed, allexplicit, unneeded, recurseall, nolock\n"
     "    -- the transaction options (booleans)\n"
   },
 
