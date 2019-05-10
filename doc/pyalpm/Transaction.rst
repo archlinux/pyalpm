@@ -5,7 +5,8 @@ Transactions permit easy manipulations of several packages at a time.
 
 .. py:class:: Transaction()
 
-   A transaciton object b/pacman'.
+   A transaciton object permits easy manipulations of several packages at a
+   time, a transaction can be initiated with a type and some flags. 
 
    .. py:method:: prepare()
 
