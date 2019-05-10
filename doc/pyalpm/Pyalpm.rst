@@ -46,3 +46,19 @@ The pyalpm module contains a a number of convenience functions for general usage
       Find packages from a given group across databases..
 
      :returns: returns a list of :class:`Package` objects.
+
+.. py:data:: SIG_DATABASE
+
+      Undocumented
+
+.. py:data:: SIG_DATABASE_OPTIONAL
+
+      Database singing optional, absence of signature is not an error
+
+.. py:data:: SIG_DATABASE_MARGINAL_OK
+
+      Signatures are required, marginal trust
+
+.. py:data:: SIG_DATABASE_UNKNOWN_OK
+
+      Signatures are required, unknown trust
