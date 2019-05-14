@@ -65,4 +65,10 @@ def test_db_grpcache_not_empty(syncdb):
     syncdb.update(False)
     assert syncdb.grpcache != []
 
+def test_db_repr(localdb):
+    assert 'local' in repr(localdb)
+
+def test_db_str(localdb):
+    assert 'local' in str(localdb)
+
 # vim: set ts=4 sw=4 et:

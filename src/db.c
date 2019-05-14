@@ -92,6 +92,20 @@ int pylist_db_to_alpmlist(PyObject *list, alpm_list_t **result) {
   return NULL; \
   }
 
+static PyObject* pyalpm_db_repr(PyObject *rawself) {
+  AlpmDB *self = (AlpmDB *)rawself;
+  return PyUnicode_FromFormat("<alpm.DB(\"%s\") at %p>",
+			      alpm_db_get_name(self->c_data),
+			      self);
+}
+
+static PyObject* pyalpm_db_str(PyObject *rawself) {
+  AlpmDB *self = (AlpmDB *)rawself;
+  return PyUnicode_FromFormat("alpm.DB(\"%s\")",
+			      alpm_db_get_name(self->c_data),
+            self);
+}
+
 /** Database properties */
 
 static PyObject* pyalpm_db_get_name(AlpmDB* self, void* closure) {
@@ -241,6 +255,8 @@ static PyTypeObject AlpmDBType = {
   sizeof(AlpmDB),        /*tp_basicsize*/
   0,                          /*tp_itemsize*/
   .tp_dealloc = (destructor)pyalpm_db_dealloc,
+  .tp_repr = pyalpm_db_repr,
+  .tp_str = pyalpm_db_str,
   .tp_flags = Py_TPFLAGS_DEFAULT,
   .tp_doc = "libalpm DB object",
   .tp_methods = db_methods,
