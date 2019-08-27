@@ -18,7 +18,7 @@ archlinux:
     - sudo python3 setup.py install
     - sudo mkdir /var/cache/pacman/pkg
     - make test
-    - make pylint
+    - make lint
     - make -C doc html
 
 script: 'curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash'
