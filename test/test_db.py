@@ -36,7 +36,7 @@ def test_update_error(handle, syncdb):
     syncdb.servers = ['nonexistant']
     with pytest.raises(error) as excinfo:
         syncdb.update(False)
-    assert 'unable to update database' in str(excinfo)
+    assert 'unable to update database' in str(excinfo.value)
     # TODO(jelle): remove when handle is no longer scope="module"
     syncdb.servers = servers
 
@@ -50,7 +50,7 @@ def test_db_servers(localdb):
 
     with pytest.raises(TypeError) as excinfo:
         localdb.servers = [1]
-    assert 'list must contain only strings' in str(excinfo)
+    assert 'list must contain only strings' in str(excinfo.value)
 
     localdb.servers = [b'server']
     assert localdb.servers == ['server']

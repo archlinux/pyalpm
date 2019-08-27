@@ -55,4 +55,4 @@ def transaction(real_handle):
 def assert_string_argument(func):
     with pytest.raises(TypeError) as excinfo:
         func(1)
-    assert 'expecting a string argument' in str(excinfo)
+    assert 'expecting a string argument' in str(excinfo.value)
