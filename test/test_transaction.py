@@ -26,7 +26,7 @@ def test_add_pkg_not_satisfied(handle, transaction, package):
     transaction.add_pkg(package)
     with raises(error) as excinfo:
         transaction.prepare()
-    assert 'could not satisfy dependencies' in str(excinfo)
+    assert 'could not satisfy dependencies' in str(excinfo.value)
 
 def test_add_pkg_error(transaction):
     with raises(TypeError) as excinfo:
@@ -56,9 +56,9 @@ def test_sysupgrade(transaction):
 def test_interrupt_error(transaction):
     with raises(error) as excinfo:
         transaction.interrupt()
-    assert 'unable to interrupt transaction' in str(excinfo)
+    assert 'unable to interrupt transaction' in str(excinfo.value)
 
 def test_commit_error(transaction):
     with raises(error) as excinfo:
         transaction.commit()
-    assert 'transaction failed' in str(excinfo)
+    assert 'transaction failed' in str(excinfo.value)

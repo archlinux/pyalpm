@@ -83,7 +83,7 @@ def test_usesyslog(handle):
 def test_usesyslog_error(handle):
     with raises(TypeError) as excinfo:
         handle.usesyslog = "nope"
-    assert 'wrong arguments' in str(excinfo)
+    assert 'wrong arguments' in str(excinfo.value)
 
 def test_checkspace(handle):
     assert not handle.checkspace
@@ -93,7 +93,7 @@ def test_checkspace(handle):
 def test_checkspace_error(handle):
     with raises(TypeError) as excinfo:
         handle.checkspace = "nope"
-    assert 'wrong arguments' in str(excinfo)
+    assert 'wrong arguments' in str(excinfo.value)
 
 def test_noupgrades(handle):
     assert not handle.noupgrades
@@ -115,12 +115,12 @@ def test_gpgdir(handle):
 def test_invalid_logfile(handle):
     with raises(TypeError) as excinfo:
         handle.logfile = 1
-    assert 'logfile path must be a string' in str(excinfo)
+    assert 'logfile path must be a string' in str(excinfo.value)
 
 def test_invalid_logcb(handle):
     with raises(TypeError) as excinfo:
         handle.logcb = 1
-    assert 'value must be None or a function' in str(excinfo)
+    assert 'value must be None or a function' in str(excinfo.value)
 
 def test_logcb(handle):
     handle.logcb = None
@@ -129,20 +129,20 @@ def test_logcb(handle):
 def test_load_pkg(handle):
     with raises(pyalpm.error) as excinfo:
         handle.load_pkg('/tmp/noexistant.txt')
-    assert 'loading package failed' in str(excinfo)
+    assert 'loading package failed' in str(excinfo.value)
 
 def test_set_pkgreason(handle, package):
     with raises(pyalpm.error) as excinfo:
         handle.set_pkgreason(package, -1)
-    assert 'failed setting install reason' in str(excinfo)
+    assert 'failed setting install reason' in str(excinfo.value)
 
 def test_register_syncdb_invalid(handle):
     with raises(TypeError) as excinfo:
         handle.register_syncdb([], -1)
-    assert 'takes a string and an integer' in str(excinfo)
+    assert 'takes a string and an integer' in str(excinfo.value)
 
     with raises(TypeError) as excinfo:
         handle.register_syncdb("foo", "bar")
-    assert 'takes a string and an integer' in str(excinfo)
+    assert 'takes a string and an integer' in str(excinfo.value)
 
 # vim: set ts=4 sw=4 et:
