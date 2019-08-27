@@ -11,6 +11,7 @@ archlinux:
     - python-pytest
     - python-pytest-cov
     - python-sphinx
+    - python-pylint
 
   script:
     - python3 -m py_compile $(git ls-files '*.py')
