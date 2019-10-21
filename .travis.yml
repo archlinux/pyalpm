@@ -16,7 +16,6 @@ archlinux:
   script:
     - python3 -m py_compile $(git ls-files '*.py')
     - sudo python3 setup.py install
-    - sudo mkdir /var/cache/pacman/pkg
     - make test
     - make lint
     - make -C doc html
