@@ -7,4 +7,4 @@
 ## Uploading to PyPI
 
 1. python3 setup.py sdist
-2. twine upload  dist/* --verbose  
+2. twine upload -s dist/* --verbose

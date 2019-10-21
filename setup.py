@@ -5,7 +5,7 @@ from setuptools import setup, Extension
 
 os.putenv('LC_CTYPE', 'en_US.UTF-8')
 
-pyalpm_version = '0.8.5'
+pyalpm_version = '0.9.0'
 
 PYCMAN_SCRIPTS = ['database', 'deptest', 'query', 'remove', 'sync', 'upgrade', 'version']
 
@@ -50,9 +50,9 @@ if __name__ == "__main__":
           classifiers=[
               'Development Status :: 6 - Mature',
               'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-              'Topic :: System :: Software Distribution '
-              'Topic :: System :: Systems Administration'
               'Programming Language :: C',
+              'Topic :: System :: Software Distribution',
+              'Topic :: System :: Systems Administration',
           ])
 
 # vim: set ts=4 sw=4 et tw=0:
