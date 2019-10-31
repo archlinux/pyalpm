@@ -104,11 +104,11 @@ def display_pkginfo(pkg, level=1, style='local'):
 	print(format_attr('Installed Size', '%.2f K' % (pkg.isize / 1024)))
 	print(format_attr('Packager', pkg.packager))
 	print(format_attr('Architecture', pkg.arch))
-	print(format_attr('Build Date', pkg.builddate, format='time'))
+	print(format_attr('Build Date', pkg.builddate, format_str='time'))
 
 	if style == 'local':
 		# local installation information
-		print(format_attr('Install Date', pkg.installdate, format='time'))
+		print(format_attr('Install Date', pkg.installdate, format_str='time'))
 		if pkg.reason == pyalpm.PKG_REASON_EXPLICIT:
 			reason = 'Explicitly installed'
 		elif pkg.reason == pyalpm.PKG_REASON_DEPEND:
