@@ -30,6 +30,7 @@
 typedef struct _AlpmDB {
   PyObject_HEAD
   alpm_db_t *c_data;
+  PyObject *handle;
 } AlpmDB;
 
 #define ALPM_DB(self) (((AlpmDB*)self)->c_data)
@@ -38,6 +39,8 @@ static PyTypeObject AlpmDBType;
 
 static void pyalpm_db_dealloc(AlpmDB *self) {
   Py_TYPE(self)->tp_free((PyObject*)self);
+  if (self->handle)
+    Py_DECREF(self->handle);
 }
 
 static PyObject* _pyobject_from_pmgrp(void *group) {
@@ -281,7 +284,7 @@ void init_pyalpm_db(PyObject *module) {
 }
 
 
-PyObject *pyalpm_db_from_pmdb(void* data) {
+PyObject *pyalpm_db_from_pmdb(void* data, PyObject *handle) {
   alpm_db_t *db = (alpm_db_t*)data;
   AlpmDB *self;
   self = (AlpmDB*)AlpmDBType.tp_alloc(&AlpmDBType, 0);
@@ -290,6 +293,11 @@ PyObject *pyalpm_db_from_pmdb(void* data) {
     return NULL;
   }
 
+  /* TODO: Remove check when src/package.c also has a refcount to a handle */
+  if (handle != NULL) {
+    Py_INCREF(handle);
+    self->handle = handle;
+  }
   self->c_data = db;
   return (PyObject *)self;
 }

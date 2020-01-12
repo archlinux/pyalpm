@@ -69,13 +69,13 @@ PyObject* pyalpm_initialize(PyTypeObject *subtype, PyObject *args, PyObject *kwa
 
 static PyObject* pyalpm_get_localdb(PyObject *self, PyObject *dummy) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
-  return pyalpm_db_from_pmdb(alpm_get_localdb(handle));
+  return pyalpm_db_from_pmdb(alpm_get_localdb(handle), self);
 }
 
 static PyObject* pyalpm_get_syncdbs(PyObject *self, PyObject *dummy) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
-  return alpmlist_to_pylist(alpm_get_syncdbs(handle),
-			    pyalpm_db_from_pmdb);
+  return alpmlist_to_pylist2(alpm_get_syncdbs(handle),
+			    pyalpm_db_from_pmdb, self);
 }
 
 static PyObject* pyalpm_register_syncdb(PyObject *self, PyObject *args) {
@@ -95,7 +95,7 @@ static PyObject* pyalpm_register_syncdb(PyObject *self, PyObject *args) {
     return NULL;
   }
 
-  return pyalpm_db_from_pmdb(result);
+  return pyalpm_db_from_pmdb(result, self);
 }
 
 static PyObject* pyalpm_set_pkgreason(PyObject* self, PyObject* args) {

@@ -144,4 +144,29 @@ PyObject* alpmlist_to_pylist(alpm_list_t *prt, PyObject* pybuilder(void*))
   return output;
 }
 
+PyObject* alpmlist_to_pylist2(alpm_list_t *prt, PyObject* pybuilder2(void*, PyObject *self), PyObject *self)
+{
+  /* Check if *self is null to remove this function? */
+  PyObject *output, *stritem;
+  alpm_list_t *tmp;
+
+  output = PyList_New(0);
+  if(output == NULL) {
+    PyErr_SetString(PyExc_RuntimeError, "unable to create list object");
+    return NULL;
+  }
+
+  for(tmp = prt; tmp; tmp = alpm_list_next(tmp)) {
+    stritem = pybuilder2(tmp->data, self);
+    if (!stritem) {
+      Py_CLEAR(stritem);
+      return NULL;
+    }
+    PyList_Append(output, stritem);
+    Py_CLEAR(stritem);
+  }
+
+  return output;
+}
+
 /* vim: set ts=2 sw=2 et: */
