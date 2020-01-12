@@ -280,6 +280,8 @@ struct list_getter get_licenses = { alpm_pkg_get_licenses, pyobject_from_string 
 struct list_getter get_groups   = { alpm_pkg_get_groups, pyobject_from_string };
 struct list_getter get_backup   = { alpm_pkg_get_backup, pyobject_from_alpm_backup };
 struct list_getter get_depends  = { alpm_pkg_get_depends, _pyobject_from_pmdepend };
+struct list_getter get_checkdepends  = { alpm_pkg_get_checkdepends, _pyobject_from_pmdepend };
+struct list_getter get_makedepends  = { alpm_pkg_get_makedepends, _pyobject_from_pmdepend };
 struct list_getter get_optdepends = { alpm_pkg_get_optdepends, _pyobject_from_pmdepend };
 struct list_getter get_replaces   = { alpm_pkg_get_replaces, _pyobject_from_pmdepend };
 struct list_getter get_provides   = { alpm_pkg_get_provides, _pyobject_from_pmdepend };
@@ -312,6 +314,8 @@ static struct PyGetSetDef AlpmPackageGetSet[] = {
   /* dependency information */
   { "depends",    (getter)_get_list_attribute, 0, "list of dependencies", &get_depends } ,
   { "optdepends", (getter)_get_list_attribute, 0, "list of optional dependencies", &get_optdepends } ,
+  { "checkdepends",    (getter)_get_list_attribute, 0, "list of check dependencies", &get_checkdepends } ,
+  { "makedepends",    (getter)_get_list_attribute, 0, "list of make dependencies", &get_makedepends } ,
   { "conflicts",  (getter)_get_list_attribute, 0, "list of conflicts", &get_conflicts } ,
   { "provides",   (getter)_get_list_attribute, 0, "list of provided package names", &get_provides } ,
   { "replaces",   (getter)_get_list_attribute, 0, "list of replaced packages", &get_replaces } ,

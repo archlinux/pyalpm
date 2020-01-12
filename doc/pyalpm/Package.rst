@@ -47,6 +47,14 @@ Packages
 
       A list of the optional dependencies for this package
 
+   .. py:attribute:: checkdepends (list)
+
+      A list of the check dependencies for this package (syncdb only)
+
+   .. py:attribute:: makedepends (list)
+
+      A list of the make dependencies for this package (syncdb only)
+
    .. py:attribute:: replaces (list)
 
       A list of packages this package replaces
