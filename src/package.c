@@ -249,7 +249,7 @@ static PyObject* pyalpm_package_get_db(AlpmPackage *self, void *closure) {
   CHECK_IF_INITIALIZED();
   db = alpm_pkg_get_db(self->c_data);
   if (db)
-    return pyalpm_db_from_pmdb(db);
+    return pyalpm_db_from_pmdb(db, NULL);
   else
     Py_RETURN_NONE;
 }

@@ -25,7 +25,7 @@
 
 #include <Python.h>
 
-PyObject *pyalpm_db_from_pmdb(void* data);
+PyObject *pyalpm_db_from_pmdb(void* data, PyObject *handle);
 int pylist_db_to_alpmlist(PyObject *list, alpm_list_t **result);
 
 PyObject* pyalpm_find_grp_pkgs(PyObject* self, PyObject* args);

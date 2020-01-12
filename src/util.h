@@ -48,10 +48,12 @@ void init_pyalpm_error(PyObject* module);
     } while(0)
 
 typedef PyObject *(pyobjectbuilder)(void*);
+typedef PyObject *(pyobjectbuilder2)(void*, PyObject*);
 PyObject* pyobject_from_string(void *s);
 
 /** List conversion functions */
 PyObject* alpmlist_to_pylist(alpm_list_t *prt, pyobjectbuilder pybuilder);
+PyObject* alpmlist_to_pylist2(alpm_list_t *prt, pyobjectbuilder2 pybuilder, PyObject *self);
 int pylist_string_to_alpmlist(PyObject *list, alpm_list_t* *result);
 
 #endif
