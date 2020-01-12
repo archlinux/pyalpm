@@ -39,6 +39,10 @@ Packages
 
       Package description.
 
+   .. py:attribute:: depends (list)
+
+      A list of dependencies for this package
+
    .. py:attribute:: optdepends (list)
 
       A list of the optional dependencies for this package
