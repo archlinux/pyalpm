@@ -5,7 +5,7 @@ from setuptools import setup, Extension
 
 os.putenv('LC_CTYPE', 'en_US.UTF-8')
 
-pyalpm_version = '0.9.0'
+pyalpm_version = '0.9.1'
 
 PYCMAN_SCRIPTS = ['database', 'deptest', 'query', 'remove', 'sync', 'upgrade', 'version']
 
