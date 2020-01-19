@@ -43,14 +43,14 @@ static void pyalpm_db_dealloc(AlpmDB *self) {
     Py_DECREF(self->handle);
 }
 
-static PyObject* _pyobject_from_pmgrp(void *group) {
+static PyObject* _pyobject_from_pmgrp(void *group, PyObject *db) {
   const alpm_group_t* grp = (alpm_group_t*)group;
   if (!grp)
     Py_RETURN_NONE;
   else {
     PyObject *fst = PyUnicode_FromString(grp->name);
-    PyObject *snd = alpmlist_to_pylist(grp->packages,
-              pyalpm_package_from_pmpkg);
+    PyObject *snd = alpmlist_to_pylist2(grp->packages,
+              pyalpm_package_from_pmpkg, db);
     PyObject *tuple = PyTuple_Pack(2, fst, snd);
     Py_DECREF(fst);
     Py_DECREF(snd);
@@ -137,12 +137,12 @@ static int pyalpm_db_set_servers(PyObject* self, PyObject* value, void* closure)
 
 static PyObject* pyalpm_db_get_pkgcache(AlpmDB* self, void* closure) {
   alpm_list_t *pkglist = alpm_db_get_pkgcache(self->c_data);
-  return alpmlist_to_pylist(pkglist, pyalpm_package_from_pmpkg);
+  return alpmlist_to_pylist2(pkglist, pyalpm_package_from_pmpkg, self);
 }
 
 static PyObject* pyalpm_db_get_grpcache(AlpmDB* self, void* closure) {
   alpm_list_t *grplist = alpm_db_get_groupcache(self->c_data);
-  return alpmlist_to_pylist(grplist, _pyobject_from_pmgrp);
+  return alpmlist_to_pylist2(grplist, _pyobject_from_pmgrp, self);
 }
 
 /** Package get/set operations */
@@ -166,7 +166,7 @@ static PyObject* pyalpm_db_get_pkg(PyObject *rawself, PyObject* args) {
     Py_RETURN_NONE;
   } else {
     PyObject *result;
-    result = pyalpm_package_from_pmpkg(p);
+    result = pyalpm_package_from_pmpkg(p, self);
     if (result == NULL) {
       return NULL;
     } else {
@@ -185,7 +185,7 @@ static PyObject* pyalpm_db_get_group(PyObject* rawself, PyObject* args) {
   }
 
   grp = alpm_db_get_group(self->c_data, grpname);
-  return _pyobject_from_pmgrp(grp);
+  return _pyobject_from_pmgrp(grp, self);
 }
 
 static PyObject *pyalpm_db_update(PyObject *rawself, PyObject *args, PyObject *kwargs) {
@@ -218,7 +218,7 @@ static PyObject* pyalpm_db_search(PyObject *rawself, PyObject *args) {
   if (ok == -1) return NULL;
 
   result = alpm_db_search(self->c_data, rawargs);
-  return alpmlist_to_pylist(result, pyalpm_package_from_pmpkg);
+  return alpmlist_to_pylist2(result, pyalpm_package_from_pmpkg, self);
 }
 
 static struct PyMethodDef db_methods[] = {
@@ -351,7 +351,7 @@ PyObject* pyalpm_sync_get_new_version(PyObject *self, PyObject* args) {
   if (!result)
     Py_RETURN_NONE;
   else
-    return pyalpm_package_from_pmpkg(result);
+    return pyalpm_package_from_pmpkg(result, NULL);
 }
 
 /* vim: set ts=2 sw=2 et: */

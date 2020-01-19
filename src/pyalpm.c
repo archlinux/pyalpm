@@ -59,7 +59,7 @@ static PyObject* pyalpm_find_satisfier(PyObject *self, PyObject* args) {
     Py_RETURN_NONE;
   } else {
     PyObject *result;
-    result = pyalpm_package_from_pmpkg(p);
+    result = pyalpm_package_from_pmpkg(p, NULL);
     if (result == NULL) {
       return NULL;
     } else {
