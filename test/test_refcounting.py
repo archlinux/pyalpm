@@ -34,6 +34,35 @@ def get_pkg_search():
     return db.search('pacman')[0]
 
 
+def get_pkg_db():
+    db = get_syncdb()
+    db.update(False)
+    return db.get_pkg('pacman')
+
+
+def get_grpcache_pkg():
+    syncdb = get_syncdb()
+    syncdb.update(False)
+    # Returns a tuple
+    return syncdb.grpcache[0][1][0]
+
+
+def get_read_grp():
+    syncdb = get_syncdb()
+    syncdb.update(False)
+    # return pkg
+    return syncdb.read_grp('base-devel')[1][0]
+
+
+def get_db_pkgcache():
+    syncdb = get_syncdb()
+    syncdb.update(False)
+    return syncdb.pkgcache[0]
+
+
+# Database tests, where the Handle goes out of scope
+
+
 def test_localdb_segfault():
     localdb = get_localdb()
     collect()
@@ -51,3 +80,35 @@ def test_register_syncdb_segfault():
     syncdb = register_syncdb()
     collect()
     assert syncdb.search('yay') == []
+
+# Package tests, where the DB goes out of scope
+
+
+def test_pkg_search_segfault():
+    pkg = get_pkg_search()
+    collect()
+    assert pkg.name
+
+
+def test_db_get_pkg_segfault():
+    pkg = get_pkg_db()
+    collect()
+    assert pkg.name
+
+
+def test_db_grpcache_pkg_segfault():
+    pkg = get_grpcache_pkg()
+    collect()
+    assert pkg.name
+
+
+def test_db_read_grp():
+    pkg = get_read_grp()
+    collect()
+    assert pkg.name
+
+
+def test_db_pkgcache():
+    pkg = get_db_pkgcache()
+    collect()
+    assert pkg.name

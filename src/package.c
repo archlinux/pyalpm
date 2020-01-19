@@ -61,6 +61,8 @@ void pyalpm_pkg_unref(PyObject *object) {
 static void pyalpm_package_dealloc(AlpmPackage *self) {
   if (self->needs_free)
     alpm_pkg_free(self->c_data);
+  if (self->db)
+    Py_DECREF(self->db);
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
@@ -73,7 +75,7 @@ static PyObject* _pyobject_from_pmdepend(void* dep) {
   return item;
 };
 
-PyObject *pyalpm_package_from_pmpkg(void* data) {
+PyObject *pyalpm_package_from_pmpkg(void* data, PyObject *db) {
   AlpmPackage *self;
   alpm_pkg_t *p = (alpm_pkg_t*)data;
   self = (AlpmPackage*)AlpmPackageType.tp_alloc(&AlpmPackageType, 0);
@@ -82,6 +84,10 @@ PyObject *pyalpm_package_from_pmpkg(void* data) {
     return NULL;
   }
 
+  if (db) {
+    Py_INCREF(db);
+    self->db = db;
+  }
   self->c_data = p;
   self->needs_free = 0;
   return (PyObject *)self;
@@ -169,7 +175,7 @@ PyObject *pyalpm_package_load(PyObject *self, PyObject *args, PyObject *kwargs) 
     RET_ERR("loading package failed", alpm_errno(handle), NULL);
   }
 
-  pyresult = (AlpmPackage*)pyalpm_package_from_pmpkg(result);
+  pyresult = (AlpmPackage*)pyalpm_package_from_pmpkg(result, NULL);
   if (!pyresult) return NULL;
   pyresult->needs_free = 1;
   return (PyObject*)pyresult;
