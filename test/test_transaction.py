@@ -10,7 +10,7 @@ def test_cb_download(handle):
     cb_dl = mock.Mock()
     handle.dlcb = cb_dl
     db = handle.get_syncdbs()[0]
-    db.update(False)
+    db.update(True)
     cb_dl.assert_called()
 
 def test_logcb(handle):
