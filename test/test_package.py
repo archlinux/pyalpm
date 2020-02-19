@@ -30,11 +30,11 @@ def test_builddate(package):
 def test_installdate(package):
     assert package.installdate == 0
 
-def test_files(package):
-    assert package.files == []
+def test_files(localpackage):
+    assert localpackage.files != []
 
-def test_backup(package):
-    assert package.backup == []
+def test_backup(localpackage):
+    assert localpackage.backup != []
 
 def test_depends(package):
     assert package.depends != []
@@ -43,7 +43,7 @@ def test_has_scriptlet(package):
     assert isinstance(package.has_scriptlet, bool)
 
 def test_download_size(package):
-    assert package.download_size > 0
+    assert package.download_size == 0
 
 def test_compute_requiredby(package):
     assert package.compute_requiredby() == ['base']

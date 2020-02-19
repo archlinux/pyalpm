@@ -56,13 +56,12 @@ def test_db_servers(localdb):
     assert localdb.servers == ['server']
 
 def test_db_pkgcache(localdb):
-    assert localdb.pkgcache == []
+    assert localdb.pkgcache != []
 
 def test_db_grpcache_empty(localdb):
     assert localdb.grpcache == []
 
 def test_db_grpcache_not_empty(syncdb):
-    syncdb.update(False)
     assert syncdb.grpcache != []
 
 def test_db_repr(localdb):
