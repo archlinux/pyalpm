@@ -145,4 +145,14 @@ def test_register_syncdb_invalid(handle):
         handle.register_syncdb("foo", "bar")
     assert 'takes a string and an integer' in str(excinfo.value)
 
+    with raises(pyalpm.error) as excinfo:
+        handle.register_syncdb("http://", 99999)
+    assert 'unable to register sync database' in str(excinfo.value)
+
+def test_create_failed():
+    with raises(pyalpm.error) as excinfo:
+        pyalpm.Handle('/', '/')
+    assert 'could not create a libalpm handle' in str(excinfo.value)
+
+
 # vim: set ts=4 sw=4 et:
