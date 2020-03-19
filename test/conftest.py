@@ -1,6 +1,5 @@
-from os import makedirs
-from shutil import copyfile, rmtree
-from tempfile import mkdtemp
+from os import mkdir
+from shutil import copyfile
 
 import pytest
 
@@ -23,16 +22,16 @@ def localdb(real_handle):
 
 
 @pytest.fixture(scope="module")
-def real_handle():
-    dbpath = mkdtemp(dir='/tmp')
+def real_handle(tmpdir_factory):
+    dbpath = str(tmpdir_factory.mktemp('dbpath'))
     syncdb = f"{dbpath}/sync"
     localdb = f"{dbpath}/local"
     mirrorpath = f'{dbpath}/{REPO_1}'
     syncdbfile = f'{syncdb}/{REPO_1}.db'
 
-    makedirs(syncdb)
-    makedirs(localdb)
-    makedirs(mirrorpath)
+    mkdir(syncdb)
+    mkdir(localdb)
+    mkdir(mirrorpath)
 
     generate_syncdb(syncdbfile)
 
@@ -49,8 +48,6 @@ def real_handle():
     repo.servers = [f'file:///{mirrorpath}']
 
     yield handle
-
-    rmtree(dbpath)
 
 
 @pytest.fixture(scope="module")
