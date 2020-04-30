@@ -105,6 +105,6 @@ Packages
 
    .. py:method:: compute_requiredby()
 
-      Computes a list of the packages required by this package
+      Computes a list of the packages this package is required by
 
-     :returns: the packages required by this package
+     :returns: the packages who require this package
