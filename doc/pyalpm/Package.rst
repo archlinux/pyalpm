@@ -108,3 +108,9 @@ Packages
       Computes a list of the packages this package is required by
 
      :returns: the packages who require this package
+
+   .. py:method:: compute_optionalfor()
+
+      Computes a list of the packages optionally requiring this package
+
+     :returns: the packages who optionally require this package
