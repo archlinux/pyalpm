@@ -48,6 +48,9 @@ def test_download_size(package):
 def test_compute_requiredby(package):
     assert package.compute_requiredby() == ['base']
 
+def test_compute_optionalfor(package):
+    assert package.compute_optionalfor() == []
+
 def test_repr(package):
     assert repr(Package) == "<class 'alpm.Package'>"
     assert PKG in repr(package)

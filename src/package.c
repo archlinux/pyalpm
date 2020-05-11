@@ -276,6 +276,18 @@ static PyObject* pyalpm_pkg_compute_requiredby(PyObject *rawself, PyObject *args
   return pyresult;
 }
 
+static PyObject* pyalpm_pkg_compute_optionalfor(PyObject *rawself, PyObject *args) {
+  AlpmPackage *self = (AlpmPackage*)rawself;
+  PyObject *pyresult;
+  CHECK_IF_INITIALIZED();
+  {
+    alpm_list_t *result = alpm_pkg_compute_optionalfor(self->c_data);
+    pyresult = alpmlist_to_pylist(result, pyobject_from_string);
+    FREELIST(result);
+  }
+  return pyresult;
+}
+
 struct list_getter get_licenses = { alpm_pkg_get_licenses, pyobject_from_string };
 struct list_getter get_groups   = { alpm_pkg_get_groups, pyobject_from_string };
 struct list_getter get_backup   = { alpm_pkg_get_backup, pyobject_from_alpm_backup };
@@ -328,6 +340,8 @@ static struct PyGetSetDef AlpmPackageGetSet[] = {
 static struct PyMethodDef pyalpm_pkg_methods[] = {
   { "compute_requiredby", pyalpm_pkg_compute_requiredby, METH_NOARGS,
       "computes the list of packages requiring this package" },
+  { "compute_optionalfor", pyalpm_pkg_compute_optionalfor, METH_NOARGS,
+      "computes the list of packages optionally requiring this package" },
   { NULL }
 };
 

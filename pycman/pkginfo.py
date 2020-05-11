@@ -95,6 +95,7 @@ def display_pkginfo(pkg, level=1, style='local'):
 	print(format_attr_oneperline('Optional Deps', pkg.optdepends))
 	if style == 'local' or level == 2:
 		print(format_attr('Required By', pkg.compute_requiredby()))
+		print(format_attr('Optional For', pkg.compute_optionalfor()))
 	print(format_attr('Conflicts With', pkg.conflicts))
 	print(format_attr('Replaces', pkg.replaces))
 	if style == 'sync':
