@@ -33,7 +33,7 @@ typedef struct _AlpmPackage {
 
 #define ALPM_PACKAGE(self) (((AlpmPackage*)(self))->c_data)
 
-PyTypeObject AlpmPackageType;
+extern PyTypeObject AlpmPackageType;
 int PyAlpmPkg_Check(PyObject *object);
 
 void pyalpm_pkg_unref(PyObject *object);
