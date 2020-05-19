@@ -68,6 +68,7 @@ SINGLE_OPTIONS = (
 	'SigLevel',
 	'LocalFileSigLevel',
 	'RemoteFileSigLevel',
+	'ParallelDownloads',
 )
 
 BOOLEAN_OPTIONS = (
