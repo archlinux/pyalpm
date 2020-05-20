@@ -213,11 +213,15 @@ static PyObject *pyalpm_db_update(PyObject *rawself, PyObject *args, PyObject *k
 static PyObject* pyalpm_db_search(PyObject *rawself, PyObject *args) {
   AlpmDB* self = (AlpmDB *)rawself;
   alpm_list_t* rawargs;
-  alpm_list_t* result;
+  alpm_list_t* result = NULL;
   int ok = pylist_string_to_alpmlist(args, &rawargs);
   if (ok == -1) return NULL;
 
-  result = alpm_db_search(self->c_data, rawargs);
+  ok = alpm_db_search(self->c_data, rawargs, &result);
+  FREELIST(rawargs);
+  // TODO: handle pm_errno being set and throw an exception
+  if (ok == -1) return NULL;
+
   return alpmlist_to_pylist2(result, pyalpm_package_from_pmpkg, self);
 }
 
