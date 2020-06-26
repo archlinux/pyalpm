@@ -3,8 +3,12 @@ Packages
 
 .. py:class:: Package
 
+   .. py:attribute:: name (str)
+
+      The name of the package
+
    .. py:attribute:: builddate (Long long)
-        
+
       The date on which this package was built
 
    .. py:attribute:: installdate (Long Long)
