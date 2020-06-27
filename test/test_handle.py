@@ -40,7 +40,7 @@ def test_ignorepkg(handle):
     assert PKG in handle.ignorepkgs
 
     handle.remove_ignorepkg(PKG)
-    assert PKG not in  handle.ignorepkgs
+    assert PKG not in handle.ignorepkgs
 
 def test_ignorepkg_error(handle):
     assert_string_argument(handle.add_ignorepkg)
@@ -124,7 +124,7 @@ def test_invalid_logcb(handle):
 
 def test_logcb(handle):
     handle.logcb = None
-    assert handle.logcb == None
+    assert handle.logcb is None
 
 def test_load_pkg(handle):
     with raises(pyalpm.error) as excinfo:

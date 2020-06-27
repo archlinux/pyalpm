@@ -1,10 +1,10 @@
-from conftest import package, PKG
+from conftest import PKG
 
 from pyalpm import Package
 
 
 def test_db(package):
-    assert not package.db is None
+    assert package.db is not None
 
 def test_name(package):
     assert package.name == PKG

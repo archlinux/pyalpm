@@ -2,8 +2,6 @@ import pytest
 
 from pyalpm import error
 
-from conftest import handle, localdb, syncdb
-
 
 def test_empty_getsyncdb(handle):
     assert handle.get_syncdbs() == []
@@ -29,7 +27,7 @@ def test_get_pkg(localdb):
 
 def test_update(syncdb):
     syncdb.update(False)
-    assert not syncdb.search('pacman') is None
+    assert syncdb.search('pacman') is not None
 
 def test_update_error(handle, syncdb):
     servers = syncdb.servers
