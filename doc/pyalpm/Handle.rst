@@ -22,7 +22,7 @@ Handles are objects that provide access to pacman databases and transactions.
 
       Return a list of references to the sync databases currently registered.
 
-     :returns: an alpm database object for the localdb. 
+     :returns: an alpm database object for the syncdb. 
 
 
    .. py:method:: register_syncdb(name: string, flags: int)
