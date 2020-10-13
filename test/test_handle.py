@@ -151,7 +151,7 @@ def test_register_syncdb_invalid(handle):
 
 def test_create_failed():
     with raises(pyalpm.error) as excinfo:
-        pyalpm.Handle('/', '/')
+        pyalpm.Handle('/non-existant', '/')
     assert 'could not create a libalpm handle' in str(excinfo.value)
 
 

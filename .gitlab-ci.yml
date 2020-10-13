@@ -1,0 +1,26 @@
+image: "archlinux/base"
+
+before_script:
+    - >
+      pacman -Syu --needed --noconfirm
+      make base-devel
+      python python-pytest python-pytest-cov
+      python-sphinx python-pylint
+
+
+stages:
+  - lint
+  - test
+  - doc
+
+
+lint:
+  script:
+    - make lint
+
+
+# TODO: https://docs.gitlab.com/ee/ci/junit_test_reports.html
+test:
+  script:
+    - make build
+    - make test
