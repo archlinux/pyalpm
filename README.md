@@ -45,6 +45,17 @@ Coverage for the CPython code can be generated as following:
 
 	make open-ext-coverage
 
+# Releasing
+
+1. Bump version in setup.py
+2. commit
+3. git tag
+
+## Uploading to PyPI
+
+1. python3 setup.py sdist
+2. twine upload -s dist/* --verbose
+
 # Pacman development compatibility
 
 The master branch tracks the most recent pacman release and thus libalpm
