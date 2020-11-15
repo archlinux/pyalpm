@@ -1,11 +1,9 @@
 #!/usr/bin/python
 
+import io
 import json
 import os
 import tarfile
-
-from shutil import rmtree
-from tempfile import mkdtemp
 
 
 def generate_desc(pkg):
@@ -52,24 +50,13 @@ def get_db_data():
 
 def generate_syncdb(dbfile):
     pkgs = get_db_data()
-    dbpath = mkdtemp(dir='/tmp')
-
-    # TODO: refactor to not use chdir.
-    cwd = os.getcwd()
-    os.chdir(dbpath)
 
     with tarfile.open(dbfile, "w") as tar:
         for pkg in pkgs:
-            path = f"{pkg['name']}-{pkg['version']}"
-            os.makedirs(path)
-
-            with open(f'{path}/desc', 'w') as f:
-                f.write(generate_desc(pkg))
-
-            tar.add(path)
-
-    rmtree(dbpath)
-    os.chdir(cwd)
+            data = generate_desc(pkg)
+            info = tarfile.TarInfo(f"{pkg['name']}-{pkg['version']}/desc")
+            info.size = len(data)
+            tar.addfile(info, io.BytesIO(data.encode()))
 
 
 def generate_localdb(dbloc):
