@@ -51,6 +51,7 @@ if __name__ == "__main__":
               'Development Status :: 6 - Mature',
               'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
               'Programming Language :: C',
+              'Programming Language :: Python :: 3 :: Only',
               'Topic :: System :: Software Distribution',
               'Topic :: System :: Systems Administration',
           ])
