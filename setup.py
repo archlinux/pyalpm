@@ -49,7 +49,7 @@ if __name__ == "__main__":
           ext_modules=[alpm],
           classifiers=[
               'Development Status :: 6 - Mature',
-              'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+              'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
               'Programming Language :: C',
               'Topic :: System :: Software Distribution',
               'Topic :: System :: Systems Administration',
