@@ -2,6 +2,8 @@
 import os
 from setuptools import setup, Extension
 
+import pkgconfig
+libalpm = pkgconfig.parse('libalpm')
 
 os.putenv('LC_CTYPE', 'en_US.UTF-8')
 
@@ -12,7 +14,7 @@ cflags = ['-Wall', '-Wextra', '-Werror',
           '-Wno-cast-function-type', '-std=c99', '-D_FILE_OFFSET_BITS=64']
 
 alpm = Extension('pyalpm',
-                 libraries=['alpm'],
+                 **libalpm,
                  extra_compile_args=cflags + ['-DVERSION="%s"' % pyalpm_version],
                  language='C',
                  sources=['src/pyalpm.c',
