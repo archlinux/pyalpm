@@ -10,8 +10,10 @@ archlinux:
     - python
     - python-pytest
     - python-pytest-cov
+    - python-pytest-pacman
     - python-sphinx
     - python-pylint
+    - python-pkgconfig
 
   script:
     - python3 -m py_compile $(git ls-files '*.py')

@@ -3,7 +3,7 @@ image: "archlinux:latest"
 before_script:
     - >
       pacman -Syu --needed --noconfirm
-      make base-devel python
+      make base-devel python python-pkgconfig
       python-pytest python-pytest-cov python-pytest-pacman
       python-sphinx python-pylint
 
