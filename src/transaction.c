@@ -108,9 +108,9 @@ void pyalpm_eventcb(alpm_event_t *event) {
     case ALPM_EVENT_LOAD_DONE:
     case ALPM_EVENT_SCRIPTLET_INFO:
       /* info here */
-    case ALPM_EVENT_RETRIEVE_START:
-    case ALPM_EVENT_RETRIEVE_DONE:
-    case ALPM_EVENT_RETRIEVE_FAILED:
+    case ALPM_EVENT_DB_RETRIEVE_START:
+    case ALPM_EVENT_DB_RETRIEVE_DONE:
+    case ALPM_EVENT_DB_RETRIEVE_FAILED:
       /* info here */
       eventstr = "event not implemented";
       break;
