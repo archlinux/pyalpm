@@ -23,6 +23,7 @@
 #include <pyconfig.h>
 #include <alpm.h>
 #include <Python.h>
+#include "handle.h"
 #include "db.h"
 #include "package.h"
 #include "util.h"
@@ -190,13 +191,18 @@ static PyObject* pyalpm_db_get_group(PyObject* rawself, PyObject* args) {
 
 static PyObject *pyalpm_db_update(PyObject *rawself, PyObject *args, PyObject *kwargs) {
   AlpmDB* self = (AlpmDB*)rawself;
+  alpm_db_t *db = ALPM_DB(self);
+  alpm_handle_t *handle = ALPM_HANDLE(self->handle);
+  alpm_list_t *dbs = NULL;
   char* keyword[] = {"force", NULL};
   int ret;
   PyObject *force;
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!", keyword, &PyBool_Type, &force))
     return NULL;
 
-  ret = alpm_db_update((force == Py_True), self->c_data);
+  dbs = alpm_list_add(dbs, db);
+  ret = alpm_db_update(handle, dbs, (force == Py_True));
+  alpm_list_free(dbs);
 
   switch(ret) {
   case -1:
