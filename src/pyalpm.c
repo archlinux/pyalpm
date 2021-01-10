@@ -100,6 +100,7 @@ static PyMethodDef methods[] = {
   {NULL, NULL, 0, NULL}
 };
 
+/* GCOVR_EXCL_START */
 static int pyalpm_clear(PyObject *m)
 {
   PyObject *dict = PyModule_GetDict(m);
@@ -116,6 +117,7 @@ static int pyalpm_clear(PyObject *m)
 
   return 0;
 }
+/* GCOVR_EXCL_STOP */
 
 static struct PyModuleDef pyalpm_def = {
   PyModuleDef_HEAD_INIT,
