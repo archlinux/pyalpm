@@ -77,8 +77,6 @@ def find_file(filenames, options):
 		ret = 1
 
 	localpkgs = handle.get_localdb().pkgcache
-	n_pkg = len(localpkgs)
-	filelists = [None] * n_pkg
 
 	for name in filenames:
 		lookupname = None
@@ -101,12 +99,10 @@ def find_file(filenames, options):
 		lookupname = os.path.normpath(lookupname)
 		lookupname = lookupname.lstrip('/')
 		found = False
-		for i, pkg, files in zip(range(n_pkg), localpkgs, filelists):
-			if files is None:
-				files = pkg.files
-				filelists[i] = files
+		for pkg in localpkgs:
+			files = pkg.files
 
-			if lookupname in files:
+			if any(f for f in files if lookupname == f[0]):
 				if options.quiet:
 					print(pkg.name)
 				else:
