@@ -19,8 +19,11 @@ lint:
     - make lint
 
 
-# TODO: https://docs.gitlab.com/ee/ci/junit_test_reports.html
 test:
   script:
     - make build
-    - make test
+    - PYTEST_OPTIONS=--junitxml=report.xml make test
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
