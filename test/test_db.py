@@ -57,7 +57,7 @@ def test_db_pkgcache(localdb):
     assert localdb.pkgcache != []
 
 def test_db_grpcache_empty(localdb):
-    assert localdb.grpcache == []
+    assert localdb.grpcache != []
 
 def test_db_grpcache_not_empty(syncdb):
     assert syncdb.grpcache != []

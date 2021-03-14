@@ -13,7 +13,9 @@
     "replaces": [],
     "depends": ["coreutils"],
     "makedepends": ["bc"],
-    "optdepends": ["linux-firmware"]
+    "optdepends": ["linux-firmware"],
+    "backup": ["etc/pacman.conf 9dd54ec11513b2838bffb04dab66c50a", "etc/makepkg.conf        f613f9ecbfcafdaed423848ba7190b61"],
+    "files": ["etc/", "etc/pacman.conf", "var/", "var/lib/", "var/lib/pacman"]
 },
 {
     "name": "linux-firmware",

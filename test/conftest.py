@@ -1,15 +1,23 @@
+import os.path
 from os import mkdir
+from os.path import basename
 from shutil import copyfile
+
+import json
 
 import pytest
 
 from pyalpm import Handle
 
-from generate_pacman_db import generate_syncdb, generate_localdb
 
 PKG = 'linux'
 REPO_1 = 'core'
 
+
+@pytest.fixture(scope="module")
+def db_data():
+    curpath = os.path.dirname(os.path.realpath(__file__))
+    return json.load(open(f'{curpath}/db.json'))
 
 @pytest.fixture()
 def handle():
@@ -22,23 +30,22 @@ def localdb(real_handle):
 
 
 @pytest.fixture(scope="module")
-def real_handle(tmpdir_factory):
+def real_handle(tmpdir_factory, generate_syncdb, generate_localdb, db_data):
     dbpath = str(tmpdir_factory.mktemp('dbpath'))
     syncdb = f"{dbpath}/sync"
     localdb = f"{dbpath}/local"
+    # TODO: use a different location for clarity
     mirrorpath = f'{dbpath}/{REPO_1}'
     syncdbfile = f'{syncdb}/{REPO_1}.db'
 
     mkdir(syncdb)
-    mkdir(localdb)
     mkdir(mirrorpath)
 
-    generate_syncdb(syncdbfile)
-
-    handle = Handle('/', dbpath)
+    generate_syncdb(db_data, basename(syncdbfile), syncdb)
+    generate_localdb(db_data, dbpath)
 
     # Generate localdb content after the db is initialised
-    generate_localdb(localdb)
+    handle = Handle('/', dbpath)
 
     # Generate local repo by copying the sync core.db
     # TODO: use a different sync db with a more packages
