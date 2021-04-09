@@ -17,7 +17,7 @@ Packages
 
    .. py:attribute:: size (Long Long)
       
-      A list of references to the packages in this database
+      The archive size
 
    .. py:attribute:: isize (Long Long)
 
