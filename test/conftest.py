@@ -85,3 +85,21 @@ def assert_string_argument(func):
     with pytest.raises(TypeError) as excinfo:
         func(1)
     assert 'expecting a string argument' in str(excinfo.value)
+
+
+@pytest.fixture(scope="module")
+def localpkg(generate_package):
+    pkg_data = {
+        "pkgname": "empty",
+        "pkgbase": "empty",
+        "pkgver": "1-1",
+        "pkgdesc": "empty",
+        "url": "https://archlinux.org",
+        "builddate": 1599085821,
+        "packager": "Test <test@archlinux.org>",
+        "arch": "x86_64",
+        "license": "GPL",
+        "depend": [
+        ]
+    }
+    return generate_package(pkg_data)

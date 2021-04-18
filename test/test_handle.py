@@ -126,10 +126,15 @@ def test_logcb(handle):
     handle.logcb = None
     assert handle.logcb is None
 
-def test_load_pkg(handle):
+def test_load_pkg_invalid(handle):
     with raises(pyalpm.error) as excinfo:
         handle.load_pkg('/tmp/noexistant.txt')
     assert 'loading package failed' in str(excinfo.value)
+
+
+def test_load_pkg(handle, localpkg):
+    pkg = handle.load_pkg(localpkg)
+    assert pkg.name == 'empty'
 
 def test_set_pkgreason(handle, package):
     with raises(pyalpm.error) as excinfo:
