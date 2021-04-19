@@ -14,6 +14,8 @@ in the Arch Linux distribution.
 
 * python-setuptools
 
+* python-pkginfo
+
 * python-sphinx (optional, to build the docs)
 
 # Building
