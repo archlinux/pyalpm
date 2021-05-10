@@ -17,6 +17,8 @@ stages:
 lint:
   script:
     - make lint
+  except:
+    - schedules
 
 
 test:
@@ -27,3 +29,14 @@ test:
     when: always
     reports:
       junit: report.xml
+  except:
+    - schedules
+
+next:
+  only:
+    - schedules
+  script:
+    - pacman -Syu --needed --noconfirm meson git
+    - git clone https://git.archlinux.org/pacman.git
+    - cd pacman && mkdir build && cd build && meson .. && ninja
+    - cd $CI_PROJECT_DIR && PKG_CONFIG_PATH=./pacman/build/meson-uninstalled make build

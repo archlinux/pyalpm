@@ -11,7 +11,7 @@ PY_VERSION=$(shell ${PYTHON} -c "import sys; print('{0[0]}.{0[1]}'.format(sys.ve
 BUILD_DIR=build/lib.linux-$(shell uname -m)-${PY_VERSION}
 DOC_DIR=doc
 
-.PHONY: test doc lint
+.PHONY: test doc lint build
 
 build:
 	$(PYTHON) setup.py build
