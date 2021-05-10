@@ -64,9 +64,13 @@ The master branch tracks the most recent pacman release and thus libalpm
 release, the [next](https://github.com/archlinux/pyalpm/tree/next) branch
 follows [pacman's master branch](https://git.archlinux.org/pacman.git/).
 
-Building against pacman-git as is simple as:
+Building against pacman-git is as simple as:
 
 	git clone https://git.archlinux.org/pacman.git
 	mkdir build
 	cd build && meson .. && ninja
 	PKG_CONFIG_PATH=/path/to/pacman/build/meson-uninstalled make build
+
+Running tests against pacman-git:
+
+	LD_LIBRARY_PATH=/path/to/pacman/build/ make build
