@@ -174,7 +174,6 @@ static struct _alpm_cb_getset cb_getsets[N_CALLBACKS] = {
   { (alpm_cb_setter)alpm_option_set_logcb, pyalpm_logcb, CB_LOG },
   { (alpm_cb_setter)alpm_option_set_dlcb, pyalpm_dlcb, CB_DOWNLOAD },
   { (alpm_cb_setter)alpm_option_set_fetchcb, pyalpm_fetchcb, CB_FETCH },
-  { (alpm_cb_setter)alpm_option_set_totaldlcb, pyalpm_totaldlcb, CB_TOTALDL },
   { (alpm_cb_setter)alpm_option_set_eventcb, pyalpm_eventcb, CB_EVENT },
   { (alpm_cb_setter)alpm_option_set_questioncb, pyalpm_questioncb, CB_QUESTION },
   { (alpm_cb_setter)alpm_option_set_progresscb, pyalpm_progresscb, CB_PROGRESS },
@@ -289,10 +288,6 @@ struct PyGetSetDef pyalpm_handle_getset[] = {
     "      transferred :: int\n"
     "      total       :: int\n",
     &cb_getsets[CB_DOWNLOAD] },
-  { "totaldlcb",
-    (getter)_get_cb_attr, (setter)_set_cb_attr,
-    "total download size callback: totaldlcb(total_size)",
-    &cb_getsets[CB_TOTALDL] },
   { "fetchcb",
     (getter)_get_cb_attr, (setter)_set_cb_attr,
     "download function\n"

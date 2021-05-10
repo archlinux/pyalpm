@@ -330,13 +330,6 @@ void pyalpm_dlcb(const char *filename, off_t xfered, off_t total) {
   Py_CLEAR(result);
 }
 
-void pyalpm_totaldlcb(off_t total) {
-  PyObject *result;
-  result = PyObject_CallFunction(global_py_callbacks[CB_TOTALDL], "i", total);
-  if (!result) PyErr_Print();
-  Py_CLEAR(result);
-}
-
 int pyalpm_fetchcb(const char *url, const char *localpath, int force) {
   PyObject *result;
   result = PyObject_CallFunction(global_py_callbacks[CB_FETCH], "ssi", url, localpath, force);
