@@ -94,6 +94,22 @@ int option_set_checkspace_alpm(PyObject *self, PyObject *value, void* closure)
  * in addition to getters/setters, these have add/remove methods
  */
 
+PyObject* option_get_architectures_alpm(PyObject *self, void* closure) {
+  alpm_handle_t *handle = ALPM_HANDLE(self);
+  return alpmlist_to_pylist(alpm_option_get_architectures(handle), pyobject_from_string);
+}
+
+int option_set_architectures_alpm(PyObject *self, PyObject *value, void *closure)
+{
+  alpm_handle_t *handle = ALPM_HANDLE(self);
+  alpm_list_t *target;
+  if (pylist_string_to_alpmlist(value, &target) == -1)
+    return -1;
+
+  alpm_option_set_architectures(handle, target);
+  return 0;
+}
+
 PyObject* option_get_cachedirs_alpm(PyObject *self, void* closure) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
   return alpmlist_to_pylist(alpm_option_get_cachedirs(handle), pyobject_from_string);

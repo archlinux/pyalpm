@@ -154,7 +154,6 @@ static struct _alpm_str_getset dbpath_getset  = { alpm_option_get_dbpath, NULL }
 static struct _alpm_str_getset lockfile_getset  = { alpm_option_get_lockfile, NULL };
 static struct _alpm_str_getset logfile_getset = { alpm_option_get_logfile, alpm_option_set_logfile };
 static struct _alpm_str_getset gpgdir_getset = { alpm_option_get_gpgdir, alpm_option_set_gpgdir };
-static struct _alpm_str_getset arch_getset = { alpm_option_get_arch, alpm_option_set_arch };
 
 /* Callback attributes get/setters */
 typedef int (*alpm_cb_setter)(alpm_handle_t*, void*);
@@ -240,9 +239,9 @@ struct PyGetSetDef pyalpm_handle_getset[] = {
 
   /** strings */
   { "arch",
-    (getter)_get_string_attr,
-    (setter)_set_string_attr,
-    "Target archichecture", &arch_getset } ,
+    (getter)option_get_architectures_alpm,
+    (setter)option_set_architectures_alpm,
+    "Target archichecture(s)", NULL } ,
 
   /** booleans */
   { "usesyslog",
