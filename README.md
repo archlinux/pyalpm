@@ -73,4 +73,4 @@ Building against pacman-git is as simple as:
 
 Running tests against pacman-git:
 
-	LD_LIBRARY_PATH=/path/to/pacman/build/ make build
+	LD_LIBRARY_PATH=/path/to/pacman/build/ make test
