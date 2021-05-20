@@ -13,6 +13,7 @@ def test_cb_download(handle):
     db.update(True)
     cb_dl.assert_called()
 
+
 def test_logcb(handle):
     cb_log = mock.Mock()
     handle.logcb = cb_log
