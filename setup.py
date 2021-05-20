@@ -7,7 +7,7 @@ libalpm = pkgconfig.parse('libalpm')
 
 os.putenv('LC_CTYPE', 'en_US.UTF-8')
 
-pyalpm_version = '0.9.2'
+pyalpm_version = '0.10'
 
 cflags = ['-Wall', '-Wextra', '-Werror',
           '-Wno-unused-parameter', '-Wno-incompatible-pointer-types',

@@ -1,3 +1,8 @@
+pyalpm 10 :
+  * compatible with pacman 6
+  * document pacman.git building compatbility
+  * use pytest-pacman for unit testing
+
 pyalpm 8.8.5 :
   * resolve memory leaks caused by not releasing the alpm_handle
 
