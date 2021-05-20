@@ -156,7 +156,7 @@ static struct _alpm_str_getset logfile_getset = { alpm_option_get_logfile, alpm_
 static struct _alpm_str_getset gpgdir_getset = { alpm_option_get_gpgdir, alpm_option_set_gpgdir };
 
 /* Callback attributes get/setters */
-typedef int (*alpm_cb_setter)(alpm_handle_t*, void*);
+typedef int (*alpm_cb_setter)(alpm_handle_t*, void*, void*);
 struct _alpm_cb_getset {
   alpm_cb_setter setter;
   void *cb_wrapper;
@@ -200,12 +200,12 @@ static int _set_cb_attr(PyObject *self, PyObject *value, const struct _alpm_cb_g
   AlpmHandle *it = (AlpmHandle *)self;
   if (value == Py_None) {
     Py_CLEAR(global_py_callbacks[closure->id]);
-    closure->setter(it->c_data, NULL);
+    closure->setter(it->c_data, NULL, NULL);
   } else if (PyCallable_Check(value)) {
     Py_CLEAR(global_py_callbacks[closure->id]);
     Py_INCREF(value);
     global_py_callbacks[closure->id] = value;
-    closure->setter(it->c_data, closure->cb_wrapper);
+    closure->setter(it->c_data, closure->cb_wrapper, NULL);
   } else {
     PyErr_SetString(PyExc_TypeError, "value must be None or a function");
     return -1;

@@ -325,7 +325,7 @@ PyObject* option_remove_ignoregrp_alpm(PyObject *self, PyObject *args)
 /** Callback wrappers */
 extern PyObject *global_py_callbacks[N_CALLBACKS];
 
-void pyalpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
+void pyalpm_logcb(void *ctx, alpm_loglevel_t level, const char *fmt, va_list va_args) {
   char *log;
   PyObject *result;
   int ret;
@@ -339,14 +339,14 @@ void pyalpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
   if (ret != -1) free(log);
 }
 
-void pyalpm_dlcb(const char *filename, off_t xfered, off_t total) {
+void pyalpm_dlcb(void *ctx, const char *filename, off_t xfered, off_t total) {
   PyObject *result;
   result = PyObject_CallFunction(global_py_callbacks[CB_DOWNLOAD], "sii", filename, xfered, total);
   if (!result) PyErr_Print();
   Py_CLEAR(result);
 }
 
-int pyalpm_fetchcb(const char *url, const char *localpath, int force) {
+int pyalpm_fetchcb(void *ctx, const char *url, const char *localpath, int force) {
   PyObject *result;
   result = PyObject_CallFunction(global_py_callbacks[CB_FETCH], "ssi", url, localpath, force);
   if (!result) return -1;
