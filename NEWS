@@ -1,4 +1,7 @@
-pyalpm 10 :
+pyalpm 0.10.1 :
+  * Fix segfaults with libalpm callbacks
+
+pyalpm 0.10 :
   * compatible with pacman 6
   * document pacman.git building compatbility
   * use pytest-pacman for unit testing

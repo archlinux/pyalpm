@@ -10,7 +10,7 @@ in the Arch Linux distribution.
 
 * Python 3 or later
 
-* libalpm 10 or later
+* libalpm 13
 
 * python-setuptools
 
