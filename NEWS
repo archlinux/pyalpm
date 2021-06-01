@@ -1,3 +1,6 @@
+pyalpm 0.10.2 :
+  * Fix segfault with libalpm freeing the database object
+
 pyalpm 0.10.1 :
   * Fix segfaults with libalpm callbacks
 
