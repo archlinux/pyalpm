@@ -29,7 +29,6 @@ typedef enum _pyalpm_callback_id {
   CB_LOG,
   CB_DOWNLOAD,
   CB_FETCH,
-  CB_TOTALDL,
   CB_EVENT,
   CB_QUESTION,
   CB_PROGRESS,
