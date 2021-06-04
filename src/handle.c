@@ -163,10 +163,10 @@ struct _alpm_cb_getset {
   pyalpm_callback_id id;
 };
 
-void pyalpm_eventcb(alpm_event_t event, void* data1, void *data2);
-void pyalpm_questioncb(alpm_question_t question,
+void pyalpm_eventcb(void *ctx, alpm_event_t event, void* data1, void *data2);
+void pyalpm_questioncb(void *ctx, alpm_question_t question,
     void* data1, void *data2, void* data3, int* retcode);
-void pyalpm_progresscb(alpm_progress_t op,
+void pyalpm_progresscb(void *ctx, alpm_progress_t op,
     const char* target_name, int percentage, size_t n_targets, size_t cur_target);
 
 static struct _alpm_cb_getset cb_getsets[N_CALLBACKS] = {
