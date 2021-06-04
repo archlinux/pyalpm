@@ -1,3 +1,6 @@
+pyalpm 0.10.3 :
+  * Fix segfault with libalpm progress/event/question callbacks
+
 pyalpm 0.10.2 :
   * Fix segfault with libalpm freeing the database object
 
