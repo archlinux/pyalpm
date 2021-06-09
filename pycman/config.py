@@ -74,12 +74,12 @@ SINGLE_OPTIONS = (
 BOOLEAN_OPTIONS = (
 	'UseSyslog',
 	'ShowSize',
-	'TotalDownload',
 	'CheckSpace',
 	'VerbosePkgLists',
 	'ILoveCandy',
 	'Color',
 	'DisableDownloadTimeout',
+	'NoProgressBar',
 )
 
 
