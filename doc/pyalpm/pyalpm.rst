@@ -63,7 +63,7 @@ A Handle object can also provide a sync database to you:
    import pyalpm
    from pyalpm import Handle
    handle = Handle('.', '/var/lib/pacman/')
-   core = handle.register_syncdb("core", pyalpm.SIG_DATABASE)
+   core = handle.register_syncdb("core", pyalpm.SIG_DATABASE_OPTIONAL)
 
 The parameters required in this case are a database name ("core") and a flag to
 indicate the type of PGP level of verification that should be done on the
