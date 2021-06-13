@@ -218,9 +218,11 @@ class PacmanConfig(object):
 		# File paths
 		h.logfile = self.options["LogFile"]
 		h.gpgdir = self.options["GPGDir"]
-		# Strings
-		h.arch = self.options["Architecture"]
 		# Lists
+		arch = self.options["Architecture"]
+		if isinstance(arch, str):
+			arch = [arch]
+		h.arch = arch
 		h.cachedirs = self.options["CacheDir"]
 		if "NoUpgrade" in self.options:
 			h.noupgrades = self.options["NoUpgrade"]
