@@ -331,7 +331,7 @@ PyObject* pyalpm_find_grp_pkgs(PyObject* self, PyObject *args) {
       return NULL;
   }
   pkg_list = alpm_find_group_pkgs(db_list, grpname);
-  result = alpmlist_to_pylist(pkg_list, pyalpm_package_from_pmpkg);
+  result = alpmlist_to_pylist2(pkg_list, pyalpm_package_from_pmpkg, NULL);
   alpm_list_free(db_list);
   alpm_list_free(pkg_list);
   return result;
