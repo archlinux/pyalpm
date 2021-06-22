@@ -41,3 +41,10 @@ next:
     - git clone https://git.archlinux.org/pacman.git
     - cd pacman && mkdir build && cd build && meson .. && ninja
     - cd $CI_PROJECT_DIR && PKG_CONFIG_PATH=./pacman/build/meson-uninstalled make build
+
+include:
+- template: Security/SAST.gitlab-ci.yml
+
+sast:
+  before_script:
+    - ''
