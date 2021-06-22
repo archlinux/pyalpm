@@ -19,14 +19,14 @@ build:
 test: test-py
 
 test-py coverage:
-	PYTHONPATH="${BUILD_DIR}:.:${PYTHONPATH}" ${PYTEST} ${PYTEST_INPUT} ${PYTEST_OPTIONS} ${PYTEST_COVERAGE_OPTIONS}
+	PYTHONPATH=".:${BUILD_DIR}:${PYTHONPATH}" ${PYTEST} ${PYTEST_INPUT} ${PYTEST_OPTIONS} ${PYTEST_COVERAGE_OPTIONS}
 
 open-coverage: coverage
 	${BROWSER} test/coverage/index.html
 
 ext-coverage:
 	LDFLAGS="-fprofile-arcs -ftest-coverage" CFLAGS="-fprofile-arcs -ftest-coverage" python setup.py build
-	PYTHONPATH="${BUILD_DIR}:.:${PYTHONPATH}" ${PYTEST} ${PYTEST_INPUT} ${PYTEST_OPTIONS}
+	PYTHONPATH=".:${BUILD_DIR}:${PYTHONPATH}" ${PYTEST} ${PYTEST_INPUT} ${PYTEST_OPTIONS}
 
 	test -d ${EXT_COVERAGE_DIR} || mkdir ${EXT_COVERAGE_DIR}
 	gcovr -r . --html -o ${EXT_COVERAGE_DIR}/index.html --html-details --html-title="pyalpm C coverage"
