@@ -24,11 +24,12 @@ lint:
 test:
   script:
     - make build
-    - PYTEST_OPTIONS=--junitxml=report.xml make test
+    - PYTEST_OPTIONS="--junitxml=report.xml --cov-report xml" make test
   artifacts:
     when: always
     reports:
       junit: report.xml
+      cobertura: coverage.xml
   except:
     - schedules
 
