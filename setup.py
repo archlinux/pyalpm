@@ -11,7 +11,8 @@ pyalpm_version = '0.10.5'
 
 cflags = ['-Wall', '-Wextra', '-Werror',
           '-Wno-unused-parameter', '-Wno-incompatible-pointer-types',
-          '-Wno-cast-function-type', '-std=c99', '-D_FILE_OFFSET_BITS=64']
+          '-Wno-error=missing-field-initializers',
+          '-std=c99', '-D_FILE_OFFSET_BITS=64']
 
 alpm = Extension('pyalpm',
                  **libalpm,
