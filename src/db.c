@@ -244,7 +244,7 @@ static struct PyMethodDef db_methods[] = {
     "get contents of a group\n"
     "args: a group name (string)\n"
     "returns: a tuple (group name, list of packages)" },
-  { "update", (PyCFunction)pyalpm_db_update, METH_VARARGS | METH_KEYWORDS,
+  { "update", pyalpm_db_update, METH_VARARGS | METH_KEYWORDS,
     "update a database from its url attribute\n"
     "args: force (update even if DB is up to date, boolean)\n"
     "returns: True if an update has been done" },

@@ -183,7 +183,7 @@ static struct _alpm_cb_getset cb_getsets[N_CALLBACKS] = {
  * stored in static variables, and the reference count is
  * increased accordingly.
  *
- * These Python functions are wrapped into C functions 
+ * These Python functions are wrapped into C functions
  * that are passed to libalpm.
  */
 PyObject *global_py_callbacks[N_CALLBACKS];
@@ -316,7 +316,7 @@ struct PyGetSetDef pyalpm_handle_getset[] = {
 
 static PyMethodDef pyalpm_handle_methods[] = {
   /* Transaction initialization */
-  {"init_transaction",    (PyCFunction)pyalpm_trans_init, METH_VARARGS | METH_KEYWORDS,
+  {"init_transaction",    pyalpm_trans_init, METH_VARARGS | METH_KEYWORDS,
     "Initializes a transaction.\n"
     "Arguments:\n"
     "  nodeps, force, nosave, nodepversion, cascade, recurse,\n"
@@ -326,7 +326,7 @@ static PyMethodDef pyalpm_handle_methods[] = {
   },
 
   /* Package load */
-  {"load_pkg", (PyCFunction)pyalpm_package_load, METH_VARARGS | METH_KEYWORDS,
+  {"load_pkg", pyalpm_package_load, METH_VARARGS | METH_KEYWORDS,
     "loads package information from a tarball"},
 
   /* Database members */
