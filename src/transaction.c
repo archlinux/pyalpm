@@ -247,7 +247,7 @@ static PyObject *pyalpm_trans_get_add(PyObject *self, void *closure)
   if (flags == -1) RET_ERR("no transaction defined", alpm_errno(handle), NULL);
 
   to_add = alpm_trans_get_add(handle);
-  return alpmlist_to_pylist(to_add, pyalpm_package_from_pmpkg);
+  return alpmlist_to_pylist2(to_add, pyalpm_package_from_pmpkg, NULL);
 }
 
 static PyObject *pyalpm_trans_get_remove(PyObject *self, void *closure)
@@ -259,7 +259,7 @@ static PyObject *pyalpm_trans_get_remove(PyObject *self, void *closure)
   if (flags == -1) RET_ERR("no transaction defined", alpm_errno(handle), NULL);
 
   to_remove = alpm_trans_get_remove(handle);
-  return alpmlist_to_pylist(to_remove, pyalpm_package_from_pmpkg);
+  return alpmlist_to_pylist2(to_remove, pyalpm_package_from_pmpkg, NULL);
 }
 
 /** Transaction flow */
