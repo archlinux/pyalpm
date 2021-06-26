@@ -1,3 +1,9 @@
+pyalpm 0.10.5 :
+  * Add coverage for pycman
+  * Add SAST scanner
+  * Fix find_grp_pkgs segfault
+  * Fix transaction related segfaults
+
 pyalpm 0.10.4 :
   * Add fallback for architectures now being an list
   * Update pacman configuration in pycman
