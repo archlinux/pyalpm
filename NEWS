@@ -1,3 +1,8 @@
+pyalpm 0.10.6 :
+  * udpate pacman git repository url
+  * add pyproject.toml
+  * add clang compilation support
+
 pyalpm 0.10.5 :
   * Add coverage for pycman
   * Add SAST scanner
