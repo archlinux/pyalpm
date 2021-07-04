@@ -5,7 +5,7 @@ before_script:
       pacman -Syu --needed --noconfirm
       make base-devel python python-pkgconfig
       python-pytest python-pytest-cov python-pytest-pacman
-      python-sphinx python-pylint
+      python-sphinx python-pylint twine
 
 
 stages:
@@ -41,6 +41,14 @@ next:
     - git clone https://gitlab.archlinux.org/pacman/pacman.git
     - cd pacman && mkdir build && cd build && meson .. && ninja
     - cd $CI_PROJECT_DIR && PKG_CONFIG_PATH=./pacman/build/meson-uninstalled make build
+
+pypi:
+  only:
+    - tags
+    - secure
+  script:
+    - python setup.py sdist
+    - twine upload -s dist/*
 
 include:
 - template: Security/SAST.gitlab-ci.yml
