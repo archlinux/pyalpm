@@ -61,7 +61,7 @@ Coverage for the CPython code can be generated as following:
 # Pacman development compatibility
 
 The master branch tracks the most recent pacman release and thus libalpm
-release, the [next](https://github.com/archlinux/pyalpm/tree/next) branch
+release, the [next](https://gitlab.archlinux.org/archlinux/pyalpm/-/tree/next) branch
 follows [pacman's master branch](https://gitlab.archlinux.org/pacman/pacman.git).
 
 Building against pacman-git is as simple as:
