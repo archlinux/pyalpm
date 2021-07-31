@@ -48,7 +48,7 @@ pypi:
     - secure
   script:
     - python setup.py sdist
-    - twine upload -s dist/*
+    - twine upload dist/*
 
 include:
 - template: Security/SAST.gitlab-ci.yml
