@@ -206,7 +206,7 @@ static PyObject *pyalpm_db_update(PyObject *rawself, PyObject *args, PyObject *k
 
   switch(ret) {
   case -1:
-    RET_ERR("unable to update database", 0, NULL);
+    RET_ERR("unable to update database", alpm_errno(handle), NULL);
   case 0:
     Py_RETURN_TRUE;
   case 1:
