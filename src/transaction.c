@@ -280,7 +280,7 @@ PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
   PyObject *result;
   const char* keywords[] = { INDEX_FLAGS(flagnames), NULL };
-  char flags[18] = "\0\0\0\0\0" /* 5 */ "\0\0\0\0\0" /* 10 */ "\0\0\0\0\0" /* 15 */ "\0\0\0";
+  char flags[18] __nonstring = "\0\0\0\0\0" /* 5 */ "\0\0\0\0\0" /* 10 */ "\0\0\0\0\0" /* 15 */ "\0\0\0";
 
   /* check all arguments */
   if (!PyArg_ParseTupleAndKeywords(args, kwargs,

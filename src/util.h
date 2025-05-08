@@ -56,6 +56,26 @@ PyObject* alpmlist_to_pylist(alpm_list_t *prt, pyobjectbuilder pybuilder);
 PyObject* alpmlist_to_pylist2(alpm_list_t *prt, pyobjectbuilder2 pybuilder, PyObject *self);
 int pylist_string_to_alpmlist(PyObject *list, alpm_list_t* *result);
 
+
+/* gcc 15 throws a warning if a terminating NULL char of a string initializer
+ * does not fit into a fixed-size char array:
+ *   src/transaction.c:283:20: error: initializer-string for array of 'char'
+      truncates NUL terminator but destination lacks 'nonstring' attribute (19
+      chars into 18 available) [-Werror=unterminated-string-initialization]
+ * gcc has an attribute 'nonstring', which allows to suppress this warning
+ * for such array declarations. But it is not the case for clang and other
+ * compilers.
+ */
+#if defined(__has_attribute)
+#  if __has_attribute(nonstring)
+#    define __nonstring __attribute__ ((nonstring))
+#  else
+#    define __nonstring
+#  endif
+#else
+#  define __nonstring
+#endif
+
 #endif
 
 /* vim: set ts=2 sw=2 et: */
