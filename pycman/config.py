@@ -108,7 +108,8 @@ class PacmanConfEnumeratorSession():
 				continue
 
 			line = line.strip()
-			if len(line) == 0: continue
+			if len(line) == 0:
+				continue
 			if line[0] == '#':
 				continue
 			if line[0] == '[' and line[-1] == ']':

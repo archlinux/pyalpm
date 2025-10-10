@@ -5,7 +5,7 @@ before_script:
       pacman -Syu --needed --noconfirm
       make base-devel python meson-python meson
       python-pytest python-pytest-cov python-pytest-pacman
-      python-sphinx python-pylint twine gcovr
+      python-sphinx ruff twine gcovr
 
 
 stages:
@@ -16,7 +16,7 @@ stages:
 
 lint:
   script:
-    - pylint pycman
+    - ruff check pycman
   except:
     - schedules
 
