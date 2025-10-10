@@ -36,7 +36,10 @@ def deptest(deps):
 	missing = [dep for dep in deps if pyalpm.find_satisfier(db.pkgcache, dep) is None]
 	return missing
 
-def main(rawargs):
+def main(rawargs=None):
+	if rawargs is None:
+		rawargs = sys.argv[1:]
+
 	global handle
 	parser = config.make_parser()
 	parser.add_argument('deps', metavar='dep', nargs='*',

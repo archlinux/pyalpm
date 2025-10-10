@@ -221,7 +221,10 @@ def parse_options(rawargs):
 			'package names for -i)')
 	return parser.parse_args(rawargs)
 
-def main(rawargs):
+def main(rawargs=None):
+	if rawargs is None:
+		rawargs = sys.argv[1:]
+
 	global handle
 	args = parse_options(rawargs)
 	handle = config.init_with_config_and_options(args)

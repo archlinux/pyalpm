@@ -37,7 +37,10 @@ def commit(pkgs, mode):
 		pkg = db.get_pkg(pkgname)
 		handle.set_pkgreason(pkg, mode)
 
-def main(rawargs):
+def main(rawargs=None):
+	if rawargs is None:
+		rawargs = sys.argv[1:]
+
 	global handle
 	parser = config.make_parser()
 	mode = parser.add_mutually_exclusive_group(required=True)

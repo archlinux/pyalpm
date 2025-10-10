@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+# 
+# pyalpm - Python 3 Bindings for libalpm
+# Copyright (C) 2011 Rémy Oudompheng <remy@archlinux.org>
+# 
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+"""
+Lists optional dependencies of installed packages.
+
+Options:
+	-u : only list uninstalled optdepends
+	-q : only print package names
+"""
+
+import re
+import argparse
+
+from pycman import config
+
+re_depstring = re.compile("([^<=>]*)([<>]?=.*)?")
+
+def enum_optdepends(h):
+	for p in h.get_localdb().pkgcache:
+		for o in p.optdepends:
+			oname, _colon, odesc = o.partition(':')
+			yield (p.name, oname.strip(), odesc.strip())
+
+def enum_depends(h):
+	for p in h.get_localdb().pkgcache:
+		for d in p.depends:
+			m = re_depstring.match(d)
+			yield (p.name, m.group(1))
+
+def main(opts=None):
+	if opts is None:
+		opts = parse_options()
+
+	h = config.init_with_config("/etc/pacman.conf")
+	optdeps = {}
+	installed = set(p.name for p in h.get_localdb().pkgcache)
+	needed = set(q for (p, q) in enum_depends(h))
+
+	for suggester, optdep, reason in enum_optdepends(h):
+		optdeps.setdefault(optdep, {})[suggester] = reason
+
+	for optdep in sorted(optdeps):
+		if optdep in installed and opts.u:
+			continue
+		if opts.orphan and not (optdep in installed and optdep not in needed):
+			continue
+		suggesters = optdeps[optdep]
+		if opts.q:
+			print(optdep)
+		else:
+			print(optdep, 'is suggested by')
+			for name, reason in sorted(suggesters.items()):
+				print('    ', name, ':', reason)
+
+def parse_options():
+	p = argparse.ArgumentParser()
+	p.add_argument('-u', action = 'store_true', default = False,
+			help='only list uninstalled optdepends')
+	p.add_argument('--orphan', action = 'store_true', default = False,
+			help='list installed optdepends that are not hard deps of any package')
+	p.add_argument('-q', action = 'store_true', default = False,
+			help='only print package names')
+	return p.parse_args()
+
+if __name__ == "__main__":
+	main(parse_options())
+
+# vim: set ts=4 sw=4 tw=0 noet:

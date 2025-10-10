@@ -129,7 +129,10 @@ def find_search(patterns, options):
 			print("    " + pkg.desc)
 	return 0
 
-def main(rawargs):
+def main(rawargs=None):
+	if rawargs is None:
+		rawargs = sys.argv[1:]
+
 	global handle
 	parser = config.make_parser(prog='pycman-query')
 	group = parser.add_argument_group("Query options")

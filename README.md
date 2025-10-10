@@ -12,21 +12,22 @@ in the Arch Linux distribution.
 
 * libalpm 13
 
-* python-setuptools
+* meson
 
-* python-pkgconfig
+* meson-python
 
 * python-sphinx (optional, to build the docs)
 
 # Building
 
-Building is as easy as running make
+Building is as easy as running:
 
-	make
+	meson setup build
+    meson compile -C build
 
 Building the docs:
 
-	make -C doc html
+    meson compile -C build doc
 
 # Testing
 
@@ -37,15 +38,14 @@ Required test dependency:
 
 Unit tests can be run with:
 
-	make test
-
-Coverage for Python code can be generated as following:
-
-	make open-coverage
+	meson test -C build
 
 Coverage for the CPython code can be generated as following:
 
-	make open-ext-coverage
+    meson setup build --reconfigure -Dcoverage=true
+    meson compile -C build
+    meson test -C build
+    ninja coverage -C build
 
 # Releasing
 

@@ -1,2 +1,47 @@
+[project]
+name = "pyalpm"
+dynamic = ["version"]
+description = "libalpm bindings for Python 3"
+readme = "README.md"
+license = { text = "GPLv3-or-later" }
+authors = [{ name = "Rémy Oudompheng", email = "remy@archlinux.org" }]
+maintainers = [
+    { name = "Jelle van der Waa", email = "jelle@archlinux.org" },
+]
+classifiers = [
+    "Development Status :: 6 - Mature",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: C",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: System :: Archiving :: Packaging",
+    "Topic :: System :: Software Distribution",
+    "Topic :: System :: Systems Administration",
+]
+keywords = ["archlinux", "pacman"]
+requires-python = ">=3.9"
+
+[project.urls]
+Homepage = "https://gitlab.archlinux.org/archlinux/pyalpm"
+Repository = "https://gitlab.archlinux.org/archlinux/pyalpm.git"
+Issues = "https://gitlab.archlinux.org/archlinux/pyalpm/-/issues"
+
+[dependency-groups]
+test = ["pytest", "pytest-cov", "pytest-pacman"]
+docs = ["sphinx"]
+build = [
+    "meson>=1.8.2"
+]
+
 [build-system]
-requires = ["setuptools", "wheel", "pkgconfig"]
+requires = ["meson-python"]
+build-backend = "mesonpy"
+
+[project.scripts]
+pycman-database = "pycman.action_database:main"
+pycman-deptest = "pycman.action_deptest:main"
+pycman-query = "pycman.action_query:main"
+pycman-remove = "pycman.action_remove:main"
+pycman-sync = "pycman.action_sync:main"
+pycman-upgrade = "pycman.action_upgrade:main"
+pycman-version = "pycman.action_version:main"
+lsoptdepends = "pycman.action_optdepends:main"

@@ -47,7 +47,10 @@ def upgrade(pkgs, options):
 	ok = transaction.finalize(t)
 	return (0 if ok else 1)
 
-def main(rawargs):
+def main(rawargs=None):
+	if rawargs is None:
+		rawargs = sys.argv[1:]
+
 	global handle
 	parser = config.make_parser()
 	group = parser.add_argument_group("upgrade options")

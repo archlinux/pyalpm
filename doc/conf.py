@@ -13,13 +13,9 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import subprocess
 import sys
 sys.path.insert(0, os.path.abspath('..'))
-
-# import as pyalpm_setup to avoid shadowing the setup method
-# used by sphinx
-import setup as pyalpm_setup
-
 
 # -- Project information -----------------------------------------------------
 
@@ -30,8 +26,7 @@ author = 'Dan McGee <dan@archlinux.org>, Imanol Celaya <ilcra1989@gmail.com>, Je
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = pyalpm_setup.pyalpm_version
-
+release = subprocess.check_output(['git', 'describe', '--tags', '--abbrev=0']).decode().strip()
 
 # -- General configuration ---------------------------------------------------
 

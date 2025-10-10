@@ -3,9 +3,9 @@ image: "archlinux:latest"
 before_script:
     - >
       pacman -Syu --needed --noconfirm
-      make base-devel python python-pkgconfig
+      make base-devel python meson-python meson
       python-pytest python-pytest-cov python-pytest-pacman
-      python-sphinx python-pylint twine python-tomli
+      python-sphinx python-pylint twine gcovr
 
 
 stages:
@@ -16,21 +16,19 @@ stages:
 
 lint:
   script:
-    - make lint
+    - pylint pycman
   except:
     - schedules
 
 
 test:
   script:
-    - make build
-    - PYTEST_OPTIONS="--junitxml=report.xml --cov-report xml" make test
+    - meson setup build -Db_coverage=true
+    - meson compile -C build
+    - meson test -C build
   artifacts:
     reports:
-      junit: report.xml
-      coverage_report:
-        coverage_format: cobertura
-        path: coverage.xml
+      junit: build/report.xml
   except:
     - schedules
 
@@ -48,8 +46,8 @@ pypi:
     - tags
     - secure
   script:
-    - python setup.py sdist
-    - twine upload dist/*
+    - meson dist -C build
+    - twine upload build/meson-dist/*
 
 include:
 - template: Security/SAST.gitlab-ci.yml

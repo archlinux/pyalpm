@@ -39,7 +39,7 @@ VERSION_STRING = """
                        the terms of the GNU General Public License.
 """
 
-def main(args):
+def main(args=None):
 	print(VERSION_STRING % (pyalpm.version(), pyalpm.alpmversion()))
 	return 2
 
