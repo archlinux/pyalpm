@@ -83,6 +83,8 @@ BOOLEAN_OPTIONS = (
 	'DisableDownloadTimeout',
 	'NoProgressBar',
 	'DisableSandbox',
+	'DisableSandboxFilesystem',
+	'DisableSandboxSyscalls',
 )
 
 
