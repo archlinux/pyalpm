@@ -40,7 +40,8 @@ ATTR_INDENT = 17 * ' '
 
 def get_term_size():
 	if sys.stdout.isatty():
-		_, width = struct.unpack("HH", fcntl.ioctl(1, termios.TIOCGWINSZ, 4 * b"\x00"))
+		empty = struct.pack("HHHH", 0, 0, 0, 0)
+		_, width, _, _ = struct.unpack("HHHH", fcntl.ioctl(1, termios.TIOCGWINSZ, empty))
 		return width
 	else:
 		return 80
