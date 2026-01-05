@@ -39,11 +39,23 @@ test(
   env: { 'PYTHONPATH': '@0@:@1@'.format(build_dir, meson.current_source_dir()) },
 )
 
+sphinx_build = find_program('sphinx-build', disabler: true, required: get_option('docs'))
+sphinx_args = ['-Dversion=' + meson.project_version(), '-Drelease=' + meson.project_version()]
+
 input_dir = meson.current_source_dir() / 'doc'
 output_dir = meson.current_build_dir() / 'html'
-output_file = output_dir / 'index.html'
-custom_target('doc',
-      output: 'index.html',
-      input: files('doc/conf.py'),
-      command: [find_program('sphinx-build'), '-b', 'html', input_dir, output_dir],
+doc_target = custom_target('html',
+      output: 'html',
+      input: files('doc/conf.py',
+                   'doc/pyalpm/pyalpm.rst',
+                   'doc/pyalpm/Database.rst',
+                   'doc/pyalpm/Handle.rst',
+                   'doc/pyalpm/Package.rst',
+                   'doc/pyalpm/Pyalpm.rst',
+                   'doc/pyalpm/Transaction.rst'),
+      command: [sphinx_build, '-b', 'html', sphinx_args, input_dir, output_dir],
+      env: { 'PYTHONPATH': meson.current_build_dir() / 'src' },
+      build_by_default: get_option('docs'),
+      install: get_option('docs'),
+      install_dir: get_option('datadir') / 'doc' / meson.project_name()
 )
