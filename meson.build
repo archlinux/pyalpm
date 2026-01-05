@@ -1,7 +1,7 @@
 project(
         'pyalpm',
         'c',
-        version: '0.9.2',
+        version: '0.11.0',
         license: 'GPL-3-or-later',
         default_options: ['warning_level=2', 'c_std=c99'],
         meson_version: '>= 1.8.0',
