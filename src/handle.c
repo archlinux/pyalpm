@@ -65,6 +65,39 @@ PyObject* pyalpm_initialize(PyTypeObject *subtype, PyObject *args, PyObject *kwa
   }
 }
 
+/** Finds a package satisfying a dependency constraint from a package database list */
+static PyObject* pyalpm_find_dbs_satisfier(PyObject *self, PyObject* args) {
+  PyObject *dblist;
+  char *depspec;
+  alpm_list_t *alpm_dblist;
+  alpm_pkg_t *p;
+  alpm_handle_t *handle = ALPM_HANDLE(self);
+
+  if(!PyArg_ParseTuple(args, "Os", &dblist, &depspec))
+  {
+    PyErr_SetString(PyExc_TypeError, "find_dbs_satisfier() takes a Database list and a string");
+    return NULL;
+  }
+
+  if(pylist_db_to_alpmlist(dblist, &alpm_dblist) == -1)
+    return NULL;
+
+  p = alpm_find_dbs_satisfier(handle, alpm_dblist, depspec);
+  alpm_list_free(alpm_dblist);
+
+  if (p == NULL) {
+    Py_RETURN_NONE;
+  } else {
+    PyObject *result;
+    result = pyalpm_package_from_pmpkg(p, NULL);
+    if (result == NULL) {
+      return NULL;
+    } else {
+      return result;
+    }
+  }
+}
+
 /* Database getters/setters */
 
 static PyObject* pyalpm_get_localdb(PyObject *self, PyObject *dummy) {
@@ -358,6 +391,16 @@ static PyMethodDef pyalpm_handle_methods[] = {
 
   {"add_ignoregrp", option_add_ignoregrp_alpm, METH_VARARGS, "add an ignoregrp."},
   {"remove_ignoregrp", option_remove_ignoregrp_alpm, METH_VARARGS, "remove an ignoregrp."},
+
+  /* Other methods */
+  {"find_dbs_satisfier",    pyalpm_find_dbs_satisfier, METH_VARARGS,
+    "Searches a list of databases for a dependency specified with a depstring.\n"
+    "Arguments:\n"
+    "dbs: a list of Databases to search\n"
+    "depstring: a formatted string, e.g. 'glibc>=2.27'\n"
+    "Returns: a Package or None.\n"
+  },
+
   {NULL, NULL, 0, NULL},
 };
 

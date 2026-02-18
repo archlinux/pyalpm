@@ -1,7 +1,7 @@
 import pytest
 import pyalpm
 
-from conftest import package, syncdb, PKG
+from conftest import handle, package, syncdb, PKG
 
 
 def test_alpm_version():
@@ -36,6 +36,19 @@ def test_find_satisfier_error():
     with pytest.raises(TypeError) as excinfo:
         pyalpm.find_satisfier(["foo"], PKG)
     assert 'list must contain only Package objects' in str(excinfo.value)
+
+def test_find_dbs_satisfier(handle, syncdb, package):
+    assert handle.find_dbs_satisfier([syncdb], PKG).name == package.name
+    assert handle.find_dbs_satisfier([syncdb], 'bar') is None
+
+def test_find_dbs_satisfier_error(handle):
+    with pytest.raises(TypeError) as excinfo:
+        handle.find_dbs_satisfier()
+    assert 'takes a Database list and a string' in str(excinfo.value)
+
+    with pytest.raises(TypeError) as excinfo:
+        handle.find_dbs_satisfier(["foo"], PKG)
+    assert 'list must contain only Database objects' in str(excinfo.value)
 
 def test_find_grp_pkgs(syncdb):
     assert pyalpm.find_grp_pkgs([syncdb], 'test') == []

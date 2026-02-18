@@ -99,3 +99,11 @@ Handles are objects that provide access to pacman databases and transactions.
       :param bool recurseall: undocumented
       :param bool nolock: do not database
       :returns: a :class:`Transaction` object
+
+   .. py:method:: find_db_satisfiers(dbs: list[Database], depstring: str)
+
+      Searches a list of databases for a dependency specified with a depstring
+
+      :param list dbs: list of Databases to search
+      :param str depstring: a formatted string, e.g. 'glibc>=2.27'
+      :returns: a :class:`Package` object or None
