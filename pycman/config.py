@@ -89,7 +89,7 @@ BOOLEAN_OPTIONS = (
 )
 
 
-class PacmanConfEnumeratorSession():
+class PacmanConfEnumeratorSession:
 
 	def __init__(self, path):
 		self.path = path
