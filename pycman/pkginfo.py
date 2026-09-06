@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-#
 # pycman.pkginfo - A Python implementation of Pacman
 # Copyright (C) 2011 Rémy Oudompheng <remy@archlinux.org>
 #
