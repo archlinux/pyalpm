@@ -18,13 +18,15 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-from . import action_database
-from . import action_deptest
-from . import action_query
-from . import action_remove
-from . import action_sync
-from . import action_upgrade
-from . import action_version
+from . import (
+	action_database,
+	action_deptest,
+	action_query,
+	action_remove,
+	action_sync,
+	action_upgrade,
+	action_version,
+)
 
 ACTIONS = {
 	'db': action_database.main,

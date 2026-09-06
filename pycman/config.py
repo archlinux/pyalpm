@@ -25,14 +25,15 @@ This module handles pacman.conf files as well as pycman options that
 are common to all action modes.
 """
 
-import os
-import glob
-import sys
 import argparse
 import collections
+import glob
+import os
+import sys
 import warnings
 
 import pyalpm
+
 
 class InvalidSyntax(Warning):
 	def __init__(self, filename, problem, arg):

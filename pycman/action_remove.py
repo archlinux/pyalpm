@@ -26,8 +26,8 @@ the effect on dependencies of/on given targets.
 """
 
 import sys
-from pycman import config
-from pycman import transaction
+
+from pycman import config, transaction
 
 handle = None
 

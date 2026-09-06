@@ -26,8 +26,8 @@ Options:
 	-q : only print package names
 """
 
-import re
 import argparse
+import re
 
 from pycman import config
 

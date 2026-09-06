@@ -26,9 +26,10 @@ the effect of the transaction.
 """
 
 import sys
+
 import pyalpm
-from pycman import config
-from pycman import transaction
+
+from pycman import config, transaction
 
 handle = None
 

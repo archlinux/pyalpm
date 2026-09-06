@@ -25,13 +25,12 @@ This module defines utility function to format package information
 for terminal output.
 """
 
-import sys
-import time
-import textwrap
-
-import struct
 import fcntl
+import struct
+import sys
 import termios
+import textwrap
+import time
 
 import pyalpm
 

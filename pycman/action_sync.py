@@ -28,9 +28,8 @@ and is also used to install/upgrade/remove them.
 import sys
 
 import pyalpm
-from pycman import config
-from pycman import pkginfo
-from pycman import transaction
+
+from pycman import config, pkginfo, transaction
 
 handle = None
 

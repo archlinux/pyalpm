@@ -26,7 +26,9 @@ and prints out a list of those which are missing.
 """
 
 import sys
+
 import pyalpm
+
 from pycman import config
 
 handle = None

@@ -28,8 +28,8 @@ import os
 import sys
 
 import pyalpm
-from pycman import config
-from pycman import pkginfo
+
+from pycman import config, pkginfo
 
 handle = None
 

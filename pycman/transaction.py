@@ -28,7 +28,9 @@ to initialize transactions according to options
 import math
 import sys
 import traceback
+
 import pyalpm
+
 
 # Callbacks
 def cb_event(*args):

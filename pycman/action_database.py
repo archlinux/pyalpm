@@ -26,7 +26,9 @@ database.
 """
 
 import sys
+
 import pyalpm
+
 from pycman import config
 
 handle = None
