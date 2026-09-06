@@ -45,3 +45,16 @@ pycman-sync = "pycman.action_sync:main"
 pycman-upgrade = "pycman.action_upgrade:main"
 pycman-version = "pycman.action_version:main"
 lsoptdepends = "pycman.action_optdepends:main"
+
+[tool.ruff]
+exclude = [
+     ".git",
+     "src",
+     "test",  # TODO: fix all ruff issues and enable
+]
+src = []
+
+[tool.ruff.lint]
+ignore = [
+     "SIM115",  # Use context manager for open
+]
