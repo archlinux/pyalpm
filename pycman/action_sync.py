@@ -60,7 +60,7 @@ def do_sysupgrade(options):
 
 def do_install(pkgs, options):
 	"Install a list of packages like pacman -S"
-	repos = dict((db.name, db) for db in handle.get_syncdbs())
+	repos = {db.name: db for db in handle.get_syncdbs()}
 	if len(pkgs) == 0:
 		print("error: no targets specified")
 		return 1
@@ -122,7 +122,7 @@ def show_repo(args):
 	"Show repository's list of packages like pacman -Sl"
 	repos = handle.get_syncdbs()
 	if len(args.args) > 0:
-		repo_dict = dict((repo.name, repo) for repo in repos)
+		repo_dict = {repo.name: repo for repo in repos}
 		try:
 			repos = [repo_dict[name] for name in args.args]
 		except KeyError as err:
@@ -144,7 +144,7 @@ def show_packages(args):
 			for pkg in repo.pkgcache:
 				pkginfo.display_pkginfo(pkg, level=args.info, style='sync')
 	else:
-		repos = dict((db.name, db) for db in handle.get_syncdbs())
+		repos = {db.name: db for db in handle.get_syncdbs()}
 		for pkgname in args.args:
 			ok, value = find_sync_package(pkgname, repos)
 			if ok:
