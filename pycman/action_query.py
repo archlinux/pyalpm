@@ -87,12 +87,12 @@ def find_file(filenames, options):
 					name = os.path.join(dirname, name)
 					lookupname = name
 			if lookupname is None:
-				print("error: failed to find '%s' in PATH: No such file or directory" % name)
+				print(f"error: failed to find '{name}' in PATH: No such file or directory")
 				ret = 1
 				continue
 		else:
 			if not os.path.lexists(name):
-				print("error: failed to read file '%s': No such file or directory" % name)
+				print(f"error: failed to read file '{name}': No such file or directory")
 				ret = 1
 				continue
 			lookupname = name
@@ -125,7 +125,7 @@ def find_search(patterns, options):
 		if options.quiet:
 			print(pkg.name)
 		else:
-			print("%s/%s %s" % (pkg.db.name, pkg.name, pkg.version))
+			print(f"{pkg.db.name}/{pkg.name} {pkg.version}")
 			print("    " + pkg.desc)
 	return 0
 
@@ -197,7 +197,7 @@ def main(rawargs=None):
 			else:
 				pkg = db.get_pkg(pkgname)
 			if pkg is None:
-				print('error: package "%s" not found' % pkgname)
+				print(f'error: package "{pkgname}" not found')
 				retcode = 1
 			else:
 				pkglist.append(pkg)

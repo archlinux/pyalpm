@@ -132,7 +132,7 @@ def display_pkginfo(pkg, level=1, style='local'):
 		if len(pkg.backup) == 0:
 			print('(none)')
 		else:
-			print('\n'.join(["%s %s" % (md5, file) for (file, md5) in pkg.backup]))
+			print('\n'.join([f"{md5} {file}" for (file, md5) in pkg.backup]))
 	print()
 
 # vim: set ts=4 sw=4 noet:

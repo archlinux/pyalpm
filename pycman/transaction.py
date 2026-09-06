@@ -48,7 +48,7 @@ def cb_progress(target, percent, n, i):
 	if len(target) == 0:
 		# abstract progress
 		if percent < last_percent or i < last_i:
-			sys.stdout.write("progress (%d targets)" % n)
+			sys.stdout.write(f"progress ({n} targets)")
 			last_i = 0
 		sys.stdout.write((i - last_i) * '.')
 		sys.stdout.flush()
@@ -58,7 +58,7 @@ def cb_progress(target, percent, n, i):
 		if target != last_target or percent < last_percent:
 			last_target = target
 			last_percent = 0
-			sys.stdout.write("progress for %s (%d/%d)" % (target, i, n))
+			sys.stdout.write(f"progress for {target} ({i}/{n})")
 		old_dots = last_percent // 4
 		new_dots = percent // 4
 		sys.stdout.write((new_dots - old_dots) * '.')
@@ -80,7 +80,7 @@ def cb_dl(filename, tx, total):
 		_last_dl_filename = filename
 		_last_dl_total = total
 		_last_dl_progress = 0
-		sys.stdout.write("\ndownload %s: %d/%d" % (filename, tx, total))
+		sys.stdout.write(f"\ndownload {filename}: {tx}/{total}")
 		sys.stdout.flush()
 	# compute a progress indicator
 	if _last_dl_total > 0:
@@ -90,7 +90,7 @@ def cb_dl(filename, tx, total):
 		progress = int(math.log(1 + tx / 1024) ** 2 / 2)
 	if progress > _last_dl_progress:
 		_last_dl_progress = progress
-		sys.stdout.write("\rdownload %s: %s %d/%d" % (filename, '.' * progress, tx, total))
+		sys.stdout.write(f"\rdownload {filename}: {'.' * progress} {tx}/{total}")
 		sys.stdout.flush()
 
 def init_from_options(handle, options):

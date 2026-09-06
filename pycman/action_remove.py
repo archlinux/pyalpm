@@ -38,7 +38,7 @@ def remove(pkgs, options):
 	for name in pkgs:
 		pkg = db.get_pkg(name)
 		if pkg is None:
-			print("error: '%s': target not found" % name)
+			print(f"error: '{name}': target not found")
 			return 1
 		targets.append(pkg)
 

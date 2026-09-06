@@ -84,17 +84,17 @@ def find_sync_package(pkgname, syncdbs):
 		repo, pkgname = pkgname.split('/', 1)
 		db = syncdbs.get(repo)
 		if db is None:
-			return False, "repository '%s' does not exist" % repo
+			return False, f"repository '{repo}' does not exist"
 		pkg = db.get_pkg(pkgname)
 		if pkg is None:
-			return False, "package '%s' was not found in repository '%s'" % (pkgname, repo)
+			return False, f"package '{pkgname}' was not found in repository '{repo}'"
 		return True, pkg
 	else:
 		for db in syncdbs.values():
 			pkg = db.get_pkg(pkgname)
 			if pkg is not None:
 				return True, pkg
-		return False, "package '%s' was not found" % pkgname
+		return False, f"package '{pkgname}' was not found"
 
 # Query actions
 
@@ -126,7 +126,7 @@ def show_repo(args):
 		try:
 			repos = [repo_dict[name] for name in args.args]
 		except KeyError as err:
-			print("error: repository '%s' was not found" % err.args)
+			print(f"error: repository '{err.args}' was not found")
 			return 1
 
 	for repo in repos:
@@ -164,7 +164,7 @@ def show_search(patterns, options):
 		if options.quiet:
 			print(pkg.name)
 		else:
-			print("%s/%s %s" % (pkg.db.name, pkg.name, pkg.version))
+			print("{pkg.db.name}/{pkg.name} {pkg.version}")
 			print("    " + pkg.desc)
 	return 0
 

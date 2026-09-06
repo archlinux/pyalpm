@@ -40,7 +40,7 @@ ACTIONS = {
 
 def run_action_with_args(action, args):
 	if action not in ACTIONS:
-		print("Invalid action specified (%s are supported)" % ', '.join(ACTIONS.keys()))
+		print(f"Invalid action specified ({', '.join(ACTIONS.keys())} are supported)")
 		return 1
 	else:
 		callback = ACTIONS[action]

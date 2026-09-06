@@ -42,7 +42,7 @@ class InvalidSyntax(Warning):
 		self.arg = arg
 
 	def __str__(self):
-		return "unable to parse %s, %s: %r" % (self.filename, self.problem, self.arg)
+		return f"unable to parse {self.filename}, {self.problem}: {self.arg!r}"
 
 # Options that may occur several times in a section. Their values should be
 # accumulated in a list.
@@ -259,7 +259,7 @@ class PacmanConfig(object):
 		return h
 
 	def __str__(self):
-		return("PacmanConfig(options=%s, repos=%s)" % (str(self.options), str(self.repos)))
+		return(f"PacmanConfig(options={self.options}, repos={self.repos})")
 
 def make_parser(*args, **kwargs):
 	parser = argparse.ArgumentParser(*args, **kwargs)
