@@ -51,8 +51,8 @@ def main(opts=None):
 
 	h = config.init_with_config("/etc/pacman.conf")
 	optdeps = {}
-	installed = set(p.name for p in h.get_localdb().pkgcache)
-	needed = set(q for (p, q) in enum_depends(h))
+	installed = {p.name for p in h.get_localdb().pkgcache}
+	needed = {q for (p, q) in enum_depends(h)}
 
 	for suggester, optdep, reason in enum_optdepends(h):
 		optdeps.setdefault(optdep, {})[suggester] = reason

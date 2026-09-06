@@ -38,7 +38,7 @@ def filter_pkglist(pkglist, options):
 	if options.foreign:
 		syncpkgs = set()
 		for db in handle.get_syncdbs():
-			syncpkgs |= set(p.name for p in db.pkgcache)
+			syncpkgs |= {p.name for p in db.pkgcache}
 	for pkg in pkglist:
 		if options.deps and pkg.reason == pyalpm.PKG_REASON_EXPLICIT:
 			continue
