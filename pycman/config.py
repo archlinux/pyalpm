@@ -174,7 +174,7 @@ def cb_log(level, line):
 		line = "FUNC: " + line
 	sys.stderr.write(line)
 
-class PacmanConfig(object):
+class PacmanConfig:
 	def __init__(self, conf=None, options=None):
 		self.options = {}
 		self.repos = collections.OrderedDict()
