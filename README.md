@@ -49,7 +49,7 @@ Coverage for the CPython code can be generated as following:
 
 # Releasing
 
-1. Bump version in setup.py
+1. Bump version in meson.build 
 2. commit
 3. git tag
 
