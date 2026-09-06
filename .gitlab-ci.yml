@@ -46,7 +46,7 @@ pypi:
     - tags
     - secure
   script:
-    - meson -C build dist
+    - meson dist -C build
     - twine upload build/meson-dist/*
 
 include:
