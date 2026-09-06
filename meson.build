@@ -7,7 +7,7 @@ project(
         meson_version: '>= 1.8.0',
 )
 
-add_global_arguments('-Wno-incompatible-pointer-types', language : 'c')
+add_global_arguments('-Wno-incompatible-pointer-types', '-Wno-unused-parameter', language : 'c')
 
 
 # Dependencies
