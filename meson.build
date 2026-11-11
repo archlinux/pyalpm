@@ -29,7 +29,7 @@ test_dir = meson.current_source_dir() / 'test'
 test_args = [test_dir, '-v']
 
 if get_option('b_coverage')
-    test_args = [test_dir, '--junitxml=report.xml', '--cov-report=xml']
+    test_args += ['--junitxml=report.xml', '--cov-report=xml']
 endif
 
 test(
