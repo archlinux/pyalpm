@@ -307,7 +307,7 @@ PyObject* pyalpm_trans_init(PyObject *self, PyObject *args, PyObject *kwargs) {
 
 static PyObject* pyalpm_trans_prepare(PyObject *self, PyObject *args) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
-  alpm_list_t *data;
+  alpm_list_t *data = NULL;
 
   int ret = alpm_trans_prepare(handle, &data);
   if (ret == -1) {
