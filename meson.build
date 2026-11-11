@@ -26,7 +26,7 @@ subdir('pycman')
 # Test
 build_dir = meson.current_build_dir() / 'src'
 test_dir = meson.current_source_dir() / 'test'
-test_args = [test_dir]
+test_args = [test_dir, '-v']
 
 if get_option('b_coverage')
     test_args = [test_dir, '--junitxml=report.xml', '--cov-report=xml']
