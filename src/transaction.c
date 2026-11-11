@@ -143,7 +143,7 @@ void pyalpm_eventcb(void *ctx, alpm_event_t *event) {
   }
   {
     PyObject *result = NULL;
-    if (global_py_callbacks[CB_PROGRESS]) {
+    if (global_py_callbacks[CB_EVENT]) {
       result = PyObject_CallFunction(global_py_callbacks[CB_EVENT], "is", event->type, eventstr);
     } else {
       PyErr_SetString(PyExc_RuntimeError, "event callback was called but it's not set!");
