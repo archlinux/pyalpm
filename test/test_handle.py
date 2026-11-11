@@ -1,3 +1,5 @@
+import os
+
 from pytest import raises
 
 import pyalpm
@@ -120,6 +122,17 @@ def test_invalid_logfile(handle):
     with raises(TypeError) as excinfo:
         handle.logfile = 1
     assert 'logfile path must be a string' in str(excinfo.value)
+
+def test_logfile_surrogate(handle):
+    with raises(UnicodeEncodeError):
+        handle.logfile = '\udc80'
+
+def test_logfile_bytes(handle):
+    handle.logfile = os.fsencode('/tmp/\udc80.log')
+
+def test_set_arch_surrogate(handle):
+    with raises(UnicodeEncodeError):
+        handle.arch = ['x86_64', '\udc80']
 
 def test_invalid_logcb(handle):
     with raises(TypeError) as excinfo:

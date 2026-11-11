@@ -169,6 +169,8 @@ static int _set_string_attr(PyObject *self, PyObject *value, const struct _alpm_
     path = strdup(PyBytes_AS_STRING(value));
   } else if (PyUnicode_Check(value)) {
     PyObject* utf8 = PyUnicode_AsUTF8String(value);
+    if (utf8 == NULL)
+      return -1;
     path = strdup(PyBytes_AS_STRING(utf8));
     Py_DECREF(utf8);
   } else {

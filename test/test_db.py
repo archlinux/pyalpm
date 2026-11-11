@@ -12,6 +12,10 @@ def test_localdb_empty(localdb):
 def test_search_empty(localdb):
     assert localdb.search('bar') == []
 
+def test_search_surrogate(localdb):
+    with pytest.raises(UnicodeEncodeError):
+        localdb.search('\udc80')
+
 def test_read_grp(localdb):
     assert localdb.read_grp('foo') is None
 

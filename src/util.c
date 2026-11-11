@@ -100,20 +100,32 @@ int pylist_string_to_alpmlist(PyObject *list, alpm_list_t* *result)
       ret = alpm_list_add(ret, strdup(PyBytes_AS_STRING(item)));
     } else if (PyUnicode_Check(item)) {
       PyObject* utf8 = PyUnicode_AsUTF8String(item);
+      if (utf8 == NULL) {
+        Py_DECREF(item);
+        goto error;
+      }
       ret = alpm_list_add(ret, strdup(PyBytes_AS_STRING(utf8)));
       Py_DECREF(utf8);
     } else {
       PyErr_SetString(PyExc_TypeError, "list must contain only strings");
-      FREELIST(ret);
       Py_DECREF(item);
-      return -1;
+      goto error;
     }
     Py_DECREF(item);
   }
-  Py_DECREF(iterator);
 
+  /* PyIter_Next() also returns NULL when the iterator raised */
+  if (PyErr_Occurred())
+    goto error;
+
+  Py_DECREF(iterator);
   *result = ret;
   return 0;
+
+error:
+  Py_DECREF(iterator);
+  FREELIST(ret);
+  return -1;
 }
 
 PyObject* pyobject_from_string(void *s) {
