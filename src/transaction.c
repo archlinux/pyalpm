@@ -185,6 +185,17 @@ static PyObject* pyobject_from_pmdepmissing(void *item) {
   return result;
 }
 
+static PyObject* pyobject_from_pmconflict(void *item) {
+  alpm_conflict_t* conflict = (alpm_conflict_t*)item;
+  char* reason = conflict->reason ? alpm_dep_compute_string(conflict->reason) : NULL;
+  PyObject *result = Py_BuildValue("(ssz)",
+      alpm_pkg_get_name(conflict->package1),
+      alpm_pkg_get_name(conflict->package2),
+      reason);
+  free(reason);
+  return result;
+}
+
 static PyObject* pyobject_from_pmfileconflict(void *item) {
   alpm_fileconflict_t* conflict = (alpm_fileconflict_t*)item;
   const char *target = conflict->target;
@@ -309,12 +320,33 @@ static PyObject* pyalpm_trans_prepare(PyObject *self, PyObject *args) {
   alpm_handle_t *handle = ALPM_HANDLE(self);
   alpm_list_t *data = NULL;
 
+  enum _alpm_errno_t err;
+  PyObject *info;
+
   int ret = alpm_trans_prepare(handle, &data);
   if (ret == -1) {
-    /* return the list of package conflicts in the exception */
-    PyObject *info = alpmlist_to_pylist(data, pyobject_from_pmdepmissing);
+    err = alpm_errno(handle);
+    switch (err) {
+      case ALPM_ERR_UNSATISFIED_DEPS:
+        info = alpmlist_to_pylist(data, pyobject_from_pmdepmissing);
+        alpm_list_free_inner(data, (alpm_list_fn_free)alpm_depmissing_free);
+        break;
+      case ALPM_ERR_CONFLICTING_DEPS:
+        info = alpmlist_to_pylist(data, pyobject_from_pmconflict);
+        alpm_list_free_inner(data, (alpm_list_fn_free)alpm_conflict_free);
+        break;
+      case ALPM_ERR_PKG_INVALID_ARCH:
+        info = alpmlist_to_pylist(data, pyobject_from_string);
+        alpm_list_free_inner(data, free);
+        break;
+      default:
+        info = PyList_New(0);
+        break;
+    }
+    alpm_list_free(data);
+
     if (!info) return NULL;
-    RET_ERR_DATA("transaction preparation failed", alpm_errno(handle), info, NULL);
+    RET_ERR_DATA("transaction preparation failed", err, info, NULL);
   }
 
   Py_RETURN_NONE;
