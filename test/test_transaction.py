@@ -61,11 +61,14 @@ def conflict_handle(tmp_path, generate_localdb, generate_syncdb):
                  'files': []}
     target = {'name': 'bar', 'base': 'bar', 'version': '1-1', 'arch': 'any',
               'conflicts': ['foo']}
-    dbpath = str(tmp_path)
+    dbpath = tmp_path
+    sync_dir = dbpath / 'sync'
+
     generate_localdb([installed], dbpath)
-    os.mkdir(f'{dbpath}/sync')
-    generate_syncdb([target], 'test.db', f'{dbpath}/sync')
-    handle = Handle('/', dbpath)
+
+    os.mkdir(sync_dir)
+    generate_syncdb([target], 'test.db', sync_dir)
+    handle = Handle('/', str(dbpath))
     handle.register_syncdb('test', 0)
     return handle
 

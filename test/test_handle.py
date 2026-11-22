@@ -150,7 +150,7 @@ def test_load_pkg_invalid(handle):
 
 
 def test_load_pkg(handle, localpkg):
-    pkg = handle.load_pkg(localpkg)
+    pkg = handle.load_pkg(str(localpkg))
     assert pkg.name == 'empty'
 
 def test_set_pkgreason(handle, package):

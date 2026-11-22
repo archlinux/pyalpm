@@ -31,25 +31,25 @@ def localdb(real_handle):
 
 @pytest.fixture(scope="module")
 def real_handle(tmpdir_factory, generate_syncdb, generate_localdb, db_data):
-    dbpath = str(tmpdir_factory.mktemp('dbpath'))
-    syncdb = f"{dbpath}/sync"
-    localdb = f"{dbpath}/local"
+    dbpath = tmpdir_factory.mktemp('dbpath')
+    syncdb = dbpath / "sync"
+    localdb = dbpath / "local"
     # TODO: use a different location for clarity
-    mirrorpath = f'{dbpath}/{REPO_1}'
-    syncdbfile = f'{syncdb}/{REPO_1}.db'
+    mirrorpath = dbpath / REPO_1
+    syncdbfile =  syncdb / f'{REPO_1}.db'
 
-    mkdir(syncdb)
-    mkdir(mirrorpath)
+    syncdb.mkdir()
+    mirrorpath.mkdir()
 
     generate_syncdb(db_data, basename(syncdbfile), syncdb)
     generate_localdb(db_data, dbpath)
 
     # Generate localdb content after the db is initialised
-    handle = Handle('/', dbpath)
+    handle = Handle('/', str(dbpath))
 
     # Generate local repo by copying the sync core.db
     # TODO: use a different sync db with a more packages
-    copyfile(syncdbfile, f'{mirrorpath}/{REPO_1}.db')
+    copyfile(syncdbfile, mirrorpath / f'{REPO_1}.db')
 
     repo = handle.register_syncdb(REPO_1, 0)
     repo.servers = [f'file:///{mirrorpath}']
