@@ -57,6 +57,13 @@ exclude = [
 src = []
 
 [tool.ruff.lint]
+select = [
+     "C4",      # flake8-comprehensions
+     "E",       # pycodestyle
+     "F",       # pyflakes
+     "ISC",     # flake8-implicit-str-concat
+     "RUF",     # ruff rules
+]
 ignore = [
      "SIM115",  # Use context manager for open
 ]
