@@ -71,10 +71,10 @@ def display_pkginfo(pkg, level=1, style='local'):
 	"""
 	Displays pretty-printed package information.
 
-	Args :
-	  pkg -- the package to display
-	  level -- the level of detail (1 or 2)
-	  style -- 'local' or 'sync'
+	Args:
+		pkg -- the package to display
+		level -- the level of detail (1 or 2)
+		style -- 'local' or 'sync'
 	"""
 
 	if style not in ['local', 'sync', 'file']:
