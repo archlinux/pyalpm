@@ -50,6 +50,7 @@ lsoptdepends = "pycman.action_optdepends:main"
 exclude = [
      ".git",
      "src",
+     "doc",
      "test",  # TODO: fix all ruff issues and enable
 ]
 src = []
