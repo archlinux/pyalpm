@@ -47,6 +47,7 @@ pycman-version = "pycman.action_version:main"
 lsoptdepends = "pycman.action_optdepends:main"
 
 [tool.ruff]
+line-length = 118
 exclude = [
      ".git",
      "src",
